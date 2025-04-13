@@ -28,9 +28,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Check if user is logged in on page load
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem('user')
+      if (storedUser) {
+        setUser(JSON.parse(storedUser))
+      }
     }
     setIsLoading(false)
   }, [])
@@ -39,7 +41,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await axios.post('/api/auth/login', { email, password })
       setUser(response.data)
-      localStorage.setItem('user', JSON.stringify(response.data))
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(response.data))
+      }
       router.push('/quiz')
     } catch {
       toast.error('Invalid credentials')
@@ -50,7 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await axios.post('/api/auth/register', { username, email, password })
       setUser(response.data)
-      localStorage.setItem('user', JSON.stringify(response.data))
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(response.data))
+      }
       router.push('/quiz')
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
@@ -62,7 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null)
-    localStorage.removeItem('user')
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('user')
+    }
     router.push('/')
   }
 

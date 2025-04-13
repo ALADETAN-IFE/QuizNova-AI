@@ -1,8 +1,8 @@
 'use client';
 
-// import { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Loader2 } from 'lucide-react';
+import { useCallback } from "react";
+import { useDropzone, DropzoneOptions } from "react-dropzone";
+import { Upload, FileText, Loader2 } from "lucide-react";
 
 interface FileDropzoneProps {
   onDrop: (acceptedFiles: File[]) => void;
@@ -15,15 +15,19 @@ export default function FileDropzone({
   onDrop,
   isUploading,
   processingStatus,
-  uploadedFile
+  uploadedFile,
 }: FileDropzoneProps) {
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  // Create dropzone options
+  const dropzoneOptions: DropzoneOptions = {
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
     },
     maxFiles: 1,
-  });
+  };
+
+  // Initialize dropzone directly in the component
+  const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
 
   return (
     <div

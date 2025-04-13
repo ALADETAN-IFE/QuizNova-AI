@@ -5,8 +5,13 @@ import { useRouter } from "next/navigation"; // Next.js hook for programmatic na
 import { toast } from "react-hot-toast"; // Library for displaying notifications
 import { extractTextFromPDF } from "@/lib/pdf"; // Utility function to extract text from a PDF
 import { generateQuizFromPDF } from "@/lib/gemini"; // Function to generate quiz questions from extracted text
-import { Upload, FileText, Loader2 } from "lucide-react"; // Icons for UI elements
-import { useDropzone, DropzoneOptions } from "react-dropzone"; // Import types from react-dropzone
+import dynamic from 'next/dynamic';
+
+// Dynamically import the FileDropzone component with no SSR
+const FileDropzone = dynamic(
+  () => import('@/components/FileDropzone'),
+  { ssr: false }
+);
 
 export default function UploadPage() {
   const router = useRouter(); // Initialize router for navigation
@@ -28,18 +33,6 @@ export default function UploadPage() {
       toast.error("Please upload a PDF file"); // Show error if the file is not a PDF
     }
   }, []);
-
-  // Create dropzone options
-  const dropzoneOptions: DropzoneOptions = {
-    onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-    },
-    maxFiles: 1,
-  };
-
-  // Initialize dropzone directly in the component
-  const { getRootProps, getInputProps, isDragActive } = useDropzone(dropzoneOptions);
 
   // Generates a quiz from the uploaded PDF
   const generateQuiz = async () => {
@@ -101,42 +94,12 @@ export default function UploadPage() {
         </h1>{" "}
         {/* Page title */}
         {/* Drag-and-drop area */}
-        <div
-          {...getRootProps()}
-          className={`card border-2 border-dashed ${
-            isDragActive ? "border-nova-purple" : "border-holographic-silver"
-          } cursor-pointer transition-colors`}
-        >
-          <input {...getInputProps()} />
-          <div className="text-center py-12">
-            {isUploading ? (
-              <div className="flex flex-col items-center gap-4">
-                <Loader2 className="w-12 h-12 text-nova-purple animate-spin" />
-                <p className="text-cool-white/70">{processingStatus}</p>
-              </div>
-            ) : uploadedFile ? (
-              <div className="flex flex-col items-center gap-4">
-                <FileText className="w-12 h-12 text-quantum-teal" />
-                <p className="text-cool-white/70">{uploadedFile.name}</p>
-                <p className="text-sm text-cool-white/50">
-                  Click or drag to upload a different file
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-4">
-                <Upload className="w-12 h-12 text-nova-purple" />
-                <p className="text-cool-white/70">
-                  {isDragActive
-                    ? "Drop your PDF here"
-                    : "Drag & drop your PDF here, or click to select"}
-                </p>
-                <p className="text-sm text-cool-white/50">
-                  Supported format: PDF
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+        <FileDropzone 
+          onDrop={onDrop}
+          isUploading={isUploading}
+          processingStatus={processingStatus}
+          uploadedFile={uploadedFile}
+        />
         {/* Quiz settings */}
         {uploadedFile && !isUploading && (
           <div className="mt-8">

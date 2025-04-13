@@ -54,7 +54,7 @@ export default function UploadPage() {
         description: `Quiz generated from ${uploadedFile.name}`, // Add a description
         difficulty,
         questions: questions.map((q) => ({
-          question: q.question,
+          question: q.text, // Assuming 'text' is the correct property in 'QuizQuestion'
           options: q.options,
           correctAnswer: q.correctAnswer,
           explanation: q.explanation,

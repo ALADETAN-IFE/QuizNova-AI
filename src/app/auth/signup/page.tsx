@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext'
 
 export default function SignUp() {
   const router = useRouter()
-  const { signup } = useAuth()
+  const { register } = useAuth()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -22,7 +22,7 @@ export default function SignUp() {
     const password = formData.get('password') as string
 
     try {
-      await signup(username, email, password)
+      await register(username, email, password)
       router.push('/')
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Something went wrong')

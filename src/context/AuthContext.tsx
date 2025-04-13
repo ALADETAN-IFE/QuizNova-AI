@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     }
-  }, [user])
+  }, [])
 
   const login = async (email: string, password: string) => {
     try {

@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs'
 import { connectToDatabase } from '@/lib/mongodb'
 import User from '@/models/User'
 import { createToken, setAuthCookie } from '@/utils/auth'
-import { sendWelcomeEmail } from '@/utils/mail'
 
 export const config = {
   runtime: 'nodejs', // Force Node.js runtime

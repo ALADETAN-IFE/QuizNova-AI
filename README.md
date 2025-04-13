@@ -45,13 +45,13 @@ npm install
 
 ### 3. Set up environment variables
 
-Copy the `.env.example` file to `.env` and fill in your credentials:
+Copy the `.env.example` file to `.env.local` and fill in your credentials:
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
-Edit the `.env` file with your actual credentials:
+Edit the `.env.local` file with your actual credentials:
 
 ```
 # MongoDB Connection

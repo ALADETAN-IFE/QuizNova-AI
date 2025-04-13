@@ -80,7 +80,7 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
        setLoading(false)
      }, 2000);
     }
-  }, [id])
+  }, [id, Questions])
 
 
   const handleAnswer = (answer: string) => {
@@ -121,12 +121,6 @@ export default function QuizDetailPage({ params }: { params: Promise<{ id: strin
       }
     }, 1000);
   };
-
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
-  }
 
   if (loading) {
     return (

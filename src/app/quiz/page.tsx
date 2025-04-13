@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Clock, BarChart2 } from 'lucide-react'
-import QuizCard from '@/components/QuizCard'
+import { Clock } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 

@@ -1,26 +1,124 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --novaPurple: #6b48ff;
+    --aiBlue: #4ecdc4;
+    --starburstOrange: #ff6b6b;
+    --deepSpace: #1a1a2e;
+    --coolWhite: #f5f7fa;
+    --midnightGray: #2d2d44;
+    --quantumTeal: #2ec4b6;
+    --neonPink: #ff3f6b;
+    --holographicSilver: #e0e0e0;
+    --background: 240 29% 12%;
+    --foreground: 220 20% 97%;
+    --paddingHorizontal: 1rem; /* Define custom horizontal padding */
+    --paddingVertical: 0.5rem; /* Define custom vertical padding */
+  }
+
+  body {
+    @apply text-[var(--coolWhite)];
+    background-color: var(--deepSpace);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .btn-primary {
+    padding-top: var(--paddingVertical);
+    padding-bottom: var(--paddingVertical);
+    padding-left: var(--paddingHorizontal);
+    padding-right: var(--paddingHorizontal);
+    background-color: var(--novaPurple);
+    color: var(--coolWhite);
+    box-shadow: 0 4px 6px -1px var(--novaPurple, rgba(0, 0, 0, 0.2));
+    @apply rounded-lg hover:bg-opacity-90 transition-all font-semibold shadow-lg;
+  }
+
+  .btn-secondary {
+    padding-top: var(--paddingVertical);
+    padding-bottom: var(--paddingVertical);
+    padding-left: var(--paddingHorizontal);
+    padding-right: var(--paddingHorizontal);
+    background-color: var(--aiBlue);
+    color: var(--deepSpace);
+    box-shadow: 0 4px 6px -1px var(--aiBlue, rgba(0, 0, 0, 0.2));
+    @apply rounded-lg hover:bg-opacity-90 transition-all font-semibold shadow-lg;
+  }
+
+  .btn-accent {
+    padding-top: var(--paddingVertical);
+    padding-bottom: var(--paddingVertical);
+    padding-left: var(--paddingHorizontal);
+    padding-right: var(--paddingHorizontal);
+    background-color: var(--starburstOrange);
+    color: var(--coolWhite);
+    box-shadow: 0 4px 6px -1px var(--starburstOrange, rgba(0, 0, 0, 0.2));
+    @apply rounded-lg hover:bg-opacity-90 transition-all font-semibold shadow-lg;
+  }
+
+  .input-field {
+    padding-top: var(--paddingVertical);
+    padding-bottom: var(--paddingVertical);
+    padding-left: var(--paddingHorizontal);
+    padding-right: var(--paddingHorizontal);
+    background-color: var(--midnightGray);
+    color: var(--coolWhite);
+    border-color: var(--holographicSilver);
+    @apply rounded-lg border focus:outline-none transition-all;
+  }
+
+  .card {
+    @apply rounded-xl p-6 shadow-lg transition-all;
+    background-color: var(--midnightGray);
+    border: 1px solid var(--holographicSilver);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      to right,
+      var(--novaPurple),
+      var(--aiBlue)
+    );
+  }
+
+  .gradient-border {
+    @apply border border-transparent;
+    background-image: linear-gradient(
+      to right,
+      var(--novaPurple),
+      var(--aiBlue)
+    );
+    background-clip: border-box;
+  }
+
+  .nav-link {
+    @apply transition-colors;
+    color: rgba(var(--coolWhite), 0.7);
+  }
+
+  .nav-link-active {
+    @apply font-medium;
+    color: var(--novaPurple);
+  }
+
+  .section-title {
+    @apply text-3xl font-bold mb-6;
+    background-image: linear-gradient(
+      to right,
+      var(--novaPurple),
+      var(--aiBlue)
+    );
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .feature-card {
+    @apply hover:scale-105 transition-transform duration-300;
+    background-color: var(--midnightGray);
+    border: 1px solid var(--holographicSilver);
+  }
 }

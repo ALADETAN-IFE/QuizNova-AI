@@ -5,6 +5,11 @@ type MongooseCache = {
   promise: Promise<typeof mongoose> | null
 }
 
+// Define the global object type
+interface CustomGlobal extends Global {
+  mongoose?: MongooseCache
+}
+
 declare global {
   // eslint-disable-next-line no-var
   var mongoose: MongooseCache | undefined
@@ -17,10 +22,10 @@ if (!MONGODB_URI) {
 }
 
 // Initialize the cached connection
-const cached: MongooseCache = (global as any).mongoose || { conn: null, promise: null }
+const cached: MongooseCache = (global as CustomGlobal).mongoose || { conn: null, promise: null }
 
-if (!(global as any).mongoose) {
-  (global as any).mongoose = cached
+if (!(global as CustomGlobal).mongoose) {
+  (global as CustomGlobal).mongoose = cached
 }
 
 export async function connectToDatabase() {

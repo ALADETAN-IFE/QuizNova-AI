@@ -33,7 +33,6 @@
 //   }
 // }
 import * as pdfjsLib from "pdfjs-dist";
-import { PDFDocumentProxy } from 'pdfjs-dist'
 
 // Manually set the worker source to the local file
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";

@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
+import axios from 'axios'
 
 // Ensure JWT_SECRET is available in production
 const JWT_SECRET = process.env.JWT_SECRET
@@ -53,4 +54,13 @@ export function verifyToken(token: string) {
 export async function clearAuthCookie() {
   const cookieStore = await cookies()
   cookieStore.delete('auth-token')
+}
+
+export async function login(email: string, password: string) {
+  try {
+    const response = await axios.post('/api/auth/login', { email, password })
+    return response.data
+  } catch {
+    throw new Error('Login failed')
+  }
 } 

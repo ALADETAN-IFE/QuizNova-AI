@@ -2,42 +2,14 @@
 
 import { useState, useCallback } from "react"; // React hooks for state management and memoized callbacks
 import { useRouter } from "next/navigation"; // Next.js hook for programmatic navigation
-import { Upload, FileText, Loader2 } from "lucide-react"; // Icons for UI elements
 import { toast } from "react-hot-toast"; // Library for displaying notifications
 import { extractTextFromPDF } from "@/lib/pdf"; // Utility function to extract text from a PDF
 import { generateQuizFromPDF } from "@/lib/gemini"; // Function to generate quiz questions from extracted text
 import dynamic from 'next/dynamic';
 
-// Define types for the DropzoneWrapper component
-interface DropzoneWrapperProps {
-  onDrop: (acceptedFiles: File[]) => void;
-  children: (isDragActive: boolean) => React.ReactNode;
-}
-
-// Dynamically import the Dropzone component with no SSR
-const Dropzone = dynamic(
-  () => import('react-dropzone').then(mod => {
-    // Create a wrapper component that uses the useDropzone hook
-    const DropzoneWrapper = ({ onDrop, children }: DropzoneWrapperProps) => {
-      const { getRootProps, getInputProps, isDragActive } = mod.useDropzone({
-        onDrop,
-        accept: {
-          "application/pdf": [".pdf"],
-        },
-        maxFiles: 1,
-      });
-      
-      return (
-        <div {...getRootProps()} className={`card border-2 border-dashed ${
-          isDragActive ? "border-nova-purple" : "border-holographic-silver"
-        } cursor-pointer transition-colors`}>
-          <input {...getInputProps()} />
-          {children(isDragActive)}
-        </div>
-      );
-    };
-    return DropzoneWrapper;
-  }),
+// Dynamically import the FileDropzone component with no SSR
+const FileDropzone = dynamic(
+  () => import('@/components/FileDropzone'),
   { ssr: false }
 );
 
@@ -122,39 +94,12 @@ export default function UploadPage() {
         </h1>{" "}
         {/* Page title */}
         {/* Drag-and-drop area */}
-        <Dropzone onDrop={onDrop}>
-          {(isDragActive: boolean) => (
-            <div className="text-center py-12">
-              {isUploading ? ( // Show loader if uploading
-                <div className="flex flex-col items-center gap-4">
-                  <Loader2 className="w-12 h-12 text-nova-purple animate-spin" />
-                  <p className="text-cool-white/70">{processingStatus}</p>
-                </div>
-              ) : uploadedFile ? ( // Show file details if uploaded
-                <div className="flex flex-col items-center gap-4">
-                  <FileText className="w-12 h-12 text-quantum-teal" />
-                  <p className="text-cool-white/70">{uploadedFile.name}</p>
-                  <p className="text-sm text-cool-white/50">
-                    Click or drag to upload a different file
-                  </p>
-                </div>
-              ) : (
-                // Show upload instructions
-                <div className="flex flex-col items-center gap-4">
-                  <Upload className="w-12 h-12 text-nova-purple" />
-                  <p className="text-cool-white/70">
-                    {isDragActive
-                      ? "Drop your PDF here"
-                      : "Drag & drop your PDF here, or click to select"}
-                  </p>
-                  <p className="text-sm text-cool-white/50">
-                    Supported format: PDF
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-        </Dropzone>
+        <FileDropzone 
+          onDrop={onDrop}
+          isUploading={isUploading}
+          processingStatus={processingStatus}
+          uploadedFile={uploadedFile}
+        />
         {/* Quiz settings */}
         {uploadedFile && !isUploading && (
           <div className="mt-8">

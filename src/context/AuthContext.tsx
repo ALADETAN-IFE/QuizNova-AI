@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const response = await axios.get('/api/auth/me')
           setUser(response.data)
         } catch (error) {
+          console.log("error", error)
           setUser(null)
         } finally {
           setIsLoading(false)
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedUser) {
       setUser(JSON.parse(storedUser))
     }
-  }, [])
+  }, [user])
 
   const login = async (email: string, password: string) => {
     try {

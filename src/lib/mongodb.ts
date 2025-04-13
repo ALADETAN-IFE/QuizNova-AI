@@ -1,5 +1,12 @@
 import mongoose from 'mongoose'
 
+declare global {
+  var mongoose: {
+    conn: typeof mongoose | null
+    promise: Promise<typeof mongoose> | null
+  }
+}
+
 const MONGODB_URI = process.env.MONGODB_URI
 
 if (!MONGODB_URI) {
@@ -12,7 +19,7 @@ if (!cached) {
   cached = global.mongoose = { conn: null, promise: null }
 }
 
-export async function connectToDatabase() {
+export async function connectDB() {
   if (cached.conn) {
     return cached.conn
   }
@@ -22,9 +29,7 @@ export async function connectToDatabase() {
       bufferCommands: false,
     }
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      return mongoose
-    })
+    cached.promise = mongoose.connect(MONGODB_URI!, opts)
   }
 
   try {

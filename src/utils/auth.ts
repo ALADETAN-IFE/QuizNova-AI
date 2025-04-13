@@ -1,12 +1,23 @@
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+// Ensure JWT_SECRET is available in production
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
+  throw new Error('JWT_SECRET environment variable is required in production')
+}
+
+// Fallback for development only
+const secret = JWT_SECRET || (process.env.NODE_ENV === 'development' ? 'dev-secret-key' : '')
 
 export function createToken(userId: string, username: string): string {
+  if (!secret) {
+    throw new Error('JWT secret is not configured')
+  }
+  
   return jwt.sign(
     { userId, username },
-    JWT_SECRET,
+    secret,
     { expiresIn: '7d' }
   )
 }
@@ -28,8 +39,12 @@ export async function getAuthToken(): Promise<string | null> {
 }
 
 export function verifyToken(token: string) {
+  if (!secret) {
+    throw new Error('JWT secret is not configured')
+  }
+  
   try {
-    return jwt.verify(token, JWT_SECRET)
+    return jwt.verify(token, secret)
   } catch (error) {
     return null
   }

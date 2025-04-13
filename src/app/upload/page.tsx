@@ -1,17 +1,11 @@
 "use client";
 
-import { useState, useCallback } from "react"; // React hooks for state management and memoized callbacks
+import { useState, useCallback, useEffect } from "react"; // React hooks for state management and memoized callbacks
 import { useRouter } from "next/navigation"; // Next.js hook for programmatic navigation
 import { toast } from "react-hot-toast"; // Library for displaying notifications
 import { extractTextFromPDF } from "@/lib/pdf"; // Utility function to extract text from a PDF
 import { generateQuizFromPDF } from "@/lib/gemini"; // Function to generate quiz questions from extracted text
-import dynamic from 'next/dynamic';
-
-// Dynamically import the FileDropzone component with no SSR
-const FileDropzone = dynamic(
-  () => import('@/components/FileDropzone'),
-  { ssr: false }
-);
+import { Upload, FileText, Loader2 } from "lucide-react"; // Icons for UI elements
 
 export default function UploadPage() {
   const router = useRouter(); // Initialize router for navigation
@@ -22,6 +16,29 @@ export default function UploadPage() {
     "medium"
   ); // Tracks selected quiz difficulty
   const [numQuestions, setNumQuestions] = useState<number>(5); // Tracks the number of quiz questions to generate
+  const [isClient, setIsClient] = useState(false);
+  const [dropzoneProps, setDropzoneProps] = useState<any>(null);
+
+  // Set isClient to true when component mounts
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  // Initialize dropzone on client-side only
+  useEffect(() => {
+    if (isClient) {
+      import('react-dropzone').then(({ useDropzone }) => {
+        const dropzone = useDropzone({
+          onDrop,
+          accept: {
+            "application/pdf": [".pdf"],
+          },
+          maxFiles: 1,
+        });
+        setDropzoneProps(dropzone);
+      });
+    }
+  }, [isClient]);
 
   // Handles file drop events
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -82,6 +99,11 @@ export default function UploadPage() {
     }
   };
 
+  // Get dropzone props safely
+  const getRootProps = dropzoneProps?.getRootProps || (() => ({}));
+  const getInputProps = dropzoneProps?.getInputProps || (() => ({}));
+  const isDragActive = dropzoneProps?.isDragActive || false;
+
   return (
     <main className="container mx-auto px-4 py-20">
       {" "}
@@ -94,12 +116,42 @@ export default function UploadPage() {
         </h1>{" "}
         {/* Page title */}
         {/* Drag-and-drop area */}
-        <FileDropzone 
-          onDrop={onDrop}
-          isUploading={isUploading}
-          processingStatus={processingStatus}
-          uploadedFile={uploadedFile}
-        />
+        <div
+          {...getRootProps()}
+          className={`card border-2 border-dashed ${
+            isDragActive ? "border-nova-purple" : "border-holographic-silver"
+          } cursor-pointer transition-colors`}
+        >
+          <input {...getInputProps()} />
+          <div className="text-center py-12">
+            {isUploading ? (
+              <div className="flex flex-col items-center gap-4">
+                <Loader2 className="w-12 h-12 text-nova-purple animate-spin" />
+                <p className="text-cool-white/70">{processingStatus}</p>
+              </div>
+            ) : uploadedFile ? (
+              <div className="flex flex-col items-center gap-4">
+                <FileText className="w-12 h-12 text-quantum-teal" />
+                <p className="text-cool-white/70">{uploadedFile.name}</p>
+                <p className="text-sm text-cool-white/50">
+                  Click or drag to upload a different file
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-4">
+                <Upload className="w-12 h-12 text-nova-purple" />
+                <p className="text-cool-white/70">
+                  {isDragActive
+                    ? "Drop your PDF here"
+                    : "Drag & drop your PDF here, or click to select"}
+                </p>
+                <p className="text-sm text-cool-white/50">
+                  Supported format: PDF
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
         {/* Quiz settings */}
         {uploadedFile && !isUploading && (
           <div className="mt-8">

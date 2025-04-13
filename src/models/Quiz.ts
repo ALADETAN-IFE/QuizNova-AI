@@ -16,6 +16,10 @@ const quizSchema = new mongoose.Schema({
   },
   questions: [
     {
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+      },
       question: {
         type: String,
         required: [true, 'Please provide a question'],

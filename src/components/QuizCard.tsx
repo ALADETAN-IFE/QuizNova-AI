@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { Check, X } from 'lucide-react'
 
 interface QuizCardProps {
@@ -8,64 +9,50 @@ interface QuizCardProps {
   correctAnswer: string
   explanation: string
   onAnswer: (answer: string) => void
-  showExplanation: boolean
-  selectedAnswer: string | null
+  selectedAnswer?: string
+  showExplanation?: boolean
 }
 
-export default function QuizCard({ 
-  question, 
-  options, 
-  correctAnswer, 
-  explanation, 
+export default function QuizCard({
+  question,
+  options,
+  correctAnswer,
+  explanation,
   onAnswer,
-  showExplanation,
-  selectedAnswer
+  selectedAnswer,
+  showExplanation = false
 }: QuizCardProps) {
-
   const handleAnswer = (answer: string) => {
     if (selectedAnswer) return // Prevent multiple answers
     onAnswer(answer)
   }
 
   return (
-    <div className="card p-6">
-      <h3 className="text-xl font-semibold mb-4 text-cool-white">{question}</h3>
+    <div className="bg-white rounded-lg shadow-lg p-6">
+      <h3 className="text-xl font-semibold mb-4">{question}</h3>
       <div className="space-y-3">
         {options.map((option, index) => (
           <button
             key={index}
-            onClick={() => handleAnswer(option)}
-            disabled={selectedAnswer !== null}
-            className={`w-full p-3 rounded-lg text-left transition-all ${
-              selectedAnswer === null
-                ? 'bg-midnight-gray hover:bg-midnight-gray/80 text-cool-white'
-                : selectedAnswer === option
+            onClick={() => !selectedAnswer && onAnswer(option)}
+            className={`w-full p-4 text-left rounded-lg transition-colors ${
+              selectedAnswer
                 ? option === correctAnswer
-                  ? 'bg-quantum-teal/20 border border-quantum-teal text-quantum-teal'
-                  : 'bg-starburst-orange/20 border border-starburst-orange text-starburst-orange'
-                : option === correctAnswer && selectedAnswer !== null
-                ? 'bg-quantum-teal/20 border border-quantum-teal text-quantum-teal'
-                : 'bg-midnight-gray text-cool-white/50'
-            }`}
+                  ? 'bg-green-100 border-green-500'
+                  : option === selectedAnswer
+                  ? 'bg-red-100 border-red-500'
+                  : 'bg-gray-50 border-gray-200'
+                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+            } border-2`}
+            disabled={!!selectedAnswer}
           >
-            <div className="flex items-center justify-between">
-              <span>{option}</span>
-              {selectedAnswer === option && (
-                <span>
-                  {option === correctAnswer ? (
-                    <Check className="w-5 h-5" />
-                  ) : (
-                    <X className="w-5 h-5" />
-                  )}
-                </span>
-              )}
-            </div>
+            {option}
           </button>
         ))}
       </div>
-      {showExplanation && (
-        <div className="mt-4 p-4 bg-midnight-gray/50 rounded-lg border border-holographic-silver/10">
-          <p className="text-cool-white/80">{explanation}</p>
+      {showExplanation && selectedAnswer && (
+        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <p className="text-gray-700">{explanation}</p>
         </div>
       )}
     </div>

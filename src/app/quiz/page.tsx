@@ -19,9 +19,6 @@ interface Quiz {
   }[]
 }
 
-interface QuizData {
-  quizzes: Quiz[]
-}
 
 
 export default function QuizPage() {
@@ -29,7 +26,7 @@ export default function QuizPage() {
   
   const router = useRouter()
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
-  const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([])
+  // const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([])
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard' | string>(`${Questions.difficulty}`)
   const [loading, setLoading] = useState(true)
 
@@ -52,7 +49,7 @@ export default function QuizPage() {
     else{
       setQuizzes(Questions);
       console.log(Questions || '[]');
-      setFilteredQuizzes(Questions);
+      // setFilteredQuizzes(Questions);
       setTimeout(() => {
        setLoading(false)
      }, 2000);
@@ -63,7 +60,8 @@ export default function QuizPage() {
   // const filteredQuizzes = quizzes.filter(quiz => 
   //   selectedDifficulty === 'all' || quiz.difficulty === selectedDifficulty
   // )
-  console.log("filteredQuizzes", filteredQuizzes)
+  console.log("filteredQuizzes", quizzes)
+  // console.log("filteredQuizzes", filteredQuizzes)
 
   // if (loading) {
   //   return (
@@ -95,13 +93,13 @@ export default function QuizPage() {
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nova-purple mx-auto"></div>
         </div>
-      ) : [filteredQuizzes].length === 0 ? (
+      ) : [quizzes].length === 0 ? (
         <div className="text-center py-8">
           <p className="text-cool-white/70">No quizzes available for the selected difficulty.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredQuizzes?.questions?.map((quiz, index) => (
+          {quizzes.map((quiz: Quiz, index: number) => (
             <div
               key={index}
               className="card hover:scale-105 transition-transform cursor-pointer"
@@ -116,7 +114,7 @@ export default function QuizPage() {
                   quiz.difficulty === 'medium' ? 'bg-ai-blue/20 text-ai-blue' :
                   'bg-starburst-orange/20 text-starburst-orange'
                 }`}>
-                  {filteredQuizzes.difficulty.charAt(0).toUpperCase() + filteredQuizzes.difficulty.slice(1)}
+                  {quizzes.difficulty.charAt(0).toUpperCase() + quizzes.difficulty.slice(1)}
                 </span>
                 <div className="flex items-center gap-4 text-cool-white/50">
                   <span className="flex items-center gap-1">

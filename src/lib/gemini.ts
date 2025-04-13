@@ -4,7 +4,8 @@ import { GoogleGenerativeAI, GenerateContentResult } from '@google/generative-ai
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '')
 
 interface QuizQuestion {
-  question: string
+  _id: string
+  text: string
   options: string[]
   correctAnswer: string
   explanation: string
@@ -29,7 +30,8 @@ export async function generateQuizFromText(
     ${difficultyDescription[difficulty]}
     
     Format the response as a JSON array of questions, where each question has:
-    - A "question" (string)
+    - An "_id" (string) - generate a random string of 24 characters
+    - A "text" (string) - the question text
     - An array of "options" (strings)
     - A "correctAnswer" (string) that matches one of the options exactly
     - An "explanation" (string) that explains why the correct answer is right and why the others are wrong
@@ -40,6 +42,7 @@ export async function generateQuizFromText(
     - Options are plausible but distinguishable
     - The explanation is clear and educational
     - Questions test understanding, not just memorization
+    - Each _id is a unique 24-character string
     
     Text to generate questions from:
     ${inputText}`

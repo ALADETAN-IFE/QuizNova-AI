@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react"; // React hooks for state management and memoized callbacks
+import { useState, useCallback } from "react"; // React hooks for state management and memoized callbacks
 import { useRouter } from "next/navigation"; // Next.js hook for programmatic navigation
 import { Upload, FileText, Loader2 } from "lucide-react"; // Icons for UI elements
 import { toast } from "react-hot-toast"; // Library for displaying notifications
@@ -8,11 +8,17 @@ import { extractTextFromPDF } from "@/lib/pdf"; // Utility function to extract t
 import { generateQuizFromPDF } from "@/lib/gemini"; // Function to generate quiz questions from extracted text
 import dynamic from 'next/dynamic';
 
+// Define types for the DropzoneWrapper component
+interface DropzoneWrapperProps {
+  onDrop: (acceptedFiles: File[]) => void;
+  children: (isDragActive: boolean) => React.ReactNode;
+}
+
 // Dynamically import the Dropzone component with no SSR
 const Dropzone = dynamic(
   () => import('react-dropzone').then(mod => {
     // Create a wrapper component that uses the useDropzone hook
-    const DropzoneWrapper = ({ onDrop, children }: any) => {
+    const DropzoneWrapper = ({ onDrop, children }: DropzoneWrapperProps) => {
       const { getRootProps, getInputProps, isDragActive } = mod.useDropzone({
         onDrop,
         accept: {

@@ -42,7 +42,8 @@ export default function QuizDetailPage() {
         if (response.data.questions.length > 0) {
           setCurrentQuestionId(response.data.questions[0]._id)
         }
-      } catch (error) {
+      } catch (error){
+        console.log("Failed to load quiz", error)
         toast.error('Failed to load quiz')
         router.push('/quiz')
       } finally {

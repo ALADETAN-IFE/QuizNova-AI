@@ -31,8 +31,9 @@
 //     console.error('Error extracting text from PDF:', error)
 //     throw error
 //   }
-// } 
+// }
 import * as pdfjsLib from "pdfjs-dist";
+import { PDFDocumentProxy } from 'pdfjs-dist'
 
 // Manually set the worker source to the local file
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
@@ -41,18 +42,25 @@ export async function extractTextFromPDF(file: File): Promise<string> {
   try {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-    let text = "";
+    let fullText = '';
 
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      const pageText = content.items.map((item: any) => item.str).join(" ");
-      text += pageText + "\n";
+      const textContent = await page.getTextContent();
+      const pageText = textContent.items
+        .map(item => {
+          const textItem = item as { str?: string; items?: Array<{ str?: string }> };
+          if (textItem.str) return textItem.str;
+          if (textItem.items) return textItem.items.map(i => i.str || '').join(' ');
+          return '';
+        })
+        .join(' ');
+      fullText += pageText + '\n';
     }
 
-    return text;
+    return fullText;
   } catch (error) {
-    console.error("Error extracting text from PDF:", error);
-    throw error;
+    console.error('Error extracting text from PDF:', error);
+    throw new Error('Failed to extract text from PDF');
   }
 }

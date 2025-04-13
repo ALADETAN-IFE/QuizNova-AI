@@ -54,7 +54,7 @@ export default function QuizPage() {
        setLoading(false)
      }, 2000);
     }
-  }, [])
+  }, [Questions])
 
 
   // const filteredQuizzes = quizzes.filter(quiz => 

@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import { Check, X } from 'lucide-react'
 
 interface QuizCardProps {
   question: string
@@ -22,37 +21,30 @@ export default function QuizCard({
   selectedAnswer,
   showExplanation = false
 }: QuizCardProps) {
-  const handleAnswer = (answer: string) => {
-    if (selectedAnswer) return // Prevent multiple answers
-    onAnswer(answer)
-  }
-
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <h3 className="text-xl font-semibold mb-4">{question}</h3>
+    <div className="card">
+      <h3 className="text-xl font-semibold mb-4 text-cool-white">{question}</h3>
       <div className="space-y-3">
         {options.map((option, index) => (
           <button
             key={index}
-            onClick={() => !selectedAnswer && onAnswer(option)}
-            className={`w-full p-4 text-left rounded-lg transition-colors ${
-              selectedAnswer
-                ? option === correctAnswer
-                  ? 'bg-green-100 border-green-500'
-                  : option === selectedAnswer
-                  ? 'bg-red-100 border-red-500'
-                  : 'bg-gray-50 border-gray-200'
-                : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-            } border-2`}
+            onClick={() => onAnswer(option)}
             disabled={!!selectedAnswer}
+            className={`w-full p-4 rounded-lg text-left transition-all ${
+              selectedAnswer === option
+                ? option === correctAnswer
+                  ? 'bg-quantum-teal/20 text-quantum-teal border-2 border-quantum-teal'
+                  : 'bg-starburst-orange/20 text-starburst-orange border-2 border-starburst-orange'
+                : 'bg-midnight-gray hover:bg-midnight-gray/80 text-cool-white/70'
+            }`}
           >
             {option}
           </button>
         ))}
       </div>
       {showExplanation && selectedAnswer && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-gray-700">{explanation}</p>
+        <div className="mt-6 p-4 rounded-lg bg-midnight-gray">
+          <p className="text-cool-white/70">{explanation}</p>
         </div>
       )}
     </div>

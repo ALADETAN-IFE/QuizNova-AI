@@ -2,6 +2,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/router'
+import { toast } from 'react-hot-toast'
 
 interface User {
   id: string
@@ -22,6 +24,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     // Check if user is logged in on page load
@@ -46,16 +49,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       checkAuth()
   }, [])
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [user])
+
   const login = async (email: string, password: string) => {
     try {
       const response = await axios.post('/api/auth/login', { email, password })
       setUser(response.data)
-      localStorage.setItem('user', JSON.stringify(user))
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response) {
-        throw new Error(error.response.data.message || 'Login failed')
-      }
-      throw error
+      localStorage.setItem('user', JSON.stringify(response.data))
+      router.push('/quiz')
+    } catch {
+      toast.error('Invalid credentials')
     }
   }
 

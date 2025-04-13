@@ -6,6 +6,14 @@ import { toast } from "react-hot-toast"; // Library for displaying notifications
 import { extractTextFromPDF } from "@/lib/pdf"; // Utility function to extract text from a PDF
 import { generateQuizFromPDF } from "@/lib/gemini"; // Function to generate quiz questions from extracted text
 import { Upload, FileText, Loader2 } from "lucide-react"; // Icons for UI elements
+import { useDropzone, DropzoneOptions, FileRejection } from "react-dropzone"; // Import types from react-dropzone
+
+// Define a type for the dropzone props
+type DropzoneState = {
+  getRootProps: () => Record<string, unknown>;
+  getInputProps: () => Record<string, unknown>;
+  isDragActive: boolean;
+};
 
 export default function UploadPage() {
   const router = useRouter(); // Initialize router for navigation
@@ -17,31 +25,15 @@ export default function UploadPage() {
   ); // Tracks selected quiz difficulty
   const [numQuestions, setNumQuestions] = useState<number>(5); // Tracks the number of quiz questions to generate
   const [isClient, setIsClient] = useState(false);
-  const [dropzoneProps, setDropzoneProps] = useState<any>(null);
+  const [dropzoneProps, setDropzoneProps] = useState<DropzoneState | null>(null);
 
   // Set isClient to true when component mounts
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Initialize dropzone on client-side only
-  useEffect(() => {
-    if (isClient) {
-      import('react-dropzone').then(({ useDropzone }) => {
-        const dropzone = useDropzone({
-          onDrop,
-          accept: {
-            "application/pdf": [".pdf"],
-          },
-          maxFiles: 1,
-        });
-        setDropzoneProps(dropzone);
-      });
-    }
-  }, [isClient]);
-
   // Handles file drop events
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+  const onDrop = useCallback(async (acceptedFiles: File[], fileRejections: FileRejection[]) => {
     const file = acceptedFiles[0]; // Get the first file from the dropped files
     if (file && file.type === "application/pdf") {
       setUploadedFile(file); // Set the uploaded file
@@ -50,6 +42,24 @@ export default function UploadPage() {
       toast.error("Please upload a PDF file"); // Show error if the file is not a PDF
     }
   }, []);
+
+  // Initialize dropzone on client-side only
+  useEffect(() => {
+    if (isClient) {
+      // Create dropzone options
+      const dropzoneOptions: DropzoneOptions = {
+        onDrop,
+        accept: {
+          "application/pdf": [".pdf"],
+        },
+        maxFiles: 1,
+      };
+      
+      // Initialize dropzone
+      const dropzone = useDropzone(dropzoneOptions);
+      setDropzoneProps(dropzone);
+    }
+  }, [isClient, onDrop]); // Add onDrop to dependencies
 
   // Generates a quiz from the uploaded PDF
   const generateQuiz = async () => {

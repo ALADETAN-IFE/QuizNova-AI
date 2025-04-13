@@ -1,19 +1,12 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react"; // React hooks for state management and memoized callbacks
+import { useState, useCallback } from "react"; // React hooks for state management and memoized callbacks
 import { useRouter } from "next/navigation"; // Next.js hook for programmatic navigation
 import { toast } from "react-hot-toast"; // Library for displaying notifications
 import { extractTextFromPDF } from "@/lib/pdf"; // Utility function to extract text from a PDF
 import { generateQuizFromPDF } from "@/lib/gemini"; // Function to generate quiz questions from extracted text
 import { Upload, FileText, Loader2 } from "lucide-react"; // Icons for UI elements
 import { useDropzone, DropzoneOptions } from "react-dropzone"; // Import types from react-dropzone
-
-// Define a type for the dropzone props
-type DropzoneState = {
-  getRootProps: () => Record<string, unknown>;
-  getInputProps: () => Record<string, unknown>;
-  isDragActive: boolean;
-};
 
 export default function UploadPage() {
   const router = useRouter(); // Initialize router for navigation
@@ -24,12 +17,6 @@ export default function UploadPage() {
     "medium"
   ); // Tracks selected quiz difficulty
   const [numQuestions, setNumQuestions] = useState<number>(5); // Tracks the number of quiz questions to generate
-  const [isClient, setIsClient] = useState(false);
-
-  // Set isClient to true when component mounts
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   // Handles file drop events
   const onDrop = useCallback(async (acceptedFiles: File[]) => {

@@ -70,6 +70,9 @@ export default function QuizPage() {
   //     </div>
   //   )
   // }
+  const mappedDifficulty = quizzes.length > 0 
+    ? quizzes[0].difficulty.charAt(0).toUpperCase() + quizzes[0].difficulty.slice(1)
+    : 'All';
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -114,7 +117,7 @@ export default function QuizPage() {
                   quiz.difficulty === 'medium' ? 'bg-ai-blue/20 text-ai-blue' :
                   'bg-starburst-orange/20 text-starburst-orange'
                 }`}>
-                  {quizzes.difficulty.charAt(0).toUpperCase() + quizzes.difficulty.slice(1)}
+                  {mappedDifficulty}
                 </span>
                 <div className="flex items-center gap-4 text-cool-white/50">
                   <span className="flex items-center gap-1">

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import axios from 'axios'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 interface User {
@@ -31,32 +31,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem('user')
     if (storedUser) {
       setUser(JSON.parse(storedUser))
-      console.log("user", user)
     }
     setIsLoading(false)
-      // Check if user is logged in
-      const checkAuth = async () => {
-        try {
-          const response = await axios.get('/api/auth/me')
-          setUser(response.data)
-        } catch (error) {
-          console.log("error", error)
-          setUser(null)
-        } finally {
-          setIsLoading(false)
-        }
-      }
-  
-      checkAuth()
   }, [])
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      setUser(JSON.parse(storedUser))
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Empty dependency array is intentional - we only want to run this once on mount
 
   const login = async (email: string, password: string) => {
     try {
@@ -73,7 +50,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await axios.post('/api/auth/register', { username, email, password })
       setUser(response.data)
-      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('user', JSON.stringify(response.data))
+      router.push('/quiz')
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         throw new Error(error.response.data.message || 'Registration failed')
@@ -85,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')
+    router.push('/')
   }
 
   return (

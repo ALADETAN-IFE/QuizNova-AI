@@ -19,16 +19,23 @@ interface Quiz {
   }[]
 }
 
-
-
 export default function QuizPage() {
-  const Questions = JSON.parse(localStorage.getItem("currentQuiz") || '{}');
-  
   const router = useRouter()
   const [quizzes, setQuizzes] = useState<Quiz[]>([])
-  // const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([])
-  const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard' | string>(`${Questions.difficulty}`)
+  const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all')
   const [loading, setLoading] = useState(true)
+  const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const storedQuiz = localStorage.getItem("currentQuiz")
+      if (storedQuiz) {
+        const parsedQuiz = JSON.parse(storedQuiz)
+        setCurrentQuiz(parsedQuiz)
+        setSelectedDifficulty(parsedQuiz.difficulty || 'all')
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
@@ -46,30 +53,14 @@ export default function QuizPage() {
     if(storedUser) {
       fetchQuizzes()
     }
-    else{
-      setQuizzes(Questions);
-      console.log(Questions || '[]');
-      // setFilteredQuizzes(Questions);
+    else if(currentQuiz) {
+      setQuizzes([currentQuiz])
       setTimeout(() => {
-       setLoading(false)
-     }, 2000);
+        setLoading(false)
+      }, 2000)
     }
-  }, [Questions])
+  }, [currentQuiz])
 
-
-  // const filteredQuizzes = quizzes.filter(quiz => 
-  //   selectedDifficulty === 'all' || quiz.difficulty === selectedDifficulty
-  // )
-  console.log("filteredQuizzes", quizzes)
-  // console.log("filteredQuizzes", filteredQuizzes)
-
-  // if (loading) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nova-purple"></div>
-  //     </div>
-  //   )
-  // }
   const mappedDifficulty = quizzes.length > 0 
     ? quizzes[0].difficulty.charAt(0).toUpperCase() + quizzes[0].difficulty.slice(1)
     : 'All';
@@ -96,7 +87,7 @@ export default function QuizPage() {
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nova-purple mx-auto"></div>
         </div>
-      ) : [quizzes].length === 0 ? (
+      ) : quizzes.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-cool-white/70">No quizzes available for the selected difficulty.</p>
         </div>
@@ -108,7 +99,6 @@ export default function QuizPage() {
               className="card hover:scale-105 transition-transform cursor-pointer"
               onClick={() => router.push(`/quiz/${index}`)}
             >
-              {/* <h3 className="text-xl font-semibold mb-2 text-cool-white">{quiz.title}</h3> */}
               <h3 className="text-xl font-semibold mb-2 text-cool-white">Question {index+1}</h3>
               <p className="text-cool-white/70 mb-4">{quiz.description}</p>
               <div className="flex items-center justify-between text-sm">

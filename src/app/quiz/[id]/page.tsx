@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Check, X } from 'lucide-react';
+//import { Check, X } from 'lucide-react';
 import axios from 'axios';
 import { useAppStore } from '@/lib/store.zustand';
 import { toast } from 'react-hot-toast';

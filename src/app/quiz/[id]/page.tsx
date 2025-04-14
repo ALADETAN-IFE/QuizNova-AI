@@ -24,7 +24,7 @@ interface Quiz {
 export default function QuizPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, currentQuiz, setCurrentQuiz, addQuizResult } = useAppStore();
+  const { user, setCurrentQuiz, addQuizResult } = useAppStore();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | undefined>(undefined);

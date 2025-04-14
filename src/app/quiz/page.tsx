@@ -38,6 +38,7 @@ export default function QuizPage() {
           const response = await axios.get('/api/quizzes');
           if (response.data && response.data.length > 0) {
             setQuiz(response.data[0]);
+            console.log("quiz", quiz)
           }
         }
       } catch (error) {

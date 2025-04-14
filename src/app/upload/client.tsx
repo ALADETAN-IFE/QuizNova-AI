@@ -62,7 +62,7 @@ export default function UploadClient() {
 
       if (user) {
         // For logged-in users, create quiz in MongoDB
-        const response = await axios.post('/api/quizzes', {
+         await axios.post('/api/quizzes', {
           title: uploadedFile.name.replace(".pdf", ""),
           description: `Quiz generated from ${uploadedFile.name}`,
           difficulty,

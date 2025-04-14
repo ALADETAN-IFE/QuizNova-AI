@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 
+// Fixed type definition for the route handler
 export async function GET(
   request: NextRequest,
-  context: { params: { userId: string } }
+  { params }: { params: { userId: string } }
 ) {
-  const { userId } = context.params;
+  const { userId } = params;
 
   try {
     // Connect to the database

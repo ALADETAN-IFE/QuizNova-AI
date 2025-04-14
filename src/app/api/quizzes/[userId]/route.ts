@@ -4,12 +4,13 @@ import Quiz from '@/models/Quiz';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Record<string, string> }
 ) {
+  const { userId } = params;
   try {
     await connectToDatabase();
     
-    const quizzes = await Quiz.find({ "creator._id": params.userId })
+    const quizzes = await Quiz.find({ "creator._id": userId })
       .sort({ createdAt: -1 });
 
     return NextResponse.json(quizzes);

@@ -9,7 +9,7 @@ export async function GET(
   try {
     await connectToDatabase();
     
-    const quizzes = await Quiz.find({ createdBy: params.userId })
+    const quizzes = await Quiz.find({ "creator._id": params.userId })
       .sort({ createdAt: -1 });
 
     return NextResponse.json(quizzes);

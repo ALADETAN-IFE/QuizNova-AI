@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 
-// Fixed type definition for the route handler
+// Define valid parameters to satisfy TypeScript
+type RouteParams = {
+  params: {
+    userId: string;
+  };
+};
+
+// Use the correct route handler signature
 export async function GET(
   request: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: RouteParams
 ) {
   const { userId } = params;
 

@@ -4,8 +4,11 @@ import User from '@/models/User'
 
 export async function PATCH(req: Request) {
   try {
-    const { id } = req.url.split('/').pop();
-    const { username } = await request.json()
+    // Get the ID from the last segment of the URL
+    const id = req.url.split('/').pop() || '';
+    
+    // Get the username from the request body
+    const { username } = await req.json()
 
     if (!username) {
       return NextResponse.json(

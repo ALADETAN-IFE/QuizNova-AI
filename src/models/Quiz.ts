@@ -1,52 +1,49 @@
 import mongoose from 'mongoose'
 
-const quizSchema = new mongoose.Schema({
+const QuestionSchema = new mongoose.Schema({
+  question: {
+    type: String,
+    required: true,
+  },
+  options: {
+    type: [String],
+    required: true,
+  },
+  correctAnswer: {
+    type: String,
+    required: true,
+  },
+  explanation: {
+    type: String,
+    required: true,
+  },
+})
+
+const QuizSchema = new mongoose.Schema({
   title: {
     type: String,
-    required: [true, 'Please provide a title'],
+    required: true,
   },
   description: {
     type: String,
-    required: [true, 'Please provide a description'],
+    required: true,
   },
   difficulty: {
     type: String,
     enum: ['easy', 'medium', 'hard'],
-    default: 'medium',
+    required: true,
   },
-  questions: [
-    {
-      _id: {
-        type: mongoose.Schema.Types.ObjectId,
-        auto: true
-      },
-      question: {
-        type: String,
-        required: [true, 'Please provide a question'],
-      },
-      options: {
-        type: [String],
-        required: [true, 'Please provide options'],
-      },
-      correctAnswer: {
-        type: String,
-        required: [true, 'Please provide a correct answer'],
-      },
-      explanation: {
-        type: String,
-        required: [true, 'Please provide an explanation'],
-      },
-    },
-  ],
+  questions: {
+    type: [QuestionSchema],
+    required: true,
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: [true, 'Please provide a creator'],
+    required: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+}, {
+  timestamps: true,
 })
 
-export default mongoose.models.Quiz || mongoose.model('Quiz', quizSchema) 
+export default mongoose.models.Quiz || mongoose.model('Quiz', QuizSchema) 

@@ -7,6 +7,14 @@ import { extractTextFromPDF } from "@/lib/pdf";
 import { generateQuizFromPDF } from "@/lib/gemini";
 import { Upload, FileText, Loader2 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+import axios from "axios";
+
+// Generate a random ID using timestamp and random number
+const generateId = () => {
+  const timestamp = Date.now().toString(36);
+  const randomStr = Math.floor(Math.random() * 1000000).toString(36);
+  return `${timestamp}-${randomStr}`;
+};
 
 export default function UploadClient() {
   const router = useRouter();
@@ -50,21 +58,45 @@ export default function UploadClient() {
         difficulty
       );
 
-      const quiz = {
-        title: uploadedFile.name.replace(".pdf", ""),
-        description: `Quiz generated from ${uploadedFile.name}`,
-        difficulty,
-        questions: questions.map((q) => ({
-          question: q.text,
-          options: q.options,
-          correctAnswer: q.correctAnswer,
-          explanation: q.explanation,
-        })),
-      };
+      const storedUser = localStorage.getItem('user');
+      
+      if (storedUser) {
+        // For logged-in users, create quiz in MongoDB
+        const user = JSON.parse(storedUser);
+        const response = await axios.post('/api/quizzes', {
+          title: uploadedFile.name.replace(".pdf", ""),
+          description: `Quiz generated from ${uploadedFile.name}`,
+          difficulty,
+          questions: questions.map((q) => ({
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.correctAnswer,
+            explanation: q.explanation,
+          })),
+          createdBy: user._id
+        });
+        
+        router.push(`/quiz/${response.data._id}`);
+      } else {
+        // For non-logged-in users, use local storage with random ID
+        const quiz = {
+          _id: generateId(),
+          title: uploadedFile.name.replace(".pdf", ""),
+          description: `Quiz generated from ${uploadedFile.name}`,
+          difficulty,
+          questions: questions.map((q) => ({
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.correctAnswer,
+            explanation: q.explanation,
+          })),
+        };
 
-      localStorage.setItem("currentQuiz", JSON.stringify(quiz));
+        localStorage.setItem("currentQuiz", JSON.stringify(quiz));
+        router.push("/quiz");
+      }
+
       toast.success("Quiz generated successfully!");
-      router.push("/quiz");
     } catch (error) {
       console.error("Error processing PDF:", error);
       toast.error("Failed to process PDF. Please try again.");

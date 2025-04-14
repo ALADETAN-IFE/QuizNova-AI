@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}>
         <AuthProvider>
           <Toaster position="top-right" />
-          {children}
+        {children}
           <Navigation />
         </AuthProvider>
       </body>

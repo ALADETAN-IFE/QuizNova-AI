@@ -20,7 +20,10 @@ export default function Navigation() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-around py-4">
           {navItems.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href || pathname.startsWith(href)
+            const isActive = pathname === href 
+            // handle speacial case for quiz page
+            || (pathname.startsWith('/quiz') && href === '/quiz')
+            
             return (
               <Link
                 key={href}

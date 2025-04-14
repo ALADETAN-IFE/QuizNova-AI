@@ -2,22 +2,22 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 
-interface Params {
-  params: {
-    userId: string;
-  };
-}
-
-export async function GET(request: NextRequest, { params }: Params) {
-  const { userId } = params;
+export async function GET(
+  request: NextRequest,
+  context: { params: { userId: string } }
+) {
+  const { userId } = context.params;
 
   try {
+    // Connect to the database
     await connectToDatabase();
 
-    const quizzes = await Quiz.find({ 'creator._id': userId }).sort({
+    // Fetch quizzes created by the user
+    const quizzes = await Quiz.find({ createdBy: userId }).sort({
       createdAt: -1,
     });
 
+    // Return the quizzes as a JSON response
     return NextResponse.json(quizzes);
   } catch (error) {
     console.error('Error fetching quizzes:', error);

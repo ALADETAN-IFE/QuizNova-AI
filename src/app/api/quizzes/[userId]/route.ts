@@ -1,20 +1,17 @@
-import { NextResponse, NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 
-type Params = {
-  params: {
-    userId: string;
-  };
-};
-
-export async function GET(request: NextRequest, { params }: Params) {
-  const { userId } = params;
+export async function GET(
+  request: NextRequest,
+  context: { params: { userId: string } }
+) {
+  const { userId } = context.params;
 
   try {
     await connectToDatabase();
 
-    const quizzes = await Quiz.find({ "creator._id": userId }).sort({
+    const quizzes = await Quiz.find({ 'creator._id': userId }).sort({
       createdAt: -1,
     });
 

@@ -1,14 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 
 // Export a route handler using the syntax for Next.js 13+
-export async function GET(
-  request: NextRequest,
-  context: { params: { userId: string } }
-) {
+export async function GET (req: Request)  {
   try {
-    const userId = context.params.userId;
+    const userId = req.url.split('/').pop();
     
     // Connect to the database
     await connectToDatabase();

@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Check, X } from 'lucide-react';
 import axios from 'axios';
 import { useAppStore } from '@/lib/store.zustand';
+import { toast } from 'react-hot-toast';
+import QuizCard from '@/components/QuizCard';
 
 interface Question {
   question: string;
@@ -14,17 +16,18 @@ interface Question {
 }
 
 interface Quiz {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   description: string;
   difficulty: string;
   questions: Question[];
 }
 
-export default function QuizPage() {
+export default function QuizPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, setCurrentQuiz, addQuizResult } = useAppStore();
+  const { user, currentQuiz, addQuizResult, setCurrentQuiz } = useAppStore();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | undefined>(undefined);
@@ -32,30 +35,55 @@ export default function QuizPage() {
   const [showReview, setShowReview] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Effect to handle initial question from URL
+  useEffect(() => {
+    const questionParam = searchParams.get('question');
+    console.log('URL Question Param:', questionParam);
+    if (questionParam) {
+      const questionIndex = parseInt(questionParam) - 1;
+      console.log('Calculated Question Index:', questionIndex);
+      if (!isNaN(questionIndex) && questionIndex >= 0 && quiz?.questions && questionIndex < quiz.questions.length) {
+        console.log('Setting current question to:', questionIndex);
+        setCurrentQuestion(questionIndex);
+        setSelectedAnswer(answers[questionIndex] || undefined);
+      }
+    }
+  }, [searchParams, answers, quiz?.questions]);
+
+  // Effect to fetch quiz
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const quizId = searchParams.get('id');
-        if (!quizId) {
-          router.push('/quiz');
+        if (currentQuiz && (currentQuiz.id === params.id)) {
+          console.log('Using quiz from store:', currentQuiz);
+          setQuiz(currentQuiz);
+          setCurrentQuiz(currentQuiz);
+          setLoading(false);
           return;
         }
 
-        const response = await axios.get(`/api/quizzes/${quizId}`);
+        const response = await axios.get(`/api/quizzes/one`, {
+          params: {
+            id: params.id
+          }
+        });
         const fetchedQuiz = response.data;
-        setCurrentQuiz(fetchedQuiz);
+        console.log('Fetched quiz:', fetchedQuiz);
         setQuiz(fetchedQuiz);
+        setCurrentQuiz(fetchedQuiz);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching quiz:', error);
+        toast.error('Failed to load quiz');
         setLoading(false);
       }
     };
 
     fetchQuiz();
-  }, [searchParams, setCurrentQuiz, router]);
+  }, [params.id, currentQuiz]);
 
   const handleAnswer = (answer: string) => {
+    console.log('Selected answer:', answer, 'for question:', currentQuestion);
     setSelectedAnswer(answer);
     const newAnswers = [...answers];
     newAnswers[currentQuestion] = answer;
@@ -64,8 +92,13 @@ export default function QuizPage() {
 
   const handleNext = () => {
     if (currentQuestion < (quiz?.questions.length || 0) - 1) {
-      setCurrentQuestion(prev => prev + 1);
-      setSelectedAnswer(answers[currentQuestion + 1] || undefined);
+      const nextQuestion = currentQuestion + 1;
+      console.log('Navigating to next question:', nextQuestion + 1);
+      const nextUrl = `/quiz/${params.id}?question=${nextQuestion + 1}`;
+      console.log('Next URL:', nextUrl);
+      router.push(nextUrl, { scroll: false });
+      setCurrentQuestion(nextQuestion);
+      setSelectedAnswer(answers[nextQuestion] || undefined);
     } else {
       // Calculate score and save result
       const score = answers.reduce((acc, answer, index) => {
@@ -74,7 +107,7 @@ export default function QuizPage() {
 
       if (quiz && user) {
         addQuizResult({
-          quizId: quiz.id,
+          quizId: quiz.id || quiz._id || '',
           score,
           totalQuestions: quiz.questions.length,
           completedAt: new Date().toISOString(),
@@ -87,8 +120,13 @@ export default function QuizPage() {
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
-      setSelectedAnswer(answers[currentQuestion - 1] || undefined);
+      const prevQuestion = currentQuestion - 1;
+      console.log('Navigating to previous question:', prevQuestion + 1);
+      const prevUrl = `/quiz/${params.id}?question=${prevQuestion + 1}`;
+      console.log('Previous URL:', prevUrl);
+      router.push(prevUrl, { scroll: false });
+      setCurrentQuestion(prevQuestion);
+      setSelectedAnswer(answers[prevQuestion] || undefined);
     }
   };
 
@@ -104,7 +142,8 @@ export default function QuizPage() {
       </div>
     );
   }
-  if (!quiz) return <div>Quiz not found</div>;
+
+  if (!quiz || !quiz.questions) return <div>Quiz not found</div>;
 
   if (showReview) {
     return (
@@ -112,39 +151,16 @@ export default function QuizPage() {
         <h1 className="text-3xl font-bold mb-8 gradient-text">Quiz Review</h1>
         <div className="space-y-8">
           {quiz.questions.map((question, index) => (
-            <div key={index} className="card p-6">
-              <h3 className="text-xl font-semibold mb-4 text-cool-white">
-                Question {index + 1}: {question.question}
-              </h3>
-              <div className="space-y-3">
-                {question.options.map((option, optionIndex) => (
-                  <div
-                    key={optionIndex}
-                    className={`p-3 rounded-lg ${
-                      option === question.correctAnswer
-                        ? 'bg-quantum-teal/20 border border-quantum-teal'
-                        : option === answers[index]
-                        ? 'bg-starburst-orange/20 border border-starburst-orange'
-                        : 'bg-cool-black/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-cool-white">{option}</span>
-                      {option === question.correctAnswer ? (
-                        <Check className="w-5 h-5 text-quantum-teal" />
-                      ) : option === answers[index] ? (
-                        <X className="w-5 h-5 text-starburst-orange" />
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-4 p-4 bg-ai-blue/10 rounded-lg">
-                <p className="text-ai-blue">
-                  <strong>Explanation:</strong> {question.explanation}
-                </p>
-              </div>
-            </div>
+            <QuizCard
+              key={index}
+              question={question.question}
+              options={question.options}
+              correctAnswer={question.correctAnswer}
+              explanation={question.explanation}
+              onAnswer={() => {}} // No-op since we're in review mode
+              selectedAnswer={answers[index]}
+              showExplanation={true}
+            />
           ))}
         </div>
         <div className="mt-8 flex justify-between">
@@ -165,48 +181,42 @@ export default function QuizPage() {
     );
   }
 
+  const currentQuestionData = quiz.questions[currentQuestion];
+  if (!currentQuestionData) return <div>Question not found</div>;
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-8 gradient-text">{quiz.title}</h1>
-        <div className="card p-6">
+        <div className="mb-4">
           <h2 className="text-xl font-semibold mb-4 text-cool-white">
             Question {currentQuestion + 1} of {quiz.questions.length}
           </h2>
-          <p className="text-cool-white/70 mb-6">
-            {quiz.questions[currentQuestion].question}
-          </p>
-          <div className="space-y-3">
-            {quiz.questions[currentQuestion].options.map((option, index) => (
-              <button
-                key={index}
-                onClick={() => handleAnswer(option)}
-                className={`w-full p-4 text-left rounded-lg transition-colors ${
-                  selectedAnswer === option
-                    ? 'bg-ai-blue/20 border border-ai-blue'
-                    : 'bg-cool-black/50 hover:bg-cool-black/70'
-                }`}
-              >
-                <span className="text-cool-white">{option}</span>
-              </button>
-            ))}
-          </div>
-          <div className="mt-8 flex justify-between">
-            <button
-              onClick={handlePrevious}
-              disabled={currentQuestion === 0}
-              className="btn-secondary"
-            >
-              Previous
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={!selectedAnswer}
-              className="btn-primary"
-            >
-              {currentQuestion === quiz.questions.length - 1 ? 'Finish' : 'Next'}
-            </button>
-          </div>
+        </div>
+        <QuizCard
+          question={currentQuestionData.question}
+          options={currentQuestionData.options}
+          correctAnswer={currentQuestionData.correctAnswer}
+          explanation={currentQuestionData.explanation}
+          onAnswer={handleAnswer}
+          selectedAnswer={selectedAnswer}
+          showExplanation={false}
+        />
+        <div className="mt-8 flex justify-between">
+          <button
+            onClick={handlePrevious}
+            disabled={currentQuestion === 0}
+            className="btn-secondary"
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={!selectedAnswer}
+            className="btn-primary"
+          >
+            {currentQuestion === quiz.questions.length - 1 ? 'Finish' : 'Next'}
+          </button>
         </div>
       </div>
     </div>

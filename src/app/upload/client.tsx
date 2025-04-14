@@ -52,6 +52,22 @@ export default function UploadClient() {
     maxFiles: 1,
   });
 
+  const getDifficultyColor = (level: string) => {
+    if (difficulty === level) {
+      switch (level) {
+        case 'easy':
+          return 'bg-green-500 text-white';
+        case 'medium':
+          return 'bg-blue-500 text-white';
+        case 'hard':
+          return 'bg-starburst-orange text-white';
+        default:
+          return '';
+      }
+    }
+    return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
+  };
+
   const generateQuiz = async () => {
     console.log("user", user);
     if (!uploadedFile) {
@@ -192,7 +208,7 @@ export default function UploadClient() {
               
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                  <label className="block text-sm font-medium text-cool-white/70 mb-2">
                     Difficulty
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -201,11 +217,7 @@ export default function UploadClient() {
                         key={level}
                         type="button"
                         onClick={() => setDifficulty(level as "easy" | "medium" | "hard")}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          difficulty === level
-                            ? "bg-quantum-teal text-cool-white"
-                            : "bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70"
-                        }`}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${getDifficultyColor(level)}`}
                       >
                         {level.charAt(0).toUpperCase() + level.slice(1)}
                       </button>
@@ -214,23 +226,23 @@ export default function UploadClient() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                  <label className="block text-sm font-medium text-cool-white/70 mb-2">
                     Number of Questions
                   </label>
                   <input
                     type="number"
                     min="1"
-                    max="100"
+                    max="20"
                     value={numQuestions}
-                    onChange={(e) => setNumQuestions(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
-                    className="w-full px-4 py-2 bg-cool-black border border-cool-white/10 rounded-lg text-cool-white placeholder-cool-white/30 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
+                    onChange={(e) => setNumQuestions(Math.min(20, Math.max(1, parseInt(e.target.value) || 1)))}
+                    className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
                   />
                 </div>
 
                 <button
                   onClick={generateQuiz}
                   disabled={isUploading}
-                  className="w-full px-4 py-3 bg-quantum-teal text-cool-white rounded-lg font-medium hover:bg-quantum-teal/90 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:ring-offset-2 focus:ring-offset-cool-black disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  className="w-full px-4 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:ring-offset-2 focus:ring-offset-[#1E1F2E] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   {isUploading ? (
                     <div className="flex items-center justify-center gap-2">
@@ -246,7 +258,7 @@ export default function UploadClient() {
                   <div className="mt-4">
                     <div className="h-1.5 w-full bg-cool-black/50 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-quantum-teal rounded-full transition-all duration-500"
+                        className="h-full bg-green-500 rounded-full transition-all duration-500"
                         style={{ 
                           width: processingStatus.includes("Extracting") ? "33%" :
                                  processingStatus.includes("Generating") ? "66%" :

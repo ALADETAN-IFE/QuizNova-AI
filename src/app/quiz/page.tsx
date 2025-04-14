@@ -6,10 +6,10 @@ import { Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useAppStore } from "@/lib/store.zustand";
-import Quiz from '@/models/Quiz';
 
 interface Quiz {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   description: string;
   difficulty: 'easy' | 'medium' | 'hard';
@@ -28,32 +28,7 @@ export default function QuizPage() {
   const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
   const [loading, setLoading] = useState(true);
-  // const [quiz, setQuiz] = useState<Quiz | null>(null);
 
-  // useEffect(() => {
-  //   const loadQuiz = async () => {
-  //     try {
-  //       if (currentQuiz) {
-  //         setQuiz(currentQuiz);
-  //       } else {
-  //         const response = await axios.get('/api/quizzes');
-  //         if (response.data && response.data.length > 0) {
-  //           setQuiz(response.data[0]);
-  //           console.log("quiz", quiz)
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error('Error loading quiz:', error);
-  //       toast.error('Failed to load quiz');
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   loadQuiz();
-  // }, [currentQuiz]);
-
-  // Fetch quizzes based on user status
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
@@ -63,7 +38,6 @@ export default function QuizPage() {
           const fetchedQuizzes = response.data;
           setAllQuizzes(fetchedQuizzes);
           setFilteredQuizzes(fetchedQuizzes);
-
           setTimeout(() => {
             setLoading(false);
           }, 1500);
@@ -71,22 +45,18 @@ export default function QuizPage() {
           // For non-logged-in users with a generated quiz
           setAllQuizzes([currentQuiz]);
           setFilteredQuizzes([currentQuiz]);
-
           setTimeout(() => {
-            setLoading(false);
-          }, 2500);
+          setLoading(false);
+        }, 1500);
         }
       } catch (error) {
         console.error('Error fetching quizzes:', error);
         toast.error('Failed to load quizzes');
-        setTimeout(() => {
-          setLoading(false);
-        }, 2500);
       } 
       // finally {
       //   setTimeout(() => {
       //     setLoading(false);
-      //   }, 2500);
+        // }, 1500);
       // }
     };
 
@@ -105,15 +75,24 @@ export default function QuizPage() {
     }
   }, [selectedDifficulty, allQuizzes]);
 
-    if (loading) {
-      return (
-        <div className="text-center py-12">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 border-4 border-t-transparent border-[#8B5CF6] rounded-full animate-spin" />
-          </div>
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-t-transparent border-[#8B5CF6] rounded-full animate-spin" />
         </div>
-      );
+      </div>
+    );
+  }
+
+  const handleQuizClick = (quiz: Quiz) => {
+    const quizId = quiz._id || quiz.id;
+    if (!quizId) {
+      toast.error('Invalid quiz ID');
+      return;
     }
+    router.push(`/quiz/${quizId}?question=1`);
+  };
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -141,9 +120,9 @@ export default function QuizPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuizzes.map((quiz: Quiz) => (
             <div
-              key={quiz.id}
+              key={quiz?._id || quiz?.id}
               className="card hover:scale-105 transition-transform cursor-pointer"
-              onClick={() => router.push(`/quiz/${quiz.id}?question=1`)}
+              onClick={() => handleQuizClick(quiz)}
             >
               <h3 className="text-xl font-semibold mb-2 text-cool-white">{quiz.title}</h3>
               <p className="text-cool-white/70 mb-4">{quiz.description}</p>
@@ -151,9 +130,9 @@ export default function QuizPage() {
                 <span
                   className={`px-3 py-1 rounded-full ${
                     quiz.difficulty === 'easy'
-                      ? 'bg-quantum-teal/20 text-quantum-teal'
+                      ? 'bg-green-500/20 text-green-500'
                       : quiz.difficulty === 'medium'
-                      ? 'bg-ai-blue/20 text-ai-blue'
+                      ? 'bg-blue-500/20 text-blue-500'
                       : 'bg-starburst-orange/20 text-starburst-orange'
                   }`}
                 >

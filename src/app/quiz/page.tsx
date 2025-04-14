@@ -6,6 +6,7 @@ import { Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useAppStore } from "@/lib/store.zustand";
+import Quiz from '@/models/Quiz';
 
 interface Quiz {
   id: string;
@@ -22,61 +23,75 @@ interface Quiz {
 
 export default function QuizPage() {
   const router = useRouter();
-  const { currentQuiz, user } = useAppStore();
+  const { user, currentQuiz } = useAppStore();
   const [allQuizzes, setAllQuizzes] = useState<Quiz[]>([]);
   const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
   const [loading, setLoading] = useState(true);
-  const [quiz, setQuiz] = useState<Quiz | null>(null);
+  // const [quiz, setQuiz] = useState<Quiz | null>(null);
 
-  useEffect(() => {
-    const loadQuiz = async () => {
-      try {
-        if (currentQuiz) {
-          setQuiz(currentQuiz);
-        } else {
-          const response = await axios.get('/api/quizzes');
-          if (response.data && response.data.length > 0) {
-            setQuiz(response.data[0]);
-            console.log("quiz", quiz)
-          }
-        }
-      } catch (error) {
-        console.error('Error loading quiz:', error);
-        toast.error('Failed to load quiz');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const loadQuiz = async () => {
+  //     try {
+  //       if (currentQuiz) {
+  //         setQuiz(currentQuiz);
+  //       } else {
+  //         const response = await axios.get('/api/quizzes');
+  //         if (response.data && response.data.length > 0) {
+  //           setQuiz(response.data[0]);
+  //           console.log("quiz", quiz)
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error('Error loading quiz:', error);
+  //       toast.error('Failed to load quiz');
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    loadQuiz();
-  }, [currentQuiz]);
+  //   loadQuiz();
+  // }, [currentQuiz]);
 
   // Fetch quizzes based on user status
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        if (!user?.id) {
-          throw new Error('No user found');
+        if (user?.id) {
+          // For logged-in users, fetch from API
+          const response = await axios.get(`/api/quizzes/${user.id}`);
+          const fetchedQuizzes = response.data;
+          setAllQuizzes(fetchedQuizzes);
+          setFilteredQuizzes(fetchedQuizzes);
+
+          setTimeout(() => {
+            setLoading(false);
+          }, 1500);
+        } else if (currentQuiz) {
+          // For non-logged-in users with a generated quiz
+          setAllQuizzes([currentQuiz]);
+          setFilteredQuizzes([currentQuiz]);
+
+          setTimeout(() => {
+            setLoading(false);
+          }, 2500);
         }
-        const response = await axios.get(`/api/quizzes/${user.id}`);
-        const fetchedQuizzes = response.data;
-        setAllQuizzes(fetchedQuizzes);
-        setFilteredQuizzes(fetchedQuizzes);
       } catch (error) {
         console.error('Error fetching quizzes:', error);
         toast.error('Failed to load quizzes');
-      } finally {
-        setLoading(false);
-      }
+        setTimeout(() => {
+          setLoading(false);
+        }, 2500);
+      } 
+      // finally {
+      //   setTimeout(() => {
+      //     setLoading(false);
+      //   }, 2500);
+      // }
     };
 
-    if (user?.id) {
-      fetchQuizzes();
-    } else {
-      setLoading(false);
-    }
-  }, [user]);
+    fetchQuizzes();
+  }, [user, currentQuiz]);
 
   // Filter quizzes when difficulty changes
   useEffect(() => {
@@ -90,9 +105,15 @@ export default function QuizPage() {
     }
   }, [selectedDifficulty, allQuizzes]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+    if (loading) {
+      return (
+        <div className="text-center py-12">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-t-transparent border-[#8B5CF6] rounded-full animate-spin" />
+          </div>
+        </div>
+      );
+    }
 
   return (
     <main className="container mx-auto px-4 py-8">

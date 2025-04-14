@@ -5,9 +5,12 @@ import { Toaster } from "react-hot-toast";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/context/AuthContext";
 
+// Configure Inter font for Turbopack compatibility
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  preload: true,
+  adjustFontFallback: true,
 });
 
 export const metadata: Metadata = {
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/logo.jpeg", // Path to your Open Graph image
+        url: "/logo.png", // Path to your Open Graph image
         width: 1200, // Recommended width
         height: 630, // Recommended height
         alt: "QuizNova AI Logo", // Alt text for the image
@@ -36,6 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "QuizNova AI",
     description: "AI-powered quiz creation and management platform",
+    images: ["/logo.png"],
   },
 };
 

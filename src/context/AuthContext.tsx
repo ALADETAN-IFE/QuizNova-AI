@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
       });
-      setUser(response.data);
+      setUser(response.data.user);
       router.push('/quiz');
     } catch (error) {
       console.error('Login error:', error);

@@ -15,6 +15,7 @@ module.exports = {
         'ai-blue': '#3B82F6',
         'starburst-orange': '#F97316',
         'holographic-silver': '#94A3B8',
+        'quantum-teal': '#10B981',
       },
     },
   },

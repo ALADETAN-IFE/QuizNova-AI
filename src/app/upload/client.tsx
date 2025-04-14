@@ -5,10 +5,18 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { extractTextFromPDF } from "@/lib/pdf";
 import { generateQuizFromPDF } from "@/lib/gemini";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useAppStore } from "@/lib/store.zustand";
+
+// Define question type
+interface Question {
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  explanation: string;
+}
 
 // Generate a random ID using timestamp and random number
 const generateId = () => {
@@ -36,7 +44,7 @@ export default function UploadClient() {
     }
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
@@ -45,13 +53,20 @@ export default function UploadClient() {
   });
 
   const generateQuiz = async () => {
-    if (!uploadedFile) return;
+    console.log("user", user);
+    if (!uploadedFile) {
+      toast.error("Please upload a PDF file first");
+      return;
+    }
 
     setIsUploading(true);
     setProcessingStatus("Extracting text from PDF...");
 
     try {
       const pdfText = await extractTextFromPDF(uploadedFile);
+      if (!pdfText || pdfText.trim().length === 0) {
+        throw new Error("Could not extract text from PDF");
+      }
 
       setProcessingStatus("Generating quiz questions...");
       const questions = await generateQuizFromPDF(
@@ -60,22 +75,44 @@ export default function UploadClient() {
         difficulty
       );
 
+      if (!questions || questions.length === 0) {
+        throw new Error("No questions were generated");
+      }
+
+      setProcessingStatus("Saving quiz...");
+      
       if (user) {
         // For logged-in users, create quiz in MongoDB
-         await axios.post('/api/quizzes', {
-          title: uploadedFile.name.replace(".pdf", ""),
-          description: `Quiz generated from ${uploadedFile.name}`,
-          difficulty,
-          questions: questions.map((q) => ({
-            question: q.question,
-            options: q.options,
-            correctAnswer: q.correctAnswer,
-            explanation: q.explanation,
-          })),
-          createdBy: user.id
-        });
-        
-        router.push(`/quiz`);
+        try {
+          const response = await axios.post('/api/quizzes', {
+            title: uploadedFile.name.replace(".pdf", ""),
+            description: `Quiz generated from ${uploadedFile.name}`,
+            difficulty,
+            questions: questions.map((q: Question) => ({
+              question: q.question,
+              options: q.options,
+              correctAnswer: q.correctAnswer,
+              explanation: q.explanation,
+            })),
+            createdBy: user.id
+          });
+
+          if (response.data) {
+            toast.success("Quiz generated successfully!");
+            router.push(`/quiz`);
+          }
+        } catch (error) {
+          if (error instanceof AxiosError) {
+            const errorMessage = error.response?.data?.error || error.message;
+            const errorDetails = error.response?.data?.details;
+            toast.error(`Failed to save quiz: ${errorMessage}${errorDetails ? `\n${errorDetails}` : ''}`);
+            console.error("API Error:", error.response?.data);
+          } else {
+            toast.error("An unexpected error occurred while saving the quiz");
+            console.error("Unexpected error:", error);
+          }
+          throw error; // Re-throw to be caught by outer catch block
+        }
       } else {
         // For non-logged-in users, use Zustand store
         const quiz = {
@@ -83,7 +120,7 @@ export default function UploadClient() {
           title: uploadedFile.name.replace(".pdf", ""),
           description: `Quiz generated from ${uploadedFile.name}`,
           difficulty,
-          questions: questions.map((q) => ({
+          questions: questions.map((q: Question) => ({
             question: q.question,
             options: q.options,
             correctAnswer: q.correctAnswer,
@@ -94,11 +131,16 @@ export default function UploadClient() {
         setCurrentQuiz(quiz);
         router.push("/quiz");
       }
-
+      
       toast.success("Quiz generated successfully!");
     } catch (error) {
       console.error("Error processing PDF:", error);
       toast.error("Failed to process PDF. Please try again.");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
     } finally {
       setIsUploading(false);
       setProcessingStatus("");
@@ -113,110 +155,111 @@ export default function UploadClient() {
         </h1>
         <div
           {...getRootProps()}
-          className={`card border-2 border-dashed ${
-            isDragActive ? "border-nova-purple" : "border-holographic-silver"
-          } cursor-pointer transition-colors`}
+          className="card border-2 border-dashed border-holographic-silver cursor-pointer transition-colors"
         >
-          <input {...getInputProps()} />
-          <div className="text-center py-12">
-            {isUploading ? (
+          <input {...getInputProps()} accept="application/pdf,.pdf" />
+          {uploadedFile ? (
+            <div className="text-center py-12">
               <div className="flex flex-col items-center gap-4">
-                <Loader2 className="w-12 h-12 text-nova-purple animate-spin" />
-                <p className="text-cool-white/70">{processingStatus}</p>
-              </div>
-            ) : uploadedFile ? (
-              <div className="flex flex-col items-center gap-4">
-                <FileText className="w-12 h-12 text-quantum-teal" />
-                <p className="text-cool-white/70">{uploadedFile.name}</p>
+                <FileText className="w-12 h-12 text-[#4B9EFF]" />
+                <p className="text-cool-white/70">
+                  {uploadedFile.name}
+                </p>
                 <p className="text-sm text-cool-white/50">
                   Click or drag to upload a different file
                 </p>
               </div>
-            ) : (
+            </div>
+          ) : (
+            <div className="text-center py-12">
               <div className="flex flex-col items-center gap-4">
                 <Upload className="w-12 h-12 text-nova-purple" />
                 <p className="text-cool-white/70">
-                  {isDragActive
-                    ? "Drop your PDF here"
-                    : "Drag & drop your PDF here, or click to select"}
+                  Drag & drop your PDF here, or click to select
                 </p>
                 <p className="text-sm text-cool-white/50">
                   Supported format: PDF
                 </p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-        {uploadedFile && !isUploading && (
-          <div className="mt-8">
-            <div className="card mb-6">
-              <h3 className="text-xl font-semibold mb-4 text-cool-white">
-                Quiz Settings
-              </h3>
-              <div className="mb-4">
-                <label className="block text-cool-white/70 mb-2">
-                  Difficulty
-                </label>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setDifficulty("easy")}
-                    className={`flex-1 py-2 rounded-lg transition-all ${
-                      difficulty === "easy"
-                        ? "bg-quantum-teal text-deep-space font-medium"
-                        : "bg-midnight-gray text-cool-white/70 hover:bg-midnight-gray/80"
-                    }`}
-                  >
-                    Easy
-                  </button>
-                  <button
-                    onClick={() => setDifficulty("medium")}
-                    className={`flex-1 py-2 rounded-lg transition-all ${
-                      difficulty === "medium"
-                        ? "bg-ai-blue text-deep-space font-medium"
-                        : "bg-midnight-gray text-cool-white/70 hover:bg-midnight-gray/80"
-                    }`}
-                  >
-                    Medium
-                  </button>
-                  <button
-                    onClick={() => setDifficulty("hard")}
-                    className={`flex-1 py-2 rounded-lg transition-all ${
-                      difficulty === "hard"
-                        ? "bg-starburst-orange text-deep-space font-medium"
-                        : "bg-midnight-gray text-cool-white/70 hover:bg-midnight-gray/80"
-                    }`}
-                  >
-                    Hard
-                  </button>
+
+        {uploadedFile && (
+          <>
+            <div className="mt-8 p-6 bg-[#1E1F2E] rounded-lg">
+              <h2 className="text-xl font-semibold text-white mb-4">Quiz Settings</h2>
+              
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                    Difficulty
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["easy", "medium", "hard"].map((level) => (
+                      <button
+                        key={level}
+                        type="button"
+                        onClick={() => setDifficulty(level as "easy" | "medium" | "hard")}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          difficulty === level
+                            ? "bg-quantum-teal text-cool-white"
+                            : "bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70"
+                        }`}
+                      >
+                        {level.charAt(0).toUpperCase() + level.slice(1)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="mb-4">
-                <label className="block text-cool-white/70 mb-2">
-                  Number of Questions
-                </label>
-                <div className="flex gap-2">
-                  {[3, 5, 10].map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => setNumQuestions(num)}
-                      className={`flex-1 py-2 rounded-lg transition-all ${
-                        numQuestions === num
-                          ? "bg-nova-purple text-cool-white font-medium"
-                          : "bg-midnight-gray text-cool-white/70 hover:bg-midnight-gray/80"
-                      }`}
-                    >
-                      {num}
-                    </button>
-                  ))}
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-400 mb-2">
+                    Number of Questions
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    value={numQuestions}
+                    onChange={(e) => setNumQuestions(Math.min(100, Math.max(1, parseInt(e.target.value) || 1)))}
+                    className="w-full px-4 py-2 bg-cool-black border border-cool-white/10 rounded-lg text-cool-white placeholder-cool-white/30 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
+                  />
                 </div>
+
+                <button
+                  onClick={generateQuiz}
+                  disabled={isUploading}
+                  className="w-full px-4 py-3 bg-quantum-teal text-cool-white rounded-lg font-medium hover:bg-quantum-teal/90 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:ring-offset-2 focus:ring-offset-cool-black disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  {isUploading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                      <span>{processingStatus}</span>
+                    </div>
+                  ) : (
+                    'Generate Quiz'
+                  )}
+                </button>
+
+                {isUploading && (
+                  <div className="mt-4">
+                    <div className="h-1.5 w-full bg-cool-black/50 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-quantum-teal rounded-full transition-all duration-500"
+                        style={{ 
+                          width: processingStatus.includes("Extracting") ? "33%" :
+                                 processingStatus.includes("Generating") ? "66%" :
+                                 processingStatus.includes("Saving") ? "100%" : "0%"
+                        }}
+                      />
+                    </div>
+                    <p className="text-sm text-cool-white/50 mt-2 text-center">{processingStatus}</p>
+                  </div>
+                )}
               </div>
             </div>
-            <div className="text-center">
-              <button onClick={generateQuiz} className="btn-primary">
-                Generate Quiz
-              </button>
-            </div>
-          </div>
+          </>
         )}
       </div>
     </main>

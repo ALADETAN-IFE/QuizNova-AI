@@ -92,7 +92,18 @@ export default function QuizPage() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-t-transparent border-[#8B5CF6] rounded-full animate-spin" />
+          <p className="text-cool-white/70">
+            Loading quiz...
+          </p>
+        </div>
+      </div>
+    );
+  }
   if (!quiz) return <div>Quiz not found</div>;
 
   if (showReview) {

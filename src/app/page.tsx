@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Upload, Brain, BarChart, Share2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Home() {
   return (
@@ -7,6 +8,15 @@ export default function Home() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <Image
+              src="/quizNova.png"
+              alt="QuizNova Logo"
+              width={100}
+              height={100}
+              className="rounded-lg"
+            />
+          </div>
           <h1 className="text-5xl font-bold mb-6 gradient-text">
             Transform Your Study Materials into Interactive Quizzes
           </h1>

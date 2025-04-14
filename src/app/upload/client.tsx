@@ -8,6 +8,7 @@ import { generateQuizFromPDF } from "@/lib/gemini";
 import { Upload, FileText, Loader2 } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+import { useAppStore } from "@/lib/store.zustand";
 
 // Generate a random ID using timestamp and random number
 const generateId = () => {
@@ -23,6 +24,7 @@ export default function UploadClient() {
   const [processingStatus, setProcessingStatus] = useState<string>("");
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [numQuestions, setNumQuestions] = useState<number>(5);
+  const { user, setCurrentQuiz } = useAppStore();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -58,11 +60,8 @@ export default function UploadClient() {
         difficulty
       );
 
-      const storedUser = localStorage.getItem('user');
-      
-      if (storedUser) {
+      if (user) {
         // For logged-in users, create quiz in MongoDB
-        const user = JSON.parse(storedUser);
         const response = await axios.post('/api/quizzes', {
           title: uploadedFile.name.replace(".pdf", ""),
           description: `Quiz generated from ${uploadedFile.name}`,
@@ -73,14 +72,14 @@ export default function UploadClient() {
             correctAnswer: q.correctAnswer,
             explanation: q.explanation,
           })),
-          createdBy: user._id
+          createdBy: user.id
         });
         
-        router.push(`/quiz/${response.data._id}`);
+        router.push(`/quiz`);
       } else {
-        // For non-logged-in users, use local storage with random ID
+        // For non-logged-in users, use Zustand store
         const quiz = {
-          _id: generateId(),
+          id: generateId(),
           title: uploadedFile.name.replace(".pdf", ""),
           description: `Quiz generated from ${uploadedFile.name}`,
           difficulty,
@@ -92,7 +91,7 @@ export default function UploadClient() {
           })),
         };
 
-        localStorage.setItem("currentQuiz", JSON.stringify(quiz));
+        setCurrentQuiz(quiz);
         router.push("/quiz");
       }
 

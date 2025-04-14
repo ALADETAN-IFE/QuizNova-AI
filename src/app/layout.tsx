@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/quizNova.ico", // Path to your Open Graph image
+        url: "/logo.jpeg", // Path to your Open Graph image
         width: 1200, // Recommended width
         height: 630, // Recommended height
         alt: "QuizNova AI Logo", // Alt text for the image

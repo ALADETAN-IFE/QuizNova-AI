@@ -1,53 +1,68 @@
-import mongoose from 'mongoose'
+// "use server"; // ✅ Ensure this file is treated as a server module
+// import mongoose from 'mongoose'
 
-type MongooseCache = {
-  conn: typeof mongoose | null
-  promise: Promise<typeof mongoose> | null
-}
+// type MongooseCache = {
+//   conn: typeof mongoose | null
+//   promise: Promise<typeof mongoose> | null
+// }
 
-// Define the global object type
-interface CustomGlobal extends Global {
-  mongoose?: MongooseCache
-}
+// // Define the global object type
+// interface CustomGlobal extends Global {
+//   mongoose?: MongooseCache
+// }
 
-declare global {
-  // eslint-disable-next-line no-var
-  var mongoose: MongooseCache | undefined
-}
+// declare global {
+//   // eslint-disable-next-line no-var
+//   var mongoose: MongooseCache | undefined
+// }
 
-const MONGODB_URI = process.env.MONGODB_URI
+// const MONGODB_URI = process.env.MONGODB_URI as string
+// if (!MONGODB_URI) throw new Error('Please define MONGODB_URI in .env')
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable inside .env.local')
-}
+// // Initialize the cached connection
+// const cached: MongooseCache = (global as CustomGlobal).mongoose || { conn: null, promise: null }
 
-// Initialize the cached connection
-const cached: MongooseCache = (global as CustomGlobal).mongoose || { conn: null, promise: null }
+// if (!(global as CustomGlobal).mongoose) {
+//   (global as CustomGlobal).mongoose = cached
+// }
 
-if (!(global as CustomGlobal).mongoose) {
-  (global as CustomGlobal).mongoose = cached
-}
+// export const connectToDatabase = async () => {
+//   if (mongoose.connection.readyState >= 1) return
+//   try {
+//     // await mongoose.connect(MONGODB_URI)
+//     await mongoose.connect(MONGODB_URI, {
+//       bufferCommands: false,
+//     })
+//     console.log('MongoDB Connected')
+//   } catch (error) {
+//     console.error('MongoDB Connection Error:', error)
+//     throw error // Re-throw the error to be handled by the caller
+//   }
+// } 
 
-export async function connectToDatabase() {
-  if (cached.conn) {
-    return cached.conn
-  }
+"use server"; // ✅ Ensure this file is treated as a server module
+import mongoose from 'mongoose';
 
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
+// export const config = {
+//   runtime: "nodejs", // ✅ Force Node.js runtime
+// };
+
+const MONGODB_URI = process.env.MONGODB_URI as string;
+if (!MONGODB_URI) throw new Error('Please define MONGODB_URI in .env');
+
+export const connectToDatabase = async () => {
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      return mongoose.connection;
     }
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts)
+    await mongoose.connect(MONGODB_URI, {
+      bufferCommands: true, // Changed to true to allow buffering
+    });
+    console.log('MongoDB Connected');
+    return mongoose.connection;
+  } catch (error) {
+    console.error('MongoDB Connection Error:', error);
+    throw error;
   }
-
-  try {
-    const mongoose = await cached.promise
-    cached.conn = mongoose
-  } catch (e) {
-    cached.promise = null
-    throw e
-  }
-
-  return cached.conn
-} 
+};

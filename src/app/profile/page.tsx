@@ -1,121 +1,160 @@
 'use client'
 
-import { User, Clock, Award, BookOpen } from 'lucide-react'
-
-// Mock user data - will be replaced with actual data from the backend
-const mockUserData = {
-  name: 'John Doe',
-  email: 'john@example.com',
-  joinedDate: '2024-01-15',
-  stats: {
-    quizzesTaken: 42,
-    averageScore: 85,
-    totalStudyTime: '32h 15m',
-    topicsStudied: 8,
-  },
-  recentQuizzes: [
-    {
-      id: '1',
-      title: 'Mathematics Quiz',
-      date: '2024-03-09',
-      score: 90,
-      totalQuestions: 10,
-    },
-    {
-      id: '2',
-      title: 'Science Quiz',
-      date: '2024-03-07',
-      score: 85,
-      totalQuestions: 15,
-    },
-    {
-      id: '3',
-      title: 'History Quiz',
-      date: '2024-03-05',
-      score: 75,
-      totalQuestions: 12,
-    },
-  ],
-}
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAppStore } from '@/lib/store.zustand'
+import { LogOut, User, Mail, Trophy, Calendar } from 'lucide-react'
 
 export default function ProfilePage() {
+  const router = useRouter()
+  const { user, logout, quizResults } = useAppStore()
+  const [isEditing, setIsEditing] = useState(false)
+  const [formData, setFormData] = useState({
+    username: user?.username || '',
+    email: user?.email || '',
+  })
+
+  if (!user) {
+    router.push('/auth/signin')
+    return null
+  }
+
+  const handleLogout = () => {
+    logout()
+    router.push('/')
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      // TODO: Implement profile update API
+      setIsEditing(false)
+    } catch (error) {
+      console.error('Error updating profile:', error)
+    }
+  }
+
+  const totalQuizzes = quizResults.length
+  const averageScore = quizResults.length > 0
+    ? Math.round(quizResults.reduce((acc, result) => 
+        acc + (result.score / result.totalQuestions) * 100, 0) / quizResults.length)
+    : 0
+
   return (
-    <main className="container mx-auto px-4 py-20">
-      {/* User Info */}
-      <div className="card mb-8">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-nova-purple/20 flex items-center justify-center">
-            <User className="w-8 h-8 text-nova-purple" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">{mockUserData.name}</h1>
-            <p className="text-cool-white/70">{mockUserData.email}</p>
-            <p className="text-sm text-cool-white/50">
-              Joined {new Date(mockUserData.joinedDate).toLocaleDateString()}
-            </p>
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold gradient-text">Profile</h1>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2 px-4 py-2 bg-starburst-orange/20 text-starburst-orange rounded-lg hover:bg-starburst-orange/30 transition-colors"
+        >
+          <LogOut className="w-5 h-5" />
+          Logout
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="md:col-span-2">
+          <div className="card p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-cool-white">Personal Information</h2>
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="text-ai-blue hover:text-ai-blue/80"
+              >
+                {isEditing ? 'Cancel' : 'Edit'}
+              </button>
+            </div>
+
+            {isEditing ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-cool-white/70 mb-1">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    className="input-field"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-cool-white/70 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="input-field"
+                  />
+                </div>
+                <button type="submit" className="btn-primary">
+                  Save Changes
+                </button>
+              </form>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <User className="w-5 h-5 text-quantum-teal" />
+                  <div>
+                    <p className="text-sm text-cool-white/70">Username</p>
+                    <p className="text-cool-white">{user.username}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-ai-blue" />
+                  <div>
+                    <p className="text-sm text-cool-white/70">Email</p>
+                    <p className="text-cool-white">{user.email}</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-lg bg-midnight-gray">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="w-5 h-5 text-ai-blue" />
-              <span className="text-sm text-cool-white/70">Quizzes Taken</span>
+        <div className="space-y-6">
+          <div className="card p-6">
+            <h2 className="text-xl font-semibold mb-4 text-cool-white">Statistics</h2>
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Trophy className="w-5 h-5 text-quantum-teal" />
+                <div>
+                  <p className="text-sm text-cool-white/70">Total Quizzes</p>
+                  <p className="text-2xl font-bold text-cool-white">{totalQuizzes}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Calendar className="w-5 h-5 text-ai-blue" />
+                <div>
+                  <p className="text-sm text-cool-white/70">Average Score</p>
+                  <p className="text-2xl font-bold text-cool-white">{averageScore}%</p>
+                </div>
+              </div>
             </div>
-            <p className="text-2xl font-bold">{mockUserData.stats.quizzesTaken}</p>
           </div>
-          <div className="p-4 rounded-lg bg-midnight-gray">
-            <div className="flex items-center gap-2 mb-2">
-              <Award className="w-5 h-5 text-starburst-orange" />
-              <span className="text-sm text-cool-white/70">Average Score</span>
-            </div>
-            <p className="text-2xl font-bold">{mockUserData.stats.averageScore}%</p>
-          </div>
-          <div className="p-4 rounded-lg bg-midnight-gray">
-            <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-5 h-5 text-quantum-teal" />
-              <span className="text-sm text-cool-white/70">Study Time</span>
-            </div>
-            <p className="text-2xl font-bold">{mockUserData.stats.totalStudyTime}</p>
-          </div>
-          <div className="p-4 rounded-lg bg-midnight-gray">
-            <div className="flex items-center gap-2 mb-2">
-              <BookOpen className="w-5 h-5 text-neon-pink" />
-              <span className="text-sm text-cool-white/70">Topics</span>
-            </div>
-            <p className="text-2xl font-bold">{mockUserData.stats.topicsStudied}</p>
-          </div>
-        </div>
-      </div>
 
-      {/* Recent Quizzes */}
-      <div className="card">
-        <h2 className="text-xl font-semibold mb-4">Recent Quizzes</h2>
-        <div className="space-y-4">
-          {mockUserData.recentQuizzes.map((quiz) => (
-            <div
-              key={quiz.id}
-              className="p-4 rounded-lg bg-midnight-gray flex items-center justify-between"
-            >
-              <div>
-                <h3 className="font-semibold">{quiz.title}</h3>
-                <p className="text-sm text-cool-white/50">
-                  {new Date(quiz.date).toLocaleDateString()}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold">
-                  {quiz.score}%
-                </p>
-                <p className="text-sm text-cool-white/50">
-                  {quiz.score}/{quiz.totalQuestions} correct
-                </p>
-              </div>
+          <div className="card p-6">
+            <h2 className="text-xl font-semibold mb-4 text-cool-white">Quick Links</h2>
+            <div className="space-y-2">
+              <button
+                onClick={() => router.push('/quiz')}
+                className="w-full text-left px-4 py-2 rounded-lg bg-cool-black/50 text-cool-white hover:bg-cool-black/70 transition-colors"
+              >
+                Take a Quiz
+              </button>
+              <button
+                onClick={() => router.push('/progress')}
+                className="w-full text-left px-4 py-2 rounded-lg bg-cool-black/50 text-cool-white hover:bg-cool-black/70 transition-colors"
+              >
+                View Progress
+              </button>
             </div>
-          ))}
+          </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 } 

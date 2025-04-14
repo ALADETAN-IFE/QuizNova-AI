@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import axios from "axios";
-import { toast } from "react-hot-toast";
-import QuizCard from "@/components/QuizCard";
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Check, X } from 'lucide-react';
+import axios from 'axios';
+import { useAppStore } from '@/lib/store.zustand';
 
 interface Question {
-  // Use index as unique key when _id is missing
-  _id?: string;
   question: string;
   options: string[];
   correctAnswer: string;
@@ -16,212 +14,190 @@ interface Question {
 }
 
 interface Quiz {
-  _id: string;
+  id: string;
   title: string;
   description: string;
-  questions: Question[];
   difficulty: string;
-  timeLimit: number;
+  questions: Question[];
 }
 
-export default function QuizDetailPage() {
-  const params = useParams();
+export default function QuizPage() {
   const router = useRouter();
-  const storedQuiz = localStorage.getItem("currentQuiz");
+  const searchParams = useSearchParams();
+  const { user, currentQuiz, setCurrentQuiz, addQuizResult } = useAppStore();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<string | undefined>(undefined);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [showReview, setShowReview] = useState(false);
   const [loading, setLoading] = useState(true);
-  // Use index to track current question (starting at 0)
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-  // Use index string as key for user answers
-  const [userAnswers, setUserAnswers] = useState<Record<number, string>>({});
-  const [showExplanations, setShowExplanations] = useState(false);
-  const [timer, setTimer] = useState(0);
-  const [isComplete, setIsComplete] = useState(false);
-  const [transitioning, setTransitioning] = useState(false);
-
-  // Update URL when current question changes
-  useEffect(() => {
-    if (quiz) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentUrlQuestion = parseInt(urlParams.get("question") || "1");
-      if (currentUrlQuestion !== currentQuestionIndex + 1) {
-        router.push(`/quiz/${quiz._id}?question=${currentQuestionIndex + 1}`);
-      }
-    }
-  }, [currentQuestionIndex, quiz, router]);
 
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(`/api/quizzes/${params.id}`);
-        setQuiz(response.data);
-        // Get question number from URL query (default to 1)
-        const urlParams = new URLSearchParams(window.location.search);
-        const questionNum = parseInt(urlParams.get("question") || "1");
-        const index = Math.min(Math.max(1, questionNum), response.data.questions.length) - 1;
-        setCurrentQuestionIndex(index);
+        const quizId = searchParams.get('id');
+        if (!quizId) {
+          router.push('/quiz');
+          return;
+        }
+
+        const response = await axios.get(`/api/quizzes/${quizId}`);
+        const fetchedQuiz = response.data;
+        setCurrentQuiz(fetchedQuiz);
+        setQuiz(fetchedQuiz);
+        setLoading(false);
       } catch (error) {
-        console.log("Failed to load quiz", error);
-        toast.error("Failed to load quiz");
-        router.push("/quiz");
-      } finally {
+        console.error('Error fetching quiz:', error);
         setLoading(false);
       }
     };
 
-    if (!storedQuiz) {
-      fetchQuiz();
-    } else {
-      const parsedQuiz = JSON.parse(storedQuiz);
-      setQuiz(parsedQuiz);
-      const urlParams = new URLSearchParams(window.location.search);
-      const questionNum = parseInt(urlParams.get("question") || "1");
-      const index = Math.min(Math.max(1, questionNum), parsedQuiz.questions.length) - 1;
-      setCurrentQuestionIndex(index);
-      setLoading(false);
-    }
-  }, [params.id, router]);
-
-  useEffect(() => {
-    if (!quiz || isComplete) return;
-    const interval = setInterval(() => {
-      setTimer((prev) => prev + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [quiz, isComplete]);
+    fetchQuiz();
+  }, [searchParams, setCurrentQuiz, router]);
 
   const handleAnswer = (answer: string) => {
-    if (!quiz || transitioning) return;
-
-    // Save the answer using the current index as key
-    setUserAnswers((prev) => ({
-      ...prev,
-      [currentQuestionIndex]: answer,
-    }));
-    setShowExplanations(true);
-    setTransitioning(true);
-
-    // Wait 5 seconds before moving to the next question
-    setTimeout(() => {
-      if (currentQuestionIndex < quiz.questions.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-      } else {
-        setIsComplete(true);
-      }
-      setShowExplanations(false);
-      setTransitioning(false);
-    }, 5000);
+    setSelectedAnswer(answer);
+    const newAnswers = [...answers];
+    newAnswers[currentQuestion] = answer;
+    setAnswers(newAnswers);
   };
 
-  const navigateQuestion = (direction: "prev" | "next") => {
-    if (!quiz || transitioning) return;
-    if (direction === "prev" && currentQuestionIndex > 0) {
-      setShowExplanations(true);
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-    } else if (direction === "next" && currentQuestionIndex < quiz.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+  const handleNext = () => {
+    if (currentQuestion < (quiz?.questions.length || 0) - 1) {
+      setCurrentQuestion(prev => prev + 1);
+      setSelectedAnswer(answers[currentQuestion + 1] || undefined);
+    } else {
+      // Calculate score and save result
+      const score = answers.reduce((acc, answer, index) => {
+        return acc + (answer === quiz?.questions[index].correctAnswer ? 1 : 0);
+      }, 0);
+
+      if (quiz && user) {
+        addQuizResult({
+          quizId: quiz.id,
+          score,
+          totalQuestions: quiz.questions.length,
+          completedAt: new Date().toISOString(),
+        });
+      }
+
+      setShowReview(true);
     }
   };
 
-  const calculateScore = () => {
-    if (!quiz) return 0;
-    return quiz.questions.reduce((score, question, idx) => {
-      return score + (userAnswers[idx] === question.correctAnswer ? 1 : 0);
-    }, 0);
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(prev => prev - 1);
+      setSelectedAnswer(answers[currentQuestion - 1] || undefined);
+    }
   };
 
-  if (loading) {
+  if (loading) return <div>Loading...</div>;
+  if (!quiz) return <div>Quiz not found</div>;
+
+  if (showReview) {
     return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nova-purple mx-auto"></div>
-        <div className="p-8">Loading...</div>
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8 gradient-text">Quiz Review</h1>
+        <div className="space-y-8">
+          {quiz.questions.map((question, index) => (
+            <div key={index} className="card p-6">
+              <h3 className="text-xl font-semibold mb-4 text-cool-white">
+                Question {index + 1}: {question.question}
+              </h3>
+              <div className="space-y-3">
+                {question.options.map((option, optionIndex) => (
+                  <div
+                    key={optionIndex}
+                    className={`p-3 rounded-lg ${
+                      option === question.correctAnswer
+                        ? 'bg-quantum-teal/20 border border-quantum-teal'
+                        : option === answers[index]
+                        ? 'bg-starburst-orange/20 border border-starburst-orange'
+                        : 'bg-cool-black/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-cool-white">{option}</span>
+                      {option === question.correctAnswer ? (
+                        <Check className="w-5 h-5 text-quantum-teal" />
+                      ) : option === answers[index] ? (
+                        <X className="w-5 h-5 text-starburst-orange" />
+                      ) : null}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 p-4 bg-ai-blue/10 rounded-lg">
+                <p className="text-ai-blue">
+                  <strong>Explanation:</strong> {question.explanation}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 flex justify-between">
+          <button
+            onClick={() => setShowReview(false)}
+            className="btn-secondary"
+          >
+            Back to Quiz
+          </button>
+          <button
+            onClick={() => router.push('/quiz')}
+            className="btn-primary"
+          >
+            Return to Quizzes
+          </button>
+        </div>
       </div>
     );
   }
 
-  if (!quiz) {
-    return <div className="p-8">Quiz not found</div>;
-  }
-
-  const currentQuestion = quiz.questions[currentQuestionIndex];
-
   return (
-    <div className="container mx-auto p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-cool-white">{quiz.title}</h1>
-        <p className="text-cool-white/70">{quiz.description}</p>
-        <div className="mt-4 flex items-center gap-4">
-          <span className="text-sm text-cool-white/70">
-            Difficulty: {quiz.difficulty}
-          </span>
-          <span className="text-sm text-cool-white/70">
-            Time: {Math.floor(timer / 60)}:
-            {(timer % 60).toString().padStart(2, "0")}
-          </span>
-        </div>
-      </div>
-      {isComplete ? (
-        <div className="bg-midnight-gray rounded-lg shadow-lg p-6">
-          <h2 className="text-2xl font-bold mb-4 text-cool-white">Quiz Complete!</h2>
-          <p className="text-xl mb-4 text-cool-white">
-            Your score: {calculateScore()} / {quiz.questions.length}
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-3xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8 gradient-text">{quiz.title}</h1>
+        <div className="card p-6">
+          <h2 className="text-xl font-semibold mb-4 text-cool-white">
+            Question {currentQuestion + 1} of {quiz.questions.length}
+          </h2>
+          <p className="text-cool-white/70 mb-6">
+            {quiz.questions[currentQuestion].question}
           </p>
-          <button
-            onClick={() => router.push("/quiz")}
-            className="bg-nova-purple text-cool-white px-4 py-2 rounded-lg hover:bg-nova-purple/80 transition-colors"
-          >
-            Back to Quizzes
-          </button>
-        </div>
-      ) : currentQuestion ? (
-        <div className="space-y-6">
-          <QuizCard
-            question={currentQuestion.question}
-            options={currentQuestion.options}
-            correctAnswer={currentQuestion.correctAnswer}
-            explanation={currentQuestion.explanation}
-            onAnswer={handleAnswer}
-            selectedAnswer={userAnswers[currentQuestionIndex]}
-            showExplanation={showExplanations}
-          />
-          <div className="flex justify-between items-center mt-6">
+          <div className="space-y-3">
+            {quiz.questions[currentQuestion].options.map((option, index) => (
+              <button
+                key={index}
+                onClick={() => handleAnswer(option)}
+                className={`w-full p-4 text-left rounded-lg transition-colors ${
+                  selectedAnswer === option
+                    ? 'bg-ai-blue/20 border border-ai-blue'
+                    : 'bg-cool-black/50 hover:bg-cool-black/70'
+                }`}
+              >
+                <span className="text-cool-white">{option}</span>
+              </button>
+            ))}
+          </div>
+          <div className="mt-8 flex justify-between">
             <button
-              onClick={() => navigateQuestion("prev")}
-              disabled={currentQuestionIndex === 0 || transitioning}
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                currentQuestionIndex === 0 || transitioning
-                  ? "bg-midnight-gray text-cool-white/50 cursor-not-allowed"
-                  : "bg-nova-purple text-cool-white hover:bg-nova-purple/80"
-              }`}
+              onClick={handlePrevious}
+              disabled={currentQuestion === 0}
+              className="btn-secondary"
             >
               Previous
             </button>
-            <span className="text-cool-white">
-              Question {currentQuestionIndex + 1} of {quiz.questions.length}
-            </span>
             <button
-              onClick={() => navigateQuestion("next")}
-              disabled={
-                currentQuestionIndex === quiz.questions.length - 1 || transitioning
-              }
-              className={`px-4 py-2 rounded-lg transition-colors ${
-                currentQuestionIndex === quiz.questions.length - 1 || transitioning
-                  ? "bg-midnight-gray text-cool-white/50 cursor-not-allowed"
-                  : "bg-nova-purple text-cool-white hover:bg-nova-purple/80"
-              }`}
+              onClick={handleNext}
+              disabled={!selectedAnswer}
+              className="btn-primary"
             >
-              Next
+              {currentQuestion === quiz.questions.length - 1 ? 'Finish' : 'Next'}
             </button>
           </div>
-          {transitioning && (
-            <div className="text-center text-cool-white/70">
-              Moving to next question in {Math.ceil((5000 - (Date.now() % 5000)) / 1000)}s...
-            </div>
-          )}
         </div>
-      ) : (
-        <p className="text-gray-500">No question available.</p>
-      )}
+      </div>
     </div>
   );
 }

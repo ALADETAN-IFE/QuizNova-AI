@@ -5,102 +5,93 @@ import { useRouter } from 'next/navigation';
 import { Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
+import { useAppStore } from "@/lib/store.zustand";
 
 interface Quiz {
-  _id: string;
+  id: string;
   title: string;
   description: string;
   difficulty: 'easy' | 'medium' | 'hard';
   questions: {
-    _id: string;
     question: string;
     options: string[];
     correctAnswer: string;
     explanation: string;
   }[];
-  createdBy?: string;
 }
 
 export default function QuizPage() {
   const router = useRouter();
+  const { currentQuiz, user } = useAppStore();
   const [allQuizzes, setAllQuizzes] = useState<Quiz[]>([]);
   const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
   const [loading, setLoading] = useState(true);
-  const [currentQuiz, setCurrentQuiz] = useState<Quiz | null>(null);
+  const [quiz, setQuiz] = useState<Quiz | null>(null);
 
-  // Load temporary quiz from localStorage if it exists
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedQuiz = localStorage.getItem('currentQuiz');
-      if (storedQuiz) {
-        const parsedQuiz = JSON.parse(storedQuiz);
-        setCurrentQuiz(parsedQuiz);
-        setSelectedDifficulty(parsedQuiz.difficulty || 'all');
+    const loadQuiz = async () => {
+      try {
+        if (currentQuiz) {
+          setQuiz(currentQuiz);
+        } else {
+          const response = await axios.get('/api/quizzes');
+          if (response.data && response.data.length > 0) {
+            setQuiz(response.data[0]);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading quiz:', error);
+        toast.error('Failed to load quiz');
+      } finally {
+        setLoading(false);
       }
-    }
-  }, []);
+    };
 
-  const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    loadQuiz();
+  }, [currentQuiz]);
 
   // Fetch quizzes based on user status
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        if (!storedUser) {
+        if (!user?.id) {
           throw new Error('No user found');
         }
-        const parsedUser = JSON.parse(storedUser);
-        if (!parsedUser._id) {
-          throw new Error('Invalid user data');
-        }
-        const response = await axios.get(`/api/quizzes/${parsedUser._id}`);
+        const response = await axios.get(`/api/quizzes/${user.id}`);
         const fetchedQuizzes = response.data;
-
-        // Combine fetched quizzes with temporary quiz if it exists
-        const combinedQuizzes = currentQuiz ? [currentQuiz, ...fetchedQuizzes] : fetchedQuizzes;
-
-        setAllQuizzes(combinedQuizzes);
+        setAllQuizzes(fetchedQuizzes);
+        setFilteredQuizzes(fetchedQuizzes);
       } catch (error) {
         console.error('Error fetching quizzes:', error);
-        // If API fails but we have a temporary quiz, show it
-        if (currentQuiz) {
-          setAllQuizzes([currentQuiz]);
-        }
         toast.error('Failed to load quizzes');
       } finally {
         setLoading(false);
       }
     };
 
-    // If user is logged in, fetch all quizzes
-    if (storedUser) {
+    if (user?.id) {
       fetchQuizzes();
-    } else if (currentQuiz) {
-      // If not logged in but has temporary quiz, only show that
-      setFilteredQuizzes([currentQuiz]);
-      setTimeout(() => setLoading(false), 2500);
     } else {
-      // No user and no temporary quiz
       setLoading(false);
     }
-  }, [currentQuiz, storedUser]);
+  }, [user]);
 
-  // Filter quizzes when difficulty changes or quizzes update
+  // Filter quizzes when difficulty changes
   useEffect(() => {
-    if (storedUser) {
-      if (selectedDifficulty === 'all') {
-        setFilteredQuizzes(allQuizzes);
-      } else {
-        setFilteredQuizzes(allQuizzes.filter((quiz) => quiz.difficulty === selectedDifficulty));
-      }
+    if (selectedDifficulty === 'all') {
+      setFilteredQuizzes(allQuizzes);
+    } else {
+      const filtered = allQuizzes.filter(
+        (quiz) => quiz.difficulty === selectedDifficulty
+      );
+      setFilteredQuizzes(filtered);
     }
-  }, [selectedDifficulty, allQuizzes, storedUser]);
+  }, [selectedDifficulty, allQuizzes]);
 
-  const mappedDifficulty =
-    filteredQuizzes.length > 0
-      ? filteredQuizzes[0].difficulty.charAt(0).toUpperCase() + filteredQuizzes[0].difficulty.slice(1)
-      : 'All';
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <main className="container mx-auto px-4 py-8">
@@ -120,11 +111,7 @@ export default function QuizPage() {
         </div>
       </div>
 
-      {loading ? (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-nova-purple mx-auto"></div>
-        </div>
-      ) : filteredQuizzes.length === 0 ? (
+      {filteredQuizzes.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-cool-white/70">No quizzes available for the selected difficulty.</p>
         </div>
@@ -132,9 +119,9 @@ export default function QuizPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredQuizzes.map((quiz: Quiz) => (
             <div
-              key={quiz._id}
+              key={quiz.id}
               className="card hover:scale-105 transition-transform cursor-pointer"
-              onClick={() => router.push(`/quiz/${quiz._id}?question=1`)}
+              onClick={() => router.push(`/quiz/${quiz.id}?question=1`)}
             >
               <h3 className="text-xl font-semibold mb-2 text-cool-white">{quiz.title}</h3>
               <p className="text-cool-white/70 mb-4">{quiz.description}</p>
@@ -148,7 +135,7 @@ export default function QuizPage() {
                       : 'bg-starburst-orange/20 text-starburst-orange'
                   }`}
                 >
-                  {mappedDifficulty}
+                  {quiz.difficulty.charAt(0).toUpperCase() + quiz.difficulty.slice(1)}
                 </span>
                 <div className="flex items-center gap-4 text-cool-white/50">
                   <span className="flex items-center gap-1">

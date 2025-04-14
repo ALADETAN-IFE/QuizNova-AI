@@ -2,12 +2,9 @@ import { NextResponse } from 'next/server'
 import { connectToDatabase } from '@/lib/mongodb'
 import User from '@/models/User'
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(req: Request) {
   try {
-    const { id } = params
+    const { id } = req.url.split('/').pop();
     const { username } = await request.json()
 
     if (!username) {

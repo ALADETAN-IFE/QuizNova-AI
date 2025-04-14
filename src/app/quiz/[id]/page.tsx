@@ -24,7 +24,13 @@ interface Quiz {
   questions: Question[];
 }
 
-export default function QuizPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function QuizPage({ params }: PageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, currentQuiz, addQuizResult, setCurrentQuiz } = useAppStore();
@@ -38,12 +44,9 @@ export default function QuizPage({ params }: { params: { id: string } }) {
   // Effect to handle initial question from URL
   useEffect(() => {
     const questionParam = searchParams.get('question');
-    console.log('URL Question Param:', questionParam);
     if (questionParam) {
       const questionIndex = parseInt(questionParam) - 1;
-      console.log('Calculated Question Index:', questionIndex);
       if (!isNaN(questionIndex) && questionIndex >= 0 && quiz?.questions && questionIndex < quiz.questions.length) {
-        console.log('Setting current question to:', questionIndex);
         setCurrentQuestion(questionIndex);
         setSelectedAnswer(answers[questionIndex] || undefined);
       }

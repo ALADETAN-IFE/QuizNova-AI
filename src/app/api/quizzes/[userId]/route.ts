@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 
-export async function GET(
-  request: NextRequest,
-  context: { params: { userId: string } }
-) {
-  const { userId } = context.params;
+interface Params {
+  params: {
+    userId: string;
+  };
+}
+
+export async function GET(request: NextRequest, { params }: Params) {
+  const { userId } = params;
 
   try {
     await connectToDatabase();

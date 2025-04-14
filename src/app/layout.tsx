@@ -14,14 +14,23 @@ export const metadata: Metadata = {
   title: "QuizNova AI",
   description: "AI-powered quiz creation and management platform",
   authors: [{ name: "IfeCodes" }],
-  creator: "QuizNova AI",
-  publisher: "QuizNova AI",
+  icons: "/quizNova.ico",
+  creator: "IfeCodes",
+  publisher: "IfeCodes",
   openGraph: {
     title: "QuizNova AI",
     description: "AI-powered quiz creation and management platform",
     type: "website",
     siteName: "QuizNova AI",
     locale: "en_US",
+    images: [
+      {
+        url: "/quizNova.ico", // Path to your Open Graph image
+        width: 1200, // Recommended width
+        height: 630, // Recommended height
+        alt: "QuizNova AI Logo", // Alt text for the image
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

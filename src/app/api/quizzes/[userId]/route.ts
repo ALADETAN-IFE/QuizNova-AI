@@ -2,21 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 
-// Define valid parameters to satisfy TypeScript
-type RouteParams = {
-  params: {
-    userId: string;
-  };
-};
-
-// Use the correct route handler signature
+// Export a route handler using the syntax for Next.js 13+
 export async function GET(
   request: NextRequest,
-  { params }: RouteParams
+  context: { params: { userId: string } }
 ) {
-  const { userId } = params;
-
   try {
+    const userId = context.params.userId;
+    
     // Connect to the database
     await connectToDatabase();
 

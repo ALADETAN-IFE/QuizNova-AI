@@ -4,7 +4,7 @@ import Quiz from '@/models/Quiz';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Record<string, string> }
+  { params }: { params: { userId: string } }
 ) {
   const { userId } = params;
   try {

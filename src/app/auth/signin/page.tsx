@@ -23,7 +23,7 @@ export default function SignIn() {
     const password = formData.get('password') as string
 
     try {
-      await login(email, password)
+      await login(email.toLowerCase(), password)
       router.push('/')
     } catch (error) {
       if (error instanceof Error && 'response' in error) {

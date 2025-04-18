@@ -229,14 +229,24 @@ export default function UploadClient() {
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">
                     Number of Questions
                   </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={numQuestions}
-                    onChange={(e) => setNumQuestions(Math.min(20, Math.max(1, parseInt(e.target.value) || 1)))}
-                    className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
-                  />
+                  {
+                    user?.id ?
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      value={numQuestions}
+                      onChange={(e) => setNumQuestions(Math.min(20, Math.max(1, parseInt(e.target.value) || 1)))}
+                      className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
+                    />
+                    :
+                    // three buttons for 3, 5, 10 questions
+                    <div className="grid grid-cols-3 gap-2">
+                      <button onClick={() => setNumQuestions(3)} className="w-full px-4 py-2 bg-nova-purple text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">3</button>
+                      <button onClick={() => setNumQuestions(5)} className="w-full px-4 py-2 bg-nova-purple text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">5</button>
+                      <button onClick={() => setNumQuestions(10)} className="w-full px-4 py-2 bg-nova-purple text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">10</button>
+                    </div>
+                  }
                 </div>
 
                 <button

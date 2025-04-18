@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useAppStore } from "@/lib/store.zustand";
 
 interface Quiz {
@@ -46,18 +46,22 @@ export default function QuizPage() {
           setAllQuizzes([currentQuiz]);
           setFilteredQuizzes([currentQuiz]);
           setTimeout(() => {
-          setLoading(false);
-        }, 1500);
+            setLoading(false);
+          }, 1500);
         }
       } catch (error) {
         console.error('Error fetching quizzes:', error);
-        toast.error('Failed to load quizzes');
-      } 
-      // finally {
-      //   setTimeout(() => {
-      //     setLoading(false);
-        // }, 1500);
-      // }
+        if (axios.isAxiosError(error)) {
+          toast.error(error.response?.data?.error || 'Failed to load quizzes');
+        } else {
+          toast.error('Failed to load quizzes');
+        }
+      }
+      finally {
+        setTimeout(() => {
+          setLoading(false);
+        }, 1500);
+      }
     };
 
     fetchQuizzes();
@@ -128,13 +132,12 @@ export default function QuizPage() {
               <p className="text-cool-white/70 mb-4">{quiz.description}</p>
               <div className="flex items-center justify-between text-sm">
                 <span
-                  className={`px-3 py-1 rounded-full ${
-                    quiz.difficulty === 'easy'
+                  className={`px-3 py-1 rounded-full ${quiz.difficulty === 'easy'
                       ? 'bg-green-500/20 text-green-500'
                       : quiz.difficulty === 'medium'
-                      ? 'bg-blue-500/20 text-blue-500'
-                      : 'bg-starburst-orange/20 text-starburst-orange'
-                  }`}
+                        ? 'bg-blue-500/20 text-blue-500'
+                        : 'bg-starburst-orange/20 text-starburst-orange'
+                    }`}
                 >
                   {quiz.difficulty.charAt(0).toUpperCase() + quiz.difficulty.slice(1)}
                 </span>

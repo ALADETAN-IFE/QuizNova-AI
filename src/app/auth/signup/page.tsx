@@ -24,7 +24,7 @@ export default function SignUp() {
     const password = formData.get('password') as string
 
     try {
-      await register(username, email, password)
+      await register(username, email.toLowerCase(), password)
       router.push('/')
     } catch (error) {
       if (error instanceof Error && 'response' in error) {

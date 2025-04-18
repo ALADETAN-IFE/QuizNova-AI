@@ -1,23 +1,21 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET (req: Request)  {
   try {
+    const id = req.url.split('/').pop();
     await connectToDatabase();
 
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
-      return NextResponse.json(
-        { error: 'Invalid quiz ID format' },
-        { status: 400 }
-      );
-    }
+    // if (!mongoose.Types.ObjectId.isValid(id)) {
+    //   return NextResponse.json(
+    //     { error: 'Invalid quiz ID format' },
+    //     { status: 400 }
+    //   );
+    // }
 
-    const quiz = await Quiz.findById(params.id);
+    const quiz = await Quiz.findById(id);
     
     if (!quiz) {
       return NextResponse.json(

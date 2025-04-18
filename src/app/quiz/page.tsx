@@ -66,7 +66,7 @@ export default function QuizPage() {
         setTimeout(() => {
           setLoading(false);
           if(!currentQuiz || !user?.id){
-            toast.success('No to load quizzes');
+            toast.success('No quizzes available to load');
           }
         }, 1500);
       }

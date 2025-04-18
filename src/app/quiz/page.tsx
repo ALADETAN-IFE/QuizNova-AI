@@ -40,18 +40,26 @@ export default function QuizPage() {
           setFilteredQuizzes(fetchedQuizzes);
           setTimeout(() => {
             setLoading(false);
-          }, 1500);
+          }, 1200);
         } else if (currentQuiz) {
           // For non-logged-in users with a generated quiz
           setAllQuizzes([currentQuiz]);
           setFilteredQuizzes([currentQuiz]);
-          setTimeout(() => {
-          setLoading(false);
-        }, 1500);
+           setTimeout(() => {
+            setLoading(false);
+          }, 1200);
         }
       } catch (error) {
         console.error('Error fetching quizzes:', error);
-        toast.error('Failed to load quizzes');
+        if(!currentQuiz || !user?.id){
+          toast.info('No to load quizzes');
+        }
+        if(!currentQuiz || !user?.id){
+          toast.error('Failed to load quizzes');
+        }
+          setTimeout(() => {
+            setLoading(false);
+          }, 1200);
       } 
       // finally {
       //   setTimeout(() => {

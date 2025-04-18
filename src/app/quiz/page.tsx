@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { useAppStore } from "@/lib/store.zustand";
 
 interface Quiz {

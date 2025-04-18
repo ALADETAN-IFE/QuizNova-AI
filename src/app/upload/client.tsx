@@ -242,9 +242,9 @@ export default function UploadClient() {
                     :
                     // three buttons for 3, 5, 10 questions
                     <div className="grid grid-cols-3 gap-2">
-                      <button onClick={() => setNumQuestions(3)} className="w-full px-4 py-2 bg-nova-purple text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">3</button>
-                      <button onClick={() => setNumQuestions(5)} className="w-full px-4 py-2 bg-nova-purple text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">5</button>
-                      <button onClick={() => setNumQuestions(10)} className="w-full px-4 py-2 bg-nova-purple text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">10</button>
+                      <button onClick={() => setNumQuestions(3)} className="w-full px-4 py-2  text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">3</button>
+                      <button onClick={() => setNumQuestions(5)} className="w-full px-4 py-2  text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">5</button>
+                      <button onClick={() => setNumQuestions(10)} className="w-full px-4 py-2  text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">10</button>
                     </div>
                   }
                 </div>

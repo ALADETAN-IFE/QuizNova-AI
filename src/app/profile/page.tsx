@@ -85,20 +85,25 @@ export default function ProfilePage() {
       </div>
 
       {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-cool-black p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-            <h3 className="text-xl font-semibold text-cool-white mb-4">Confirm Logout</h3>
-            <p className="text-cool-white/70 mb-6">Are you sure you want to log out?</p>
-            <div className="flex justify-end gap-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+          <div className="bg-gradient-to-b from-cool-black to-cool-black/95 p-8 rounded-xl shadow-2xl max-w-sm w-full mx-4 border border-cool-white/10 animate-slideUp">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 bg-starburst-orange/10 rounded-full flex items-center justify-center mb-4">
+                <LogOut className="w-6 h-6 text-starburst-orange" />
+              </div>
+              <h3 className="text-2xl font-bold text-cool-white mb-3">Confirm Logout</h3>
+              <p className="text-cool-white/70 mb-8">Are you sure you want to sign out of your account?</p>
+            </div>
+            <div className="flex gap-4 justify-center">
               <button
                 onClick={handleLogoutCancel}
-                className="px-4 py-2 text-cool-white/70 hover:text-cool-white transition-colors"
+                className="px-6 py-2.5 text-cool-white/80 hover:text-cool-white hover:bg-cool-white/5 rounded-lg transition-all duration-200"
               >
                 Cancel
               </button>
               <button
                 onClick={handleLogoutConfirm}
-                className="px-4 py-2 bg-starburst-orange/20 text-starburst-orange rounded-lg hover:bg-starburst-orange/30 transition-colors"
+                className="px-6 py-2.5 bg-gradient-to-r from-starburst-orange to-red-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 shadow-lg shadow-starburst-orange/20"
               >
                 Logout
               </button>

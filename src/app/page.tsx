@@ -12,8 +12,8 @@ export default function Home() {
             <Image
               src="/quizNova.png"
               alt="QuizNova Logo"
-              width={100}
-              height={100}
+              width={120}
+              height={120}
               className="rounded-lg"
             />
           </div>
@@ -77,9 +77,9 @@ export default function Home() {
             <Link href="/upload" className="btn-primary text-lg">
               Create Your First Quiz
             </Link>
-            <Link href="/demo" className="btn-secondary text-lg">
+            {/* <Link href="/demo" className="btn-secondary text-lg">
               Try Demo
-            </Link>
+            </Link> */}
           </div>
         </div>
       </section>

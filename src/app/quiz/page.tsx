@@ -33,8 +33,9 @@ export default function QuizPage() {
     const fetchQuizzes = async () => {
       try {
         if (user?.id) {
+          const userId = user?.id;
           // For logged-in users, fetch from API
-          const response = await axios.get(`/api/quizzes/${user.id}`);
+          const response = await axios.get(`/api/quizzes/${userId}`);
           const fetchedQuizzes = response.data;
           setAllQuizzes(fetchedQuizzes);
           setFilteredQuizzes(fetchedQuizzes);
@@ -51,21 +52,24 @@ export default function QuizPage() {
         }
       } catch (error) {
         console.error('Error fetching quizzes:', error);
-        if(!currentQuiz || !user?.id){
-          toast.success('No to load quizzes');
-        }
-        if(!currentQuiz || !user?.id){
+        // if(!currentQuiz || !user?.id){
+        //   toast.success('No to load quizzes');
+        // }
+        if(currentQuiz || user?.id){
           toast.error('Failed to load quizzes');
         }
           setTimeout(() => {
             setLoading(false);
           }, 1200);
       } 
-      // finally {
-      //   setTimeout(() => {
-      //     setLoading(false);
-        // }, 1500);
-      // }
+      finally {
+        setTimeout(() => {
+          setLoading(false);
+          if(!currentQuiz || !user?.id){
+            toast.success('No to load quizzes');
+          }
+        }, 1500);
+      }
     };
 
     fetchQuizzes();

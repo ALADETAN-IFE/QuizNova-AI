@@ -7,7 +7,7 @@ import { extractTextFromPDF } from "@/lib/pdf";
 import { generateQuizFromPDF } from "@/lib/gemini";
 import { Upload, FileText } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useAppStore } from "@/lib/store.zustand";
 
 // Define question type

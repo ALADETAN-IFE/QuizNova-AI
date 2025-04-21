@@ -20,7 +20,7 @@ export async function GET (req: Request)  {
   } catch (error) {
     console.error('Error fetching quizzes:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch quizzes' },
+      { error: 'Failed to fetch quizzes', msg: error },
       { status: 500 }
     );
   }

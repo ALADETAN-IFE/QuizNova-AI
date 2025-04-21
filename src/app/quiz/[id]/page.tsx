@@ -10,7 +10,13 @@ export default async function QuizPage({ params }: PageProps) {
   
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <QuizContent quizId={resolvedParams.id} />
+      <QuizContent 
+        quizId={resolvedParams.id} 
+        onComplete={(score) => {
+          // Handle quiz completion
+          console.log('Quiz completed with score:', score);
+        }}
+      />
     </Suspense>
   );
 }

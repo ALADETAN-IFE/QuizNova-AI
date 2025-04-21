@@ -109,6 +109,7 @@ export default function UploadClient() {
         difficulty,
         questionType
       );
+      console.log("questions", questions)
 
       if (!questions || questions.length === 0) {
         throw new Error("No questions were generated");

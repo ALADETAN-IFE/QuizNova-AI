@@ -58,8 +58,11 @@ export async function generateQuizFromText(
     const response = await result.response
     const text = response.text()
     
+    // Clean up the response by removing markdown code block syntax
+    const cleanedText = text.replace(/```json\n?|\n?```/g, '').trim()
+    
     try {
-      const questions = JSON.parse(text) as QuizQuestion[]
+      const questions = JSON.parse(cleanedText) as QuizQuestion[]
       return questions
     } catch (error) {
       console.error('Error parsing quiz questions:', error)
@@ -118,8 +121,11 @@ export async function generateQuizFromPDF(
     const response = await result.response
     const text = response.text()
     
+    // Clean up the response by removing markdown code block syntax
+    const cleanedText = text.replace(/```json\n?|\n?```/g, '').trim()
+    
     try {
-      const questions = JSON.parse(text) as QuizQuestion[]
+      const questions = JSON.parse(cleanedText) as QuizQuestion[]
       return questions
     } catch (error) {
       console.error('Error parsing quiz questions:', error)

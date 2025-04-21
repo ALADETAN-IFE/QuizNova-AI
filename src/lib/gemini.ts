@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, GenerateContentResult } from '@google/generative-ai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 // Initialize Gemini AI with your API key
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '')

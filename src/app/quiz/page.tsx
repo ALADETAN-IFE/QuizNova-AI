@@ -35,7 +35,7 @@ export default function QuizPage() {
         if (user?.id) {
           const userId = user?.id;
           // For logged-in users, fetch from API
-          const response = await axios.get(`/api/quizzes/${userId}`);
+          const response = await axios.get(`/api/quizzes?userId=${userId}`);
           const fetchedQuizzes = response.data;
           setAllQuizzes(fetchedQuizzes);
           setFilteredQuizzes(fetchedQuizzes);

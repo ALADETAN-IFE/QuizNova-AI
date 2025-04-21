@@ -66,6 +66,68 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Premium Features Section */}
+      {/* <section className="container mx-auto px-4 py-20">
+        <h2 className="section-title text-center text-4xl font-bold mb-12 gradient-text">
+          Premium User Advantages
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="premium-card relative p-8 rounded-xl bg-gradient-to-br from-nova-purple/10 to-ai-blue/10 border border-white/10 backdrop-blur-sm hover:scale-105 transition-transform">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-nova-purple to-ai-blue opacity-20 rounded-xl blur"></div>
+            <div className="relative">
+              <h3 className="text-2xl font-bold mb-4 text-white">Free Users</h3>
+              <ul className="space-y-3 text-white/80">
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Upload PDFs up to 5 pages
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Basic quiz generation
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Limited progress tracking
+                </li>
+                <li className="flex items-center opacity-50">
+                  <span className="mr-2">×</span> Advanced question types
+                </li>
+                <li className="flex items-center opacity-50">
+                  <span className="mr-2">×</span> Quiz sharing
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="premium-card relative p-8 rounded-xl bg-gradient-to-br from-quantum-teal/20 to-starburst-orange/20 border border-white/10 backdrop-blur-sm hover:scale-105 transition-transform">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-quantum-teal to-starburst-orange opacity-30 rounded-xl blur"></div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-bold text-white">Registered Users</h3>
+                <span className="px-3 py-1 text-sm rounded-full bg-gradient-to-r from-quantum-teal to-starburst-orange text-white">Premium</span>
+              </div>
+              <ul className="space-y-3 text-white/80">
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Unlimited PDF uploads
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Advanced AI-powered question generation
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Detailed progress analytics
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Multiple question types and difficulty levels
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Share quizzes with friends
+                </li>
+                <li className="flex items-center">
+                  <span className="mr-2">✓</span> Export results and statistics
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section> */}
+
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="card text-center max-w-3xl mx-auto p-12 rounded-lg bg-gradient-to-r from-nova-purple via-ai-blue to-quantum-teal shadow-lg">

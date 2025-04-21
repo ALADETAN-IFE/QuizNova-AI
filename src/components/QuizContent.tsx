@@ -137,9 +137,34 @@ export default function QuizContent({ quizId }: QuizContentProps) {
   if (!quiz || !quiz.questions) return <div>Quiz not found</div>;
 
   if (showReview) {
+    const score = answers.reduce((acc, answer, index) => {
+      return acc + (answer === quiz?.questions[index].correctAnswer ? 1 : 0);
+    }, 0);
+    const totalQuestions = quiz?.questions.length || 0;
+    const percentage = Math.round((score / totalQuestions) * 100);
+
+    // Save the result with the same calculation method
+    if (quiz && user) {
+      addQuizResult({
+        quizId: quiz.id || quiz._id || '',
+        score,
+        totalQuestions,
+        completedAt: new Date().toISOString(),
+      });
+    }
+
     return (
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 gradient-text">Quiz Review</h1>
+        <div className="mb-8 p-6 bg-midnight-gray rounded-lg">
+          <h2 className="text-xl font-semibold mb-4 text-cool-white">Your Score</h2>
+          <div className="flex items-center gap-4">
+            <div className="text-4xl font-bold text-quantum-teal">{percentage}%</div>
+            <div className="text-cool-white/70">
+              {score} out of {totalQuestions} correct
+            </div>
+          </div>
+        </div>
         <div className="space-y-8">
           {quiz.questions.map((question, index) => (
             <QuizCard

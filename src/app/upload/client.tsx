@@ -13,9 +13,10 @@ import { useAppStore } from "@/lib/store.zustand";
 // Define question type
 interface Question {
   question: string;
-  options: string[];
+  options?: string[];
   correctAnswer: string;
   explanation: string;
+  questionType?: 'mcq' | 'subjective' | 'theory';
 }
 
 // Generate a random ID using timestamp and random number
@@ -32,6 +33,7 @@ export default function UploadClient() {
   const [processingStatus, setProcessingStatus] = useState<string>("");
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [numQuestions, setNumQuestions] = useState<number>(5);
+  const [questionType, setQuestionType] = useState<"mcq" | "subjective" | "theory">("mcq");
   const { user, setCurrentQuiz } = useAppStore();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -68,6 +70,22 @@ export default function UploadClient() {
     return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
   };
 
+  const getQuestionTypeColor = (type: string) => {
+    if (questionType === type) {
+      switch (type) {
+        case 'mcq':
+          return 'bg-quantum-teal text-white';
+        case 'subjective':
+          return 'bg-ai-blue text-white';
+        case 'theory':
+          return 'bg-nova-purple text-white';
+        default:
+          return '';
+      }
+    }
+    return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
+  };
+
   const generateQuiz = async () => {
     console.log("user", user);
     if (!uploadedFile) {
@@ -88,7 +106,8 @@ export default function UploadClient() {
       const questions = await generateQuizFromPDF(
         pdfText,
         numQuestions,
-        difficulty
+        difficulty,
+        questionType
       );
 
       if (!questions || questions.length === 0) {
@@ -106,9 +125,10 @@ export default function UploadClient() {
             difficulty,
             questions: questions.map((q: Question) => ({
               question: q.question,
-              options: q.options,
+              options: q.options || [],
               correctAnswer: q.correctAnswer,
               explanation: q.explanation,
+              questionType,
             })),
             createdBy: user.id
           });
@@ -138,9 +158,10 @@ export default function UploadClient() {
           difficulty,
           questions: questions.map((q: Question) => ({
             question: q.question,
-            options: q.options,
+            options: q.options || [],
             correctAnswer: q.correctAnswer,
             explanation: q.explanation,
+            questionType,
           })),
         };
 
@@ -220,6 +241,24 @@ export default function UploadClient() {
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${getDifficultyColor(level)}`}
                       >
                         {level.charAt(0).toUpperCase() + level.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-cool-white/70 mb-2">
+                    Question Type
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["mcq", "subjective", "theory"].map((type) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setQuestionType(type as "mcq" | "subjective" | "theory")}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${getQuestionTypeColor(type)}`}
+                      >
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
                       </button>
                     ))}
                   </div>

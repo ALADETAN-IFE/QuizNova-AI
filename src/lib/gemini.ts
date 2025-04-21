@@ -14,7 +14,8 @@ interface QuizQuestion {
 export async function generateQuizFromText(
   inputText: string, 
   numQuestions: number = 5,
-  difficulty: 'easy' | 'medium' | 'hard' = 'medium'
+  difficulty: 'easy' | 'medium' | 'hard' = 'medium',
+  questionType: 'mcq' | 'subjective' | 'theory' = 'mcq'
 ): Promise<QuizQuestion[]> {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
@@ -25,20 +26,27 @@ export async function generateQuizFromText(
       hard: "Create complex, challenging questions that test analysis, synthesis, and evaluation."
     }
 
-    const prompt: string = `Generate ${numQuestions} multiple-choice questions based on the following text with ${difficulty} difficulty level.
+    const questionTypeDescription = {
+      mcq: "Generate multiple-choice questions with 4 options.",
+      subjective: "Generate open-ended or essay-style questions that require a detailed written answer.",
+      theory: "Generate theory-based questions that require detailed explanations or conceptual knowledge."
+    }
+
+    const prompt: string = `Generate ${numQuestions} ${questionType} questions based on the following text with ${difficulty} difficulty level.
     
     ${difficultyDescription[difficulty]}
+    ${questionTypeDescription[questionType]}
     
     Format the response as a JSON array of questions, where each question has:
     - A "question" (string) - the question text
-    - An array of "options" (strings)
-    - A "correctAnswer" (string) that matches one of the options exactly
-    - An "explanation" (string) that explains why the correct answer is right and why the others are wrong
+    - An array of "options" (strings) - only for MCQ type
+    - A "correctAnswer" (string) that matches one of the options exactly for MCQ, or the expected answer for subjective/theory
+    - An "explanation" (string) that explains why the correct answer is right and why the others are wrong for MCQ, or a detailed explanation for subjective/theory
     
     Make sure:
     - Questions are appropriate for the specified difficulty level
-    - Each question has exactly 4 options
-    - Options are plausible but distinguishable
+    - For MCQ: Each question has exactly 4 options
+    - For MCQ: Options are plausible but distinguishable
     - The explanation is clear and educational
     - Questions test understanding, not just memorization
     - Each _id is a unique 24-character string
@@ -46,18 +54,17 @@ export async function generateQuizFromText(
     Text to generate questions from:
     ${inputText}`
 
-    const result: GenerateContentResult = await model.generateContent(prompt)
+    const result = await model.generateContent(prompt)
     const response = await result.response
-    const responseText = response.text()
+    const text = response.text()
     
-    // Extract the JSON array from the response
-    const jsonMatch = responseText.match(/\[[\s\S]*\]/)
-    if (!jsonMatch) {
-      throw new Error('Failed to parse AI response')
+    try {
+      const questions = JSON.parse(text) as QuizQuestion[]
+      return questions
+    } catch (error) {
+      console.error('Error parsing quiz questions:', error)
+      throw new Error('Failed to parse quiz questions')
     }
-
-    const questions: QuizQuestion[] = JSON.parse(jsonMatch[0])
-    return questions
   } catch (error) {
     console.error('Error generating quiz:', error)
     throw error
@@ -65,11 +72,61 @@ export async function generateQuizFromText(
 }
 
 export async function generateQuizFromPDF(
-  pdfText: string, 
+  pdfText: string,
   numQuestions: number = 5,
-  difficulty: 'easy' | 'medium' | 'hard' = 'medium'
+  difficulty: 'easy' | 'medium' | 'hard' = 'medium',
+  questionType: 'mcq' | 'subjective' | 'theory' = 'mcq'
 ): Promise<QuizQuestion[]> {
-  // For now, we'll just pass the extracted text to the text-based function
-  // In the future, we can add PDF-specific processing here
-  return generateQuizFromText(pdfText, numQuestions, difficulty)
+  try {
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+
+    const difficultyDescription = {
+      easy: "Create simple, straightforward questions that test basic understanding and recall.",
+      medium: "Create moderately challenging questions that test comprehension and application.",
+      hard: "Create complex, challenging questions that test analysis, synthesis, and evaluation."
+    }
+
+    const questionTypeDescription = {
+      mcq: "Generate multiple-choice questions with 4 options.",
+      subjective: "Generate open-ended or essay-style questions that require a detailed written answer.",
+      theory: "Generate theory-based questions that require detailed explanations or conceptual knowledge."
+    }
+
+    const prompt: string = `Generate ${numQuestions} ${questionType} questions based on the following text with ${difficulty} difficulty level.
+    
+    ${difficultyDescription[difficulty]}
+    ${questionTypeDescription[questionType]}
+    
+    Format the response as a JSON array of questions, where each question has:
+    - A "question" (string) - the question text
+    - An array of "options" (strings) - only for MCQ type
+    - A "correctAnswer" (string) that matches one of the options exactly for MCQ, or the expected answer for subjective/theory
+    - An "explanation" (string) that explains why the correct answer is right and why the others are wrong for MCQ, or a detailed explanation for subjective/theory
+    
+    Make sure:
+    - Questions are appropriate for the specified difficulty level
+    - For MCQ: Each question has exactly 4 options
+    - For MCQ: Options are plausible but distinguishable
+    - The explanation is clear and educational
+    - Questions test understanding, not just memorization
+    - Each _id is a unique 24-character string
+    
+    Text to generate questions from:
+    ${pdfText}`
+
+    const result = await model.generateContent(prompt)
+    const response = await result.response
+    const text = response.text()
+    
+    try {
+      const questions = JSON.parse(text) as QuizQuestion[]
+      return questions
+    } catch (error) {
+      console.error('Error parsing quiz questions:', error)
+      throw new Error('Failed to parse quiz questions')
+    }
+  } catch (error) {
+    console.error('Error generating quiz:', error)
+    throw error
+  }
 } 

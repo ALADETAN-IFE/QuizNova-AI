@@ -21,6 +21,12 @@ interface Quiz {
   }[];
 }
 
+interface ErrorInterFace {
+  error: string;
+  msg?: string;
+}
+
+
 export default function QuizPage() {
   const router = useRouter();
   const { user, currentQuiz } = useAppStore();
@@ -50,13 +56,14 @@ export default function QuizPage() {
             setLoading(false);
           }, 1200);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error fetching quizzes:', error);
+        // toast.error(error?.error || 'Failed to load quizzes');
         // if(!currentQuiz || !user?.id){
         //   toast.success('No to load quizzes');
-        // }
+        // }Failed to load quizzes';
         if(currentQuiz || user?.id){
-          toast.error('Failed to load quizzes');
+          toast.error((error as ErrorInterFace).error);
         }
           setTimeout(() => {
             setLoading(false);

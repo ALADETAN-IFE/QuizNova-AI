@@ -62,21 +62,21 @@ export default function QuizPage() {
         // if(!currentQuiz || !user?.id){
         //   toast.success('No to load quizzes');
         // }Failed to load quizzes';
-        if(currentQuiz || user?.id){
-          toast.error((error as ErrorInterFace).error);
-        }
-          setTimeout(() => {
+        setTimeout(() => {
+            if(currentQuiz || user?.id){
+              toast.error((error as ErrorInterFace).error);
+            }
             setLoading(false);
           }, 1200);
       } 
-      finally {
-        setTimeout(() => {
-          setLoading(false);
-          if(!currentQuiz || !user?.id){
-            toast.success('No quizzes available to load');
-          }
-        }, 1500);
-      }
+      // finally {
+      //   setTimeout(() => {
+      //     setLoading(false);
+      //     if(!currentQuiz || !user?.id){
+      //       toast.success('No quizzes available to load');
+      //     }
+      //   }, 1500);
+      // }
     };
 
     fetchQuizzes();

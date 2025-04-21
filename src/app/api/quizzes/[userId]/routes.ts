@@ -15,6 +15,13 @@ export async function GET (req: Request)  {
       createdAt: -1,
     });
 
+    if (!quizzes) {
+      return NextResponse.json(
+        { error: 'Quiz not found' },
+        { status: 404 }
+      );
+    }
+
     // Return the quizzes as a JSON response
     return NextResponse.json(quizzes);
   } catch (error) {

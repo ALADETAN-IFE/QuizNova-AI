@@ -11,6 +11,8 @@ interface QuizCardProps {
   selectedAnswer?: string
   showExplanation?: boolean
   questionType?: 'mcq' | 'subjective' | 'theory'
+  userAnswer?: string
+  onUserAnswerChange?: (answer: string) => void
 }
 
 export default function QuizCard({
@@ -21,11 +23,19 @@ export default function QuizCard({
   onAnswer,
   selectedAnswer,
   showExplanation = false,
-  questionType = 'mcq'
+  questionType = 'mcq',
+  userAnswer = '',
+  onUserAnswerChange
 }: QuizCardProps) {
   const handleOptionClick = (option: string) => {
     if (!selectedAnswer) {
       onAnswer(option);
+    }
+  };
+
+  const handleUserAnswerChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (onUserAnswerChange) {
+      onUserAnswerChange(e.target.value);
     }
   };
 
@@ -63,11 +73,20 @@ export default function QuizCard({
         </div>
       )}
 
-      {questionType !== 'mcq' && (
+      {(questionType === 'subjective' || questionType === 'theory') && (
         <div className="space-y-4">
-          <div className="p-4 rounded-lg bg-deep-space border border-cool-white/10">
-            <p className="text-cool-white/90">{explanation}</p>
-          </div>
+          <textarea
+            value={userAnswer}
+            onChange={handleUserAnswerChange}
+            placeholder={`Type your ${questionType === 'subjective' ? 'short answer' : 'detailed explanation'} here...`}
+            className="w-full p-4 rounded-lg bg-deep-space text-cool-white border-2 border-cool-white/20 focus:border-quantum-teal focus:outline-none min-h-[150px]"
+            disabled={selectedAnswer !== undefined}
+          />
+          {selectedAnswer && (
+            <div className="mt-4 p-4 rounded-lg bg-deep-space border border-cool-white/10">
+              <p className="text-cool-white/90">{explanation}</p>
+            </div>
+          )}
         </div>
       )}
 

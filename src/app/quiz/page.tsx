@@ -18,6 +18,7 @@ interface Quiz {
     options: string[];
     correctAnswer: string;
     explanation: string;
+    questionType?: string;
   }[];
 }
 
@@ -160,6 +161,9 @@ export default function QuizPage() {
                   <span className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
                     {quiz.questions.length} questions
+                  </span>
+                  <span className="text-quantum-teal">
+                    {quiz.questions[0]?.questionType?.toUpperCase() || 'MCQ'}
                   </span>
                 </div>
               </div>

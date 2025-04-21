@@ -135,4 +135,49 @@ export async function generateQuizFromPDF(
     console.error('Error generating quiz:', error)
     throw error
   }
+}
+
+export async function evaluateAnswer(
+  question: string,
+  userAnswer: string,
+  correctAnswer: string,
+  questionType: 'subjective' | 'theory'
+): Promise<{
+  score: number;
+  feedback: string;
+}> {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const prompt = `Evaluate the following ${questionType} answer based on the question and correct answer provided.
+    
+    Question: ${question}
+    Correct Answer: ${correctAnswer}
+    User's Answer: ${userAnswer}
+    
+    Please evaluate the answer and provide:
+    1. A score from 0 to 100 based on how well the answer matches the key points and demonstrates understanding
+    2. Detailed feedback explaining what was good and what could be improved
+    
+    Format the response as a JSON object with "score" and "feedback" fields.`;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    
+    // Clean up the response by removing markdown code block syntax
+    const cleanedText = text.replace(/```json\n?|\n?```/g, '').trim();
+    
+    try {
+      const evaluation = JSON.parse(cleanedText);
+      return evaluation;
+    } catch (parseError) {
+      console.error('Error parsing evaluation:', parseError);
+      console.error('Raw response:', text);
+      throw new Error('Failed to parse evaluation');
+    }
+  } catch (error) {
+    console.error('Error evaluating answer:', error);
+    throw error;
+  }
 } 

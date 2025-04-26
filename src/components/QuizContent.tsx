@@ -176,7 +176,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
       // Skip scoring if no answer was provided
       if (!answer) return;
 
-      if (question.questionType === 'obj' || question.questionType === 'subjective') {
+      if (question.questionType === 'obj' || question.questionType === 'subjective' || !question.questionType) {
         if (answer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim()) {
           correctCount++;
         }

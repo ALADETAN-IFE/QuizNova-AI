@@ -2,14 +2,16 @@ import { Suspense } from 'react'
 import QuizContentWrapper from '@/components/QuizContentWrapper'
 
 interface PageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
-export default function QuizPage({ params }: PageProps) {
+export default async function QuizPage({ params }: PageProps) {
+  const resolvedParams = await params
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <QuizContentWrapper 
-        quizId={params.id}
+        quizId={resolvedParams.id}
         onComplete={() => {}} 
       />
     </Suspense>

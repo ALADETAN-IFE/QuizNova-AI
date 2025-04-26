@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { Eye, EyeOff } from 'lucide-react'
-import toast from 'react-hot-toast'
+// import toast from 'react-hot-toast'
 
 export default function SignUp() {
   const router = useRouter()
@@ -25,7 +25,7 @@ export default function SignUp() {
     const password = formData.get('password') as string
 
     try {
-      const msg = await register(username, email.toLowerCase(), password)
+     await register(username, email.toLowerCase(), password)
       router.push('/')
     } catch (error) {
       if (error instanceof Error && 'response' in error) {

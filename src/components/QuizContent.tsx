@@ -13,7 +13,7 @@ interface Question {
   options?: string[];
   correctAnswer: string;
   explanation: string;
-  questionType?: 'mcq' | 'subjective' | 'theory';
+  questionType?: 'obj' | 'subjective' | 'theory';
 }
 
 interface Quiz {
@@ -38,8 +38,6 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
-  const [showExplanation, setShowExplanation] = useState(false);
-  const [isEvaluating, setIsEvaluating] = useState(false);
   const [evaluation, setEvaluation] = useState<{ score: number; feedback: string } | null>(null);
   const [showReview, setShowReview] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -51,11 +49,9 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
       const questionIndex = parseInt(questionParam) - 1;
       if (!isNaN(questionIndex) && questionIndex >= 0 && quiz?.questions && questionIndex < quiz.questions.length) {
         setCurrentQuestionIndex(questionIndex);
-        setSelectedAnswers([...selectedAnswers, quiz.questions[questionIndex].correctAnswer]);
-        setUserAnswers([...userAnswers, quiz.questions[questionIndex].correctAnswer]);
       }
     }
-  }, [searchParams, selectedAnswers, userAnswers, quiz?.questions]);
+  }, [searchParams, quiz?.questions]);
 
   // Effect to fetch quiz
   useEffect(() => {
@@ -67,7 +63,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           setLoading(false);
           return;
         }
-
+        if (user?.id) {
         const response = await axios.get(`/api/quizzes/one`, {
           params: {
             id: quizId
@@ -77,6 +73,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
         setQuiz(fetchedQuiz);
         setCurrentQuiz(fetchedQuiz);
         setLoading(false);
+        }
       } catch (error) {
         console.error('Error fetching quiz:', error);
         toast.error('Failed to load quiz');
@@ -92,26 +89,34 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
   const handleAnswer = async (answer: string) => {
     if (!currentQuestion) return;
     
-    if (currentQuestion.questionType === 'mcq') {
-      setSelectedAnswers([...selectedAnswers, answer]);
-      setShowExplanation(true);
-    } else {
-      setIsEvaluating(true);
+    if (currentQuestion.questionType === 'obj' || currentQuestion.questionType === 'subjective') {
+      setSelectedAnswers(prev => {
+        const newAnswers = [...prev];
+        newAnswers[currentQuestionIndex] = answer;
+        return newAnswers;
+      });
+      // Add 2-second delay before moving to next question
+      setTimeout(() => {
+        handleNext();
+      }, 2000);
+    } else if (currentQuestion.questionType === 'theory') {
       try {
         const result = await evaluateAnswer(
           currentQuestion.question,
           answer,
           currentQuestion.correctAnswer,
-          currentQuestion.questionType as 'subjective' | 'theory'
+          'theory'
         );
         setEvaluation(result);
-        setSelectedAnswers([...selectedAnswers, answer]);
-        setShowExplanation(true);
+        setSelectedAnswers(prev => {
+          const newAnswers = [...prev];
+          newAnswers[currentQuestionIndex] = answer;
+          return newAnswers;
+        });
+        handleNext();
       } catch (error) {
         console.error('Error evaluating answer:', error);
         toast.error('Failed to evaluate answer. Please try again.');
-      } finally {
-        setIsEvaluating(false);
       }
     }
   };
@@ -124,38 +129,60 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
 
   const handleNext = () => {
     if (!quiz?.questions) return;
+    
+    // Only evaluate if it's a theory question and has an answer
+    if (currentQuestion?.questionType === 'theory' && userAnswers[currentQuestionIndex]) {
+      handleAnswer(userAnswers[currentQuestionIndex]);
+    }
+
     if (currentQuestionIndex < quiz.questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setShowExplanation(false);
-      setEvaluation(null);
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      
+      // Update URL with new question number
+      const params = new URLSearchParams(window.location.search);
+      params.set('question', (nextIndex + 1).toString());
+      router.push(`${window.location.pathname}?${params.toString()}`);
     } else {
-      const score = calculateScore(selectedAnswers, quiz.questions);
-      onComplete(score);
+      // At the last question, just show review without calling onComplete
+      setShowReview(true);
     }
   };
 
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
-      setShowExplanation(false);
-      setEvaluation(null);
+      const prevIndex = currentQuestionIndex - 1;
+      setCurrentQuestionIndex(prevIndex);
+      
+      // Update URL with new question number
+      const params = new URLSearchParams(window.location.search);
+      params.set('question', (prevIndex + 1).toString());
+      router.push(`${window.location.pathname}?${params.toString()}`);
     }
   };
 
   const calculateScore = (answers: string[], questions: Question[]): number => {
     let correctCount = 0;
-    answers.forEach((answer, index) => {
-      if (questions[index].questionType === 'mcq') {
-        if (answer === questions[index].correctAnswer) {
+    const totalQuestions = questions.length;
+
+    questions.forEach((question, index) => {
+      const answer = answers[index];
+      // Skip scoring if no answer was provided
+      if (!answer) return;
+      
+      if (question.questionType === 'obj' || question.questionType === 'subjective') {
+        if (answer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim()) {
           correctCount++;
         }
-      } else {
-        // For subjective and theory questions, use the AI evaluation score
+      } else if (question.questionType === 'theory') {
+        // For theory questions, use the AI evaluation score
         const evaluationScore = evaluation?.score || 0;
         correctCount += evaluationScore / 100;
       }
     });
-    return Math.round((correctCount / questions.length) * 100);
+
+    // Return raw score (correct answers / total questions) without multiplying by 100
+    return correctCount / totalQuestions;
   };
 
   if (loading) {
@@ -176,17 +203,21 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
   if (showReview) {
     const score = calculateScore(selectedAnswers, quiz.questions);
     const totalQuestions = quiz.questions.length;
-    const percentage = Math.round((score / totalQuestions) * 100);
+    const percentage = Math.round(score * 100);
 
-    // Save the result with the same calculation method
-    if (quiz && user) {
-      addQuizResult({
-        quizId: quiz.id || quiz._id || '',
-        score,
-        totalQuestions,
-        completedAt: new Date().toISOString(),
-      });
-    }
+    const handleBackToQuizzes = () => {
+      // Call onComplete and save result before navigating
+      onComplete(score);
+      if (quiz && user) {
+        addQuizResult({
+          quizId: quiz.id || quiz._id || '',
+          score,
+          totalQuestions,
+          completedAt: new Date().toISOString(),
+        });
+      }
+      router.push('/quiz');
+    };
 
     return (
       <div className="container mx-auto px-4 py-8">
@@ -196,7 +227,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           <div className="flex items-center gap-4">
             <div className="text-4xl font-bold text-quantum-teal">{percentage}%</div>
             <div className="text-cool-white/70">
-              {score} out of {totalQuestions} correct
+              {Math.round(score * totalQuestions)} out of {totalQuestions} correct
             </div>
           </div>
         </div>
@@ -208,27 +239,21 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
               options={question.options}
               correctAnswer={question.correctAnswer}
               explanation={question.explanation}
-              onAnswer={() => {}} // No-op since we're in review mode
+              onAnswer={() => { }}
               selectedAnswer={selectedAnswers[index]}
               showExplanation={true}
-              questionType={question.questionType}
+              questionType={question.questionType || 'obj'}
               userAnswer={userAnswers[index]}
-              onUserAnswerChange={handleUserAnswerChange}
+              onUserAnswerChange={() => { }}
             />
           ))}
         </div>
-        <div className="mt-8 flex justify-between">
+        <div className="mt-8 flex justify-end">
           <button
-            onClick={() => setShowReview(false)}
-            className="btn-secondary"
-          >
-            Back to Quiz
-          </button>
-          <button
-            onClick={() => router.push('/quiz')}
+            onClick={handleBackToQuizzes}
             className="btn-primary"
           >
-            Return to Quizzes
+            Back to Quizzes
           </button>
         </div>
       </div>
@@ -245,68 +270,48 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           <h2 className="text-xl font-semibold mb-4 text-cool-white">
             Question {currentQuestionIndex + 1} of {quiz.questions.length}
             <span className="ml-2 text-sm font-normal text-quantum-teal">
-              ({currentQuestion?.questionType?.toUpperCase() || 'MCQ'})
+              ({currentQuestion?.questionType?.toUpperCase() || 'OBJ'})
             </span>
           </h2>
         </div>
         <div className="space-y-8">
-          <QuizCard
+        <QuizCard
             question={currentQuestion.question}
             options={currentQuestion.options}
             correctAnswer={currentQuestion.correctAnswer}
             explanation={currentQuestion.explanation}
-            onAnswer={handleAnswer}
+          onAnswer={handleAnswer}
             selectedAnswer={selectedAnswers[currentQuestionIndex]}
-            showExplanation={showExplanation}
-            questionType={currentQuestion.questionType}
+          showExplanation={false}
+            questionType={currentQuestion.questionType || 'obj'}
             userAnswer={userAnswers[currentQuestionIndex]}
             onUserAnswerChange={handleUserAnswerChange}
           />
 
-          {evaluation && (
+          {/* {evaluation && (
             <div className="mt-4 p-4 rounded-lg bg-deep-space border border-cool-white/10">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="text-lg font-semibold text-cool-white">Evaluation</h4>
-                <span className="text-quantum-teal font-bold">{evaluation.score}%</span>
               </div>
               <p className="text-cool-white/90">{evaluation.feedback}</p>
             </div>
-          )}
+          )} */}
 
-          {showExplanation && (
-            <button
-              onClick={handleNext}
-              disabled={isEvaluating}
-              className="w-full px-4 py-3 bg-quantum-teal text-white rounded-lg font-medium hover:bg-quantum-teal/80 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:ring-offset-2 focus:ring-offset-deep-space disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              {isEvaluating ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin" />
-                  <span>Evaluating...</span>
-                </div>
-              ) : currentQuestionIndex < quiz.questions.length - 1 ? (
-                'Next Question'
-              ) : (
-                'Complete Quiz'
-              )}
-            </button>
-          )}
-        </div>
         <div className="mt-8 flex justify-between">
           <button
             onClick={handlePrevious}
-            disabled={currentQuestionIndex === 0}
+              disabled={currentQuestionIndex === 0}
             className="btn-secondary"
           >
             Previous
           </button>
           <button
             onClick={handleNext}
-            disabled={!selectedAnswers[currentQuestionIndex]}
             className="btn-primary"
           >
-            {currentQuestionIndex === quiz.questions.length - 1 ? 'Finish' : 'Next'}
+              {currentQuestionIndex === quiz.questions.length - 1 ? 'Submit Quiz' : 'Next'}
           </button>
+          </div>
         </div>
       </div>
     </div>

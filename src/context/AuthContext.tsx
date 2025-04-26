@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
-// import { toast } from 'react-hot-toast'
+import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
 
 interface User {
@@ -42,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
       });
+      toast.success(response.data.message)
       setUser(response.data.user);
       router.push('/quiz');
     } catch (error) {
@@ -57,8 +58,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
       });
+      toast.success(response.data.message)
       setUser(response.data.user);
-      router.push('/quiz');
+      // router.push('/quiz');
     } catch (error) {
       console.error('Registration error:', error);
       if (axios.isAxiosError(error) && error.response?.data?.error) {

@@ -67,7 +67,7 @@ export default function Home() {
       </section>
 
       {/* Premium Features Section */}
-      {/* <section className="container mx-auto px-4 py-20">
+      <section className="container mx-auto px-4 py-20">
         <h2 className="section-title text-center text-4xl font-bold mb-12 gradient-text">
           Premium User Advantages
         </h2>
@@ -126,7 +126,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-20">

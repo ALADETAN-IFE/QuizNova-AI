@@ -11,13 +11,13 @@ import axios, { AxiosError } from "axios";
 import { useAppStore } from "@/lib/store.zustand";
 
 // Define question type
-interface Question {
-  question: string;
-  options?: string[];
-  correctAnswer: string;
-  explanation: string;
-  questionType?: 'mcq' | 'subjective' | 'theory';
-}
+// interface Question {
+//   question: string;
+//   options?: string[];
+//   correctAnswer: string;
+//   explanation: string;
+//   questionType?: 'obj' | 'subjective' | 'theory';
+// }
 
 // Generate a random ID using timestamp and random number
 const generateId = () => {
@@ -33,7 +33,7 @@ export default function UploadClient() {
   const [processingStatus, setProcessingStatus] = useState<string>("");
   const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [numQuestions, setNumQuestions] = useState<number>(5);
-  const [questionType, setQuestionType] = useState<"mcq" | "subjective" | "theory">("mcq");
+  const [questionType, setQuestionType] = useState<"obj" | "subjective" | "theory">("obj");
   const { user, setCurrentQuiz } = useAppStore();
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -70,24 +70,25 @@ export default function UploadClient() {
     return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
   };
 
-  const getQuestionTypeColor = (type: string) => {
-    if (questionType === type) {
-      switch (type) {
-        case 'mcq':
-          return 'bg-quantum-teal text-white';
-        case 'subjective':
-          return 'bg-ai-blue text-white';
-        case 'theory':
-          return 'bg-nova-purple text-white';
-        default:
-          return '';
-      }
-    }
-    return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
-  };
+  // const getQuestionTypeColor = (type: string) => {
+  //   if (questionType === type) {
+  //     switch (type) {
+  //       case 'obj':
+  //         return 'bg-quantum-teal text-white';
+  //       case 'subjective':
+  //         return 'bg-ai-blue text-white';
+  //       case 'theory':
+  //         return 'bg-nova-purple text-white';
+  //       default:
+  //         return '';
+  //     }
+  //   }
+  //   return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
+  // };
 
   const generateQuiz = async () => {
     console.log("user", user);
+    setQuestionType("obj")
     if (!uploadedFile) {
       toast.error("Please upload a PDF file first");
       return;
@@ -98,8 +99,16 @@ export default function UploadClient() {
 
     try {
       const pdfText = await extractTextFromPDF(uploadedFile);
+      console.log("Extracted text:", pdfText?.slice(0, 100)); // Log first 100 chars for debugging
+      
       if (!pdfText || pdfText.trim().length === 0) {
-        throw new Error("Could not extract text from PDF");
+        toast.error("Could not extract text from PDF. Please make sure the PDF contains selectable text and is not scanned/image-based.");
+        return;
+      }
+
+      if (pdfText.trim().length < 50) {
+        toast.error("The extracted text is too short. Please make sure the PDF contains enough content.");
+        return;
       }
 
       setProcessingStatus("Generating quiz questions...");
@@ -109,7 +118,6 @@ export default function UploadClient() {
         difficulty,
         questionType
       );
-      console.log("questions", questions)
 
       if (!questions || questions.length === 0) {
         throw new Error("No questions were generated");
@@ -124,7 +132,7 @@ export default function UploadClient() {
             title: uploadedFile.name.replace(".pdf", ""),
             description: `Quiz generated from ${uploadedFile.name}`,
             difficulty,
-            questions: questions.map((q: Question) => ({
+            questions: questions.map((q) => ({
               question: q.question,
               options: q.options || [],
               correctAnswer: q.correctAnswer,
@@ -148,7 +156,7 @@ export default function UploadClient() {
             toast.error("An unexpected error occurred while saving the quiz");
             console.error("Unexpected error:", error);
           }
-          throw error; // Re-throw to be caught by outer catch block
+          throw error;
         }
       } else {
         // For non-logged-in users, use Zustand store
@@ -157,7 +165,7 @@ export default function UploadClient() {
           title: uploadedFile.name.replace(".pdf", ""),
           description: `Quiz generated from ${uploadedFile.name}`,
           difficulty,
-          questions: questions.map((q: Question) => ({
+          questions: questions.map((q) => ({
             question: q.question,
             options: q.options || [],
             correctAnswer: q.correctAnswer,
@@ -173,11 +181,14 @@ export default function UploadClient() {
       toast.success("Quiz generated successfully!");
     } catch (error) {
       console.error("Error processing PDF:", error);
-      toast.error("Failed to process PDF. Please try again.");
       if (error instanceof Error) {
-        toast.error(error.message);
+        if (error.message.includes("Could not extract text")) {
+          toast.error("Could not extract text from PDF. Please make sure the PDF contains selectable text and is not scanned/image-based.");
+        } else {
+          toast.error(error.message);
+        }
       } else {
-        toast.error("An unexpected error occurred");
+        toast.error("An unexpected error occurred while processing the PDF");
       }
     } finally {
       setIsUploading(false);
@@ -247,23 +258,23 @@ export default function UploadClient() {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">
                     Question Type
                   </label>
                   <div className="grid grid-cols-3 gap-2">
-                    {["mcq", "subjective", "theory"].map((type) => (
+                    {["obj", "subjective", "theory"].map((type) => (
                       <button
                         key={type}
                         type="button"
-                        onClick={() => setQuestionType(type as "mcq" | "subjective" | "theory")}
+                        onClick={() => setQuestionType(type as "obj" | "subjective" | "theory")}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${getQuestionTypeColor(type)}`}
                       >
                         {type.charAt(0).toUpperCase() + type.slice(1)}
                       </button>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 <div>
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">
@@ -282,9 +293,9 @@ export default function UploadClient() {
                     :
                     // three buttons for 3, 5, 10 questions
                     <div className="grid grid-cols-3 gap-2">
-                      <button onClick={() => setNumQuestions(3)} className="w-full px-4 py-2  text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">3</button>
-                      <button onClick={() => setNumQuestions(5)} className="w-full px-4 py-2  text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">5</button>
-                      <button onClick={() => setNumQuestions(10)} className="w-full px-4 py-2  text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all">10</button>
+                      <button onClick={() => setNumQuestions(3)} className={`w-full px-4 py-2 text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all ${numQuestions === 3 ? 'bg-nova-purple' : 'bg-cool-black/50'}`}>3</button>
+                      <button onClick={() => setNumQuestions(5)} className={`w-full px-4 py-2 text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all ${numQuestions === 5 ? 'bg-nova-purple' : 'bg-cool-black/50'}`}>5</button>
+                      <button onClick={() => setNumQuestions(10)} className={`w-full px-4 py-2 text-white rounded-lg hover:bg-nova-purple/80 focus:outline-none focus:ring-2 focus:ring-nova-purple/50 focus:border-transparent transition-all ${numQuestions === 10 ? 'bg-nova-purple' : 'bg-cool-black/50'}`}>10</button>
                     </div>
                   }
                 </div>

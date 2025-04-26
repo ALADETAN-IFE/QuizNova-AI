@@ -146,7 +146,7 @@ export default function QuizPage() {
             >
               <h3 className="text-xl font-semibold mb-2 text-cool-white">{quiz.title}</h3>
               <p className="text-cool-white/70 mb-4">{quiz.description}</p>
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={`px-3 py-1 rounded-full ${quiz.difficulty === 'easy'
                       ? 'bg-green-500/20 text-green-500'
@@ -157,15 +157,19 @@ export default function QuizPage() {
                 >
                   {quiz.difficulty.charAt(0).toUpperCase() + quiz.difficulty.slice(1)}
                 </span>
-                <div className="flex items-center gap-4 text-cool-white/50">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {quiz.questions.length} questions
-                  </span>
-                  <span className="text-quantum-teal">
-                    {quiz.questions[0]?.questionType?.toUpperCase() || 'MCQ'}
-                  </span>
-                </div>
+                <span className="flex items-center gap-1 text-cool-white/50">
+                  <Clock className="w-4 h-4" />
+                  {quiz.questions.length}&nbsp;questions
+                </span>
+                <span className={`px-3 py-1 rounded-full text-sm ${
+                  quiz.questions[0]?.questionType === 'mcq' 
+                  ? 'text-ai-blue'
+                  : quiz.questions[0]?.questionType === 'subjective'
+                  ? 'text-quantum-teal'
+                    : 'text-nova-purple'
+                }`}>
+                  {quiz.questions[0]?.questionType?.toUpperCase() || 'MCQ'}
+                </span>
               </div>
             </div>
           ))}

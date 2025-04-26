@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description: 'Take a quiz and test your knowledge',
 }
 
-export default function QuizPage({
+export default async function QuizPage({
   params,
 }: {
   params: { id: string }

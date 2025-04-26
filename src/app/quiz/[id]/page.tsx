@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import QuizContentWrapper from '@/components/QuizContentWrapper'
+import QuizClient from './QuizClient'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -10,10 +10,7 @@ export default async function QuizPage({ params }: PageProps) {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <QuizContentWrapper 
-        quizId={resolvedParams.id}
-        onComplete={() => {}} 
-      />
+      <QuizClient quizId={resolvedParams.id} />
     </Suspense>
   )
 }

@@ -29,6 +29,7 @@ interface QuizResult {
 }
 
 interface AppState {
+  version: number;
   user: User | null;
   currentQuiz: Quiz | null;
   quizResults: QuizResult[];
@@ -41,10 +42,31 @@ interface AppState {
   logout: () => void;
 }
 
+type PersistedState = Partial<Omit<AppState, 'version'>> & { version?: number };
+
+// Migration function to handle state versions
+const migrations = {
+  0: (state: PersistedState): AppState => ({
+    version: 1,
+    user: null,
+    currentQuiz: null,
+    quizResults: [],
+    ...state,
+    setUser: () => {},
+    setCurrentQuiz: () => {},
+    addQuizResult: () => {},
+    clearCurrentQuiz: () => {},
+    clearQuizResults: () => {},
+    logout: () => {},
+  }),
+  1: (state: PersistedState): AppState => state as AppState, // Current version, no migration needed
+};
+
 export const useAppStore = create<AppState>()(
   devtools(
     persist(
       (set) => ({
+        version: 1, // Current version of the store
         user: null,
         currentQuiz: null,
         quizResults: [],
@@ -60,6 +82,14 @@ export const useAppStore = create<AppState>()(
       }),
       {
         name: 'quizNova-storage',
+        version: 1, // Storage version
+        migrate: (persistedState: unknown, version: number) => {
+          const state = persistedState as PersistedState;
+          if (version === 0) {
+            return migrations[0](state);
+          }
+          return migrations[1](state);
+        },
       }
     ),
     {

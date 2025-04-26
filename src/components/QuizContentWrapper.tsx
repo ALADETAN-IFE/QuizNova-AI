@@ -9,7 +9,7 @@ const QuizContent = dynamic(() => import('@/components/QuizContent'), {
 
 interface QuizContentWrapperProps {
   quizId: string
-  onComplete: () => void
+  onComplete: (score: number) => void
 }
 
 export default function QuizContentWrapper({ quizId, onComplete }: QuizContentWrapperProps) {

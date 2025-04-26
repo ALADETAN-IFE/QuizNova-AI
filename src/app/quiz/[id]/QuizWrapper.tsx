@@ -17,11 +17,13 @@ export default function QuizWrapper({ quizId }: QuizWrapperProps) {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <QuizContent 
-        quizId={quizId} 
-        onComplete={handleComplete}
-      />
-    </Suspense>
+    <main className="min-h-screen bg-deep-space">
+      <Suspense fallback={<div>Loading...</div>}>
+        <QuizContent 
+          quizId={quizId} 
+          onComplete={handleComplete}
+        />
+      </Suspense>
+    </main>
   )
 } 

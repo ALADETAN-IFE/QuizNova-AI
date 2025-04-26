@@ -1,10 +1,9 @@
 import { Metadata } from 'next'
 import QuizWrapper from './QuizWrapper'
 
-interface PageProps {
-  params: {
-    id: string
-  }
+type Props = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
 export const metadata: Metadata = {
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
   description: 'Take a quiz and test your knowledge',
 }
 
-export default function QuizPage({ params }: PageProps) {
+export default async function QuizPage({ params }: Props) {
   return (
     <main className="min-h-screen bg-deep-space">
       <QuizWrapper quizId={params.id} />

@@ -1,6 +1,6 @@
 'use client'
 
-import { Metadata } from 'next'
+//import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import QuizContent from '@/components/QuizContent'
@@ -11,10 +11,7 @@ interface PageProps {
   }
 }
 
-export const metadata: Metadata = {
-  title: 'Quiz | QuizNova AI',
-  description: 'Take a quiz and test your knowledge',
-}
+//export const metadata: Metadata = {
 
 export default function QuizPage({ params }: PageProps) {
   const router = useRouter()

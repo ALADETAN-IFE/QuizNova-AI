@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import axios from 'axios';
+// import axios from 'axios';
 import { useAppStore } from '@/lib/store.zustand';
 import { toast } from 'react-hot-toast';
 import QuizCard from '@/components/QuizCard';
@@ -64,15 +64,21 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           return;
         }
         if (user?.id) {
-        const response = await axios.get(`/api/quizzes/one`, {
-          params: {
-            id: quizId
+          // const response = await axios.get(`/api/quizzes/one`, {
+          //   params: {
+          //     id: quizId
+          //   }
+          // });
+          // // const 
+          // const fetchedQuiz = response.data;
+          // setQuiz(fetchedQuiz);
+          // setCurrentQuiz(fetchedQuiz);
+          // setLoading(false);
+          if (currentQuiz && (currentQuiz?._id === quizId)) {
+            setQuiz(currentQuiz);
+            setCurrentQuiz(currentQuiz);
+            setLoading(false);
           }
-        });
-        const fetchedQuiz = response.data;
-        setQuiz(fetchedQuiz);
-        setCurrentQuiz(fetchedQuiz);
-        setLoading(false);
         }
       } catch (error) {
         console.error('Error fetching quiz:', error);
@@ -88,17 +94,17 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
 
   const handleAnswer = async (answer: string) => {
     if (!currentQuestion) return;
-    
-    if (currentQuestion.questionType === 'obj' || currentQuestion.questionType === 'subjective') {
+
+    if (currentQuestion.questionType === 'obj' || currentQuestion.questionType === 'subjective' || !currentQuestion.questionType) {
       setSelectedAnswers(prev => {
         const newAnswers = [...prev];
         newAnswers[currentQuestionIndex] = answer;
         return newAnswers;
       });
-      // Add 2-second delay before moving to next question
+      // Add 1.5-second delay before moving to next question
       setTimeout(() => {
         handleNext();
-      }, 2000);
+      }, 1500);
     } else if (currentQuestion.questionType === 'theory') {
       try {
         const result = await evaluateAnswer(
@@ -129,7 +135,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
 
   const handleNext = () => {
     if (!quiz?.questions) return;
-    
+
     // Only evaluate if it's a theory question and has an answer
     if (currentQuestion?.questionType === 'theory' && userAnswers[currentQuestionIndex]) {
       handleAnswer(userAnswers[currentQuestionIndex]);
@@ -138,7 +144,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
     if (currentQuestionIndex < quiz.questions.length - 1) {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
-      
+
       // Update URL with new question number
       const params = new URLSearchParams(window.location.search);
       params.set('question', (nextIndex + 1).toString());
@@ -153,7 +159,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
     if (currentQuestionIndex > 0) {
       const prevIndex = currentQuestionIndex - 1;
       setCurrentQuestionIndex(prevIndex);
-      
+
       // Update URL with new question number
       const params = new URLSearchParams(window.location.search);
       params.set('question', (prevIndex + 1).toString());
@@ -169,7 +175,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
       const answer = answers[index];
       // Skip scoring if no answer was provided
       if (!answer) return;
-      
+
       if (question.questionType === 'obj' || question.questionType === 'subjective') {
         if (answer.toLowerCase().trim() === question.correctAnswer.toLowerCase().trim()) {
           correctCount++;
@@ -275,14 +281,14 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           </h2>
         </div>
         <div className="space-y-8">
-        <QuizCard
+          <QuizCard
             question={currentQuestion.question}
             options={currentQuestion.options}
             correctAnswer={currentQuestion.correctAnswer}
             explanation={currentQuestion.explanation}
-          onAnswer={handleAnswer}
+            onAnswer={handleAnswer}
             selectedAnswer={selectedAnswers[currentQuestionIndex]}
-          showExplanation={false}
+            showExplanation={false}
             questionType={currentQuestion.questionType || 'obj'}
             userAnswer={userAnswers[currentQuestionIndex]}
             onUserAnswerChange={handleUserAnswerChange}
@@ -297,20 +303,20 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
             </div>
           )} */}
 
-        <div className="mt-8 flex justify-between">
-          <button
-            onClick={handlePrevious}
+          <div className="mt-8 flex justify-between">
+            <button
+              onClick={handlePrevious}
               disabled={currentQuestionIndex === 0}
-            className="btn-secondary"
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNext}
-            className="btn-primary"
-          >
+              className="btn-secondary"
+            >
+              Previous
+            </button>
+            <button
+              onClick={handleNext}
+              className="btn-primary"
+            >
               {currentQuestionIndex === quiz.questions.length - 1 ? 'Submit Quiz' : 'Next'}
-          </button>
+            </button>
           </div>
         </div>
       </div>

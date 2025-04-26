@@ -9,7 +9,8 @@ interface User {
 }
 
 interface Quiz {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   description: string;
   difficulty: 'easy' | 'medium' | 'hard';

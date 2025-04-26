@@ -30,7 +30,7 @@ interface ErrorInterFace {
 
 export default function QuizPage() {
   const router = useRouter();
-  const { user, currentQuiz } = useAppStore();
+  const { user, currentQuiz, setCurrentQuiz } = useAppStore();
   const [allQuizzes, setAllQuizzes] = useState<Quiz[]>([]);
   const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
@@ -110,6 +110,13 @@ export default function QuizPage() {
     if (!quizId) {
       toast.error('Invalid quiz ID');
       return;
+    }
+    if(user?.id){
+      const quizToShow = filteredQuizzes.filter(e=> e._id === quizId)
+      if (quizToShow[0] && quizToShow[0]._id) {
+        setCurrentQuiz({...quizToShow[0], id: quizToShow[0]._id})
+        router.push(`/quiz/${quizId}?question=1`);
+      }
     }
     router.push(`/quiz/${quizId}?question=1`);
   };

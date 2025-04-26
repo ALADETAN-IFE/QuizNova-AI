@@ -1,9 +1,5 @@
-'use client'
-
 import { Metadata } from 'next'
-import { Suspense } from 'react'
-import { useRouter } from 'next/navigation'
-import QuizContent from '@/components/QuizContent'
+import QuizWrapper from './QuizWrapper'
 
 interface PageProps {
   params: {
@@ -17,22 +13,9 @@ export const metadata: Metadata = {
 }
 
 export default function QuizPage({ params }: PageProps) {
-  const router = useRouter()
-  // const { setCurrentQuiz } = useAppStore()
-  
-  const handleComplete = (score: number) => {
-    console.log('Quiz completed with score:', score)
-    router.push('/quiz')
-  }
-
   return (
     <main className="min-h-screen bg-deep-space">
-      <Suspense fallback={<div>Loading...</div>}>
-        <QuizContent 
-          quizId={params.id} 
-          onComplete={handleComplete}
-        />
-      </Suspense>
+      <QuizWrapper quizId={params.id} />
     </main>
   )
 }

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import QuizContent from '@/components/QuizContent'
 
 interface PageProps {
-  params: { id: string }
+  params: { id: string };
 }
 
 export default function QuizPage({ params }: PageProps) {
@@ -15,11 +15,10 @@ export default function QuizPage({ params }: PageProps) {
     console.log('Quiz completed with score:', score)
     router.push('/quiz')
   }
-  const id = params.id
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <QuizContent 
-        quizId={id} 
+        quizId={params.id} 
         onComplete={handleComplete}
       />
     </Suspense>

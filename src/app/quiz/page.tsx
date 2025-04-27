@@ -27,6 +27,16 @@ interface ErrorInterFace {
   msg?: string;
 }
 
+const truncateTitle = (title: string) => {
+  // Remove file hash from title (everything after the last underscore)
+  const cleanTitle = title.split('_')[0];
+  // If the title is still too long, truncate it
+  return cleanTitle.length > 30 ? cleanTitle.substring(0, 30) + '...' : cleanTitle;
+};
+
+const truncateDescription = (description: string) => {
+  return description.length > 60 ? description.substring(0, 60) + '...' : description;
+};
 
 export default function QuizPage() {
   const router = useRouter();
@@ -151,8 +161,12 @@ export default function QuizPage() {
               className="card hover:scale-105 transition-transform cursor-pointer flex flex-col justify-between"
               onClick={() => handleQuizClick(quiz)}
             >
-              <h3 className="text-xl font-semibold mb-2 text-cool-white">{quiz.title}</h3>
-              <p className="text-cool-white/70 mb-4">{quiz.description}</p>
+              <h3 className="text-xl font-semibold mb-2 text-cool-white" title={quiz.title}>
+                {truncateTitle(quiz.title)}
+              </h3>
+              <p className="text-cool-white/70 mb-4" title={quiz.description}>
+                {truncateDescription(quiz.description)}
+              </p>
               <div className="flex flex-wrap items-center gap-2 justify-between">
                 <span
                   className={`px-3 py-1 rounded-full ${quiz.difficulty === 'easy'

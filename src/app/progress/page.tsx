@@ -24,6 +24,13 @@ interface QuizResult {
   completedAt: string;
 }
 
+const truncateTitle = (title: string) => {
+  // Remove file hash from title (everything after the last underscore)
+  const cleanTitle = title.split('_')[0];
+  // If the title is still too long, truncate it
+  return cleanTitle.length > 30 ? cleanTitle.substring(0, 30) + '...' : cleanTitle;
+};
+
 export default function ProgressPage() {
   const router = useRouter();
   const { quizResults, user, logout } = useAppStore();
@@ -41,7 +48,7 @@ export default function ProgressPage() {
 
     // Calculate topic performance
     const topicStats = quizResults.reduce((acc, result) => {
-      const topic = result.quizId.split(' ')[0] // Use first word as topic
+      const topic = truncateTitle(result.quizId.split(' ')[0]) // Use first word as topic and truncate if needed
       if (!acc[topic]) {
         acc[topic] = { correct: 0, total: 0 }
       }
@@ -140,8 +147,8 @@ export default function ProgressPage() {
       </div>
 
       <div className="card p-6 mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-cool-white">Score Trend</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold text-cool-white">Performance Over Time</h2>
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value as 'week' | 'month' | 'year')}
@@ -155,7 +162,7 @@ export default function ProgressPage() {
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={getFilteredResults()}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#2A2B37" />
               <XAxis
                 dataKey="date"
                 stroke="#9CA3AF"
@@ -168,30 +175,29 @@ export default function ProgressPage() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#1F2937',
-                  border: '1px solid #374151',
-                  borderRadius: '0.5rem',
+                  backgroundColor: '#1E1F2E',
+                  border: '1px solid #2A2B37',
                 }}
                 labelStyle={{ color: '#9CA3AF' }}
               />
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#10B981"
+                stroke="#8B5CF6"
                 strokeWidth={2}
-                dot={{ fill: '#10B981' }}
+                dot={{ fill: '#8B5CF6' }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="card p-6">
-        <h2 className="text-xl font-semibold mb-4 text-cool-white">Topic Performance</h2>
+      <div className="card p-6 mb-8">
+        <h2 className="text-xl font-semibold mb-6 text-cool-white">Topic Performance</h2>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={topicPerformance}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#2A2B37" />
               <XAxis
                 dataKey="topic"
                 stroke="#9CA3AF"
@@ -204,13 +210,12 @@ export default function ProgressPage() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#1F2937',
-                  border: '1px solid #374151',
-                  borderRadius: '0.5rem',
+                  backgroundColor: '#1E1F2E',
+                  border: '1px solid #2A2B37',
                 }}
                 labelStyle={{ color: '#9CA3AF' }}
               />
-              <Bar dataKey="correct" fill="#3B82F6" />
+              <Bar dataKey="correct" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -223,7 +228,9 @@ export default function ProgressPage() {
             <div key={index} className="card p-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-semibold text-cool-white">{result.quizId}</h3>
+                  <h3 className="font-semibold text-cool-white" title={result.quizId}>
+                    {truncateTitle(result.quizId)}
+                  </h3>
                   <p className="text-sm text-cool-white/70">{formatDate(result.completedAt)}</p>
                 </div>
                 <div className="text-right">

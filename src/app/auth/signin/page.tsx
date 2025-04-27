@@ -19,11 +19,11 @@ export default function SignIn() {
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
-    const email = formData.get('email') as string
+    const identifier = formData.get('identifier') as string
     const password = formData.get('password') as string
 
     try {
-      await login(email.toLowerCase(), password)
+      await login(identifier, password)
       router.push('/')
     } catch (error) {
       if (error instanceof Error && 'response' in error) {
@@ -54,18 +54,16 @@ export default function SignIn() {
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-cool-white/70 mb-1">
-                Email address
+              <label htmlFor="identifier" className="block text-sm font-medium text-cool-white/70 mb-1">
+                Email or Username
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
+                id="identifier"
+                name="identifier"
+                type="text"
                 required
-                autoComplete="email"
-                // pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                 className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
-                placeholder="Enter your email"
+                placeholder="Enter your email or username"
               />
             </div>
 

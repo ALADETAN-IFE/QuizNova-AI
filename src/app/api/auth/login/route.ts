@@ -11,21 +11,27 @@ export const config = {
 export async function POST(req: Request) {
   await connectToDatabase()
   try {
-    const { email, password } = await req.json()
+    const { identifier, password } = await req.json()
 
     // Validate input
-    if (!email || !password) {
+    if (!identifier || !password) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
-    // Find user by email
-    const user = await User.findOne({ email })
+    // Find user by email or username
+    const user = await User.findOne({
+      $or: [
+        { email: identifier.toLowerCase() },
+        { username: identifier }
+      ]
+    })
+
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid email or password' },
+        { error: 'User not found' },
         { status: 401 }
       )
     }

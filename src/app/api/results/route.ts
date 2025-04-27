@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Result from '@/models/Result';
+import Quiz from '@/models/Quiz';
 import mongoose from 'mongoose';
 
 export async function POST(req: Request) {
@@ -73,6 +74,12 @@ export async function GET(req: Request) {
     }
 
     await connectToDatabase();
+    
+    // Ensure Quiz model is registered
+    if (!mongoose.models.Quiz) {
+      mongoose.model('Quiz', Quiz.schema);
+    }
+
     const results = await Result.find({ user: userId })
       .populate('quiz')
       .sort({ createdAt: -1 });

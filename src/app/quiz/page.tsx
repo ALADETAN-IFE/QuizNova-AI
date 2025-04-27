@@ -148,12 +148,12 @@ export default function QuizPage() {
           {filteredQuizzes.map((quiz: Quiz) => (
             <div
               key={quiz?._id || quiz?.id}
-              className="card hover:scale-105 transition-transform cursor-pointer"
+              className="card hover:scale-105 transition-transform cursor-pointer flex flex-col justify-between"
               onClick={() => handleQuizClick(quiz)}
             >
               <h3 className="text-xl font-semibold mb-2 text-cool-white">{quiz.title}</h3>
               <p className="text-cool-white/70 mb-4">{quiz.description}</p>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 justify-between">
                 <span
                   className={`px-3 py-1 rounded-full ${quiz.difficulty === 'easy'
                       ? 'bg-green-500/20 text-green-500'

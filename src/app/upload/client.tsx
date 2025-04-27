@@ -178,7 +178,7 @@ export default function UploadClient() {
         router.push("/quiz");
       }
       
-      toast.success("Quiz generated successfully!");
+      // toast.success("Quiz generated successfully!");
     } catch (error) {
       console.error("Error processing PDF:", error);
       if (error instanceof Error) {

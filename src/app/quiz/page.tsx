@@ -245,9 +245,3 @@ export default function QuizPage() {
     </main>
   );
 }
-
-// For the code present, we get this error:
-// ```
-// Property 'error' does not exist on type '{}'.
-// ```
-// How can I resolve this? If you propose a fix, please make it concise.

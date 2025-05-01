@@ -60,3 +60,28 @@ export async function sendWelcomeEmail(userEmail: string, userName: string) {
     // Don't throw the error as email sending should not block the signup process
   }
 } 
+
+export async function sendPasswordResetEmail(email: string, resetToken: string) {
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`
+    
+    try {
+      await transporter.sendMail({
+        from: process.env.SMTP_FROM || '"QuizNova AI" <noreply@quiznova.com>',
+        to: email,
+        subject: 'Reset Your Password',
+        html: `
+          <h1>Password Reset Request</h1>
+          <p>You requested a password reset for your QuizNova AI account.</p>
+          <p>Click the link below to reset your password:</p>
+          <a href="${resetUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4f46e5; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
+          <p>If you didn't request this, you can safely ignore this email.</p>
+          <p>This link will expire in 1 hour.</p>
+          <p>Best regards,<br>The QuizNova AI Team</p>
+        `,
+      })
+      return true
+    } catch (error) {
+      console.error('Error sending password reset email:', error)
+      return false
+    }
+  } 

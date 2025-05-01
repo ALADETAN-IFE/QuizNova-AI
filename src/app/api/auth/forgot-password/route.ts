@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { connectToDatabase } from '@/lib/mongodb'
 import User from '@/models/User'
-import { sendPasswordResetEmail } from '@/utils/mail'
+import { sendPasswordResetEmail } from '@/lib/email'
 
 export const config = {
   runtime: "nodejs", // Force Node.js runtime

@@ -6,6 +6,7 @@ import { verifyAuth } from "@/lib/auth-middleware";
 // Export a route handler using the syntax for Next.js 13+
 export async function GET(req: Request) {
   try {
+    
     // Verify authentication
     const authResult = await verifyAuth();
     if (authResult.error || !authResult.decoded) {

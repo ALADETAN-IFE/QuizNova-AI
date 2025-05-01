@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import axios from 'axios'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
 
@@ -26,6 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { user, setUser } = useAppStore();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -34,7 +35,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } else {
       setLoading(false);
     }
-  }, [user]);
+    // Redirect to sign in if user is not logged in
+    if (!user && (pathname === '/progress' || pathname === '/results')) {
+      router.push('/auth/signin');
+      return;
+    }
+  }, [user, pathname]);
 
   const login = async (identifier: string, password: string) => {
     try {

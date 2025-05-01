@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Clock } from 'lucide-react';
+import { Clock, MoreVertical } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import { useAppStore } from "@/lib/store.zustand";
@@ -45,6 +45,7 @@ export default function QuizPage() {
   const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'easy' | 'medium' | 'hard'>('all');
   const [loading, setLoading] = useState(true);
+  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchQuizzes = async () => {
@@ -131,6 +132,27 @@ export default function QuizPage() {
     router.push(`/quiz/${quizId}?question=1`);
   };
 
+  const handleDeleteQuiz = async (quizId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent quiz card click
+    try {
+      await axios.delete(`/api/quizzes/${quizId}`);
+      toast.success('Quiz deleted successfully');
+      // Refresh quizzes
+      const response = await axios.get(`/api/quizzes?userId=${user?.id}`);
+      setAllQuizzes(response.data);
+      setFilteredQuizzes(response.data);
+    } catch (error) {
+      console.error('Error deleting quiz:', error);
+      toast.error('Failed to delete quiz');
+    }
+    setActiveMenu(null);
+  };
+
+  const toggleMenu = (quizId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent quiz card click
+    setActiveMenu(activeMenu === quizId ? null : quizId);
+  };
+
   return (
     <main className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -158,12 +180,34 @@ export default function QuizPage() {
           {filteredQuizzes.map((quiz: Quiz) => (
             <div
               key={quiz?._id || quiz?.id}
-              className="card hover:scale-105 transition-transform cursor-pointer flex flex-col justify-between"
+              className="card hover:scale-105 transition-transform cursor-pointer flex flex-col justify-between relative"
               onClick={() => handleQuizClick(quiz)}
             >
-              <h3 className="text-xl font-semibold mb-2 text-cool-white" title={quiz.title}>
-                {truncateTitle(quiz.title)}
-              </h3>
+              <div className="flex justify-between items-start">
+                <h3 className="text-xl font-semibold mb-2 text-cool-white" title={quiz.title}>
+                  {truncateTitle(quiz.title)}
+                </h3>
+                {user?.id && (
+                  <div className="relative">
+                    <button
+                      onClick={(e) => toggleMenu(quiz._id || quiz.id || '', e)}
+                      className="p-1 hover:bg-cool-black/30 rounded-full transition-colors"
+                    >
+                      <MoreVertical className="w-5 h-5 text-cool-white/70" />
+                    </button>
+                    {activeMenu === (quiz._id || quiz.id) && (
+                      <div className="absolute right-0 mt-2 w-48 bg-midnight-gray rounded-lg shadow-lg z-10">
+                        <button
+                          onClick={(e) => handleDeleteQuiz(quiz._id || quiz.id || '', e)}
+                          className="w-full text-left px-4 py-2 text-starburst-orange hover:bg-cool-black/30 rounded-lg transition-colors"
+                        >
+                          Delete Quiz
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               <p className="text-cool-white/70 mb-4" title={quiz.description}>
                 {truncateDescription(quiz.description)}
               </p>
@@ -183,13 +227,13 @@ export default function QuizPage() {
                   {quiz.questions.length}&nbsp;questions
                 </span>
                 <span className={`px-3 py-1 rounded-full text-sm ${
-                  quiz.questions[0]?.questionType === 'mcq' 
-                  ? 'text-ai-blue'
-                  : quiz.questions[0]?.questionType === 'subjective'
-                  ? 'text-quantum-teal'
+                  quiz.questions[0]?.questionType === 'obj' 
+                    ? 'text-quantum-teal'
+                    : quiz.questions[0]?.questionType === 'subjective'
+                    ? 'text-ai-blue'
                     : 'text-nova-purple'
                 }`}>
-                  {quiz.questions[0]?.questionType?.toUpperCase() || 'MCQ'}
+                  {quiz.questions[0]?.questionType?.toUpperCase() || 'OBJ'}
                 </span>
               </div>
             </div>

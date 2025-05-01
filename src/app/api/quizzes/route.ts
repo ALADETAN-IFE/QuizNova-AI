@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 import mongoose from 'mongoose';
+import { verifyAuth } from '@/lib/auth-middleware';
 
 interface Question {
   question: string;
@@ -12,6 +13,15 @@ interface Question {
 
 export async function POST(req: Request) {
   try {
+    // Verify authentication
+    const authResult = await verifyAuth();
+    if (authResult.error || !authResult.decoded) {
+      return NextResponse.json(
+        { error: authResult.message || 'Unauthorized' },
+        { status: authResult.status || 401 }
+      );
+    }
+
     // Connect to database
     await connectToDatabase();
     const body = await req.json();
@@ -39,8 +49,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // Convert createdBy to ObjectId
-    const createdById = new mongoose.Types.ObjectId(body.createdBy);
+    // // Convert createdBy to ObjectId
+    // const createdById = new mongoose.Types.ObjectId(body.createdBy);
+    // Use authenticated user's ID
+    const createdById = new mongoose.Types.ObjectId(authResult.decoded.id);
 
     // Create quiz with validated data
     const quiz = await Quiz.create({
@@ -59,7 +71,7 @@ export async function POST(req: Request) {
     return NextResponse.json(quiz, { status: 201 });
   } catch (error) {
     console.error('Error creating quiz:', error);
-    
+
     // Handle specific error types
     if (error instanceof mongoose.Error.ValidationError) {
       return NextResponse.json(
@@ -92,6 +104,15 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
+    // Verify authentication
+    const authResult = await verifyAuth();
+    if (authResult.error || !authResult.decoded) {
+      return NextResponse.json(
+        { error: authResult.message || 'Unauthorized' },
+        { status: authResult.status || 401 }
+      );
+    }
+
     await connectToDatabase();
     const quizzes = await Quiz.find().sort({ createdAt: -1 });
     return NextResponse.json(quizzes);

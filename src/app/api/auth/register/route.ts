@@ -4,6 +4,7 @@ import { connectToDatabase } from '@/lib/mongodb'
 import User from '@/models/User'
 import { createToken, setAuthCookie } from '@/utils/auth'
 import mongoose from 'mongoose'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export const config = {
   runtime: 'nodejs', // Force Node.js runtime
@@ -61,6 +62,11 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10)
 
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(email, username).catch(error => {
+      console.error('Failed to send welcome email:', error)
+    })
+    
     // Create new user
     const user = await User.create({
       username,
@@ -68,11 +74,13 @@ export async function POST(req: Request) {
       password: hashedPassword,
     })
 
+
     // Create and set JWT token
     const token = createToken(user._id, user.username)
     await setAuthCookie(token)
 
     // Return user data (excluding password)
+    // const { password: _, ...userWithoutPassword } = user.toObject()
     return NextResponse.json({
       message: 'Registration Successful',
       user: {

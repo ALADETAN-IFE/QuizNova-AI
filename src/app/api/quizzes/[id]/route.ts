@@ -3,8 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 import { verifyAuth } from '@/lib/auth-middleware';
 
-// Export a route handler using the syntax for Next.js 13+
-export async function GET(req: Request) {
+export async function DELETE(req: Request) {
   try {
     // Verify authentication
     const authResult = await verifyAuth();
@@ -15,21 +14,13 @@ export async function GET(req: Request) {
       );
     }
 
-    const url = new URL(req.url);
-    const id = url.searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json(
-        { error: 'ID is required' },
-        { status: 400 }
-      );
-    }
+    const quizId = req.url.split('/').pop();
     
+    // Connect to database
     await connectToDatabase();
 
-    // Find a single quiz by ID
-    const quiz = await Quiz.findById(id);
-    
+    // Check if quiz exists
+    const quiz = await Quiz.findById(quizId);
     if (!quiz) {
       return NextResponse.json(
         { error: 'Quiz not found' },
@@ -37,11 +28,25 @@ export async function GET(req: Request) {
       );
     }
 
-    return NextResponse.json(quiz);
-  } catch (error) {
-    console.error('Error fetching quiz:', error);
+    // Verify quiz ownership
+    if (quiz.createdBy.toString() !== authResult.decoded.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized - You can only delete your own quizzes' },
+        { status: 403 }
+      );
+    }
+
+    // Delete the quiz
+    await Quiz.findByIdAndDelete(quizId);
+
     return NextResponse.json(
-      { error: 'Failed to fetch quiz', msg: error },
+      { message: 'Quiz deleted successfully' },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('Error deleting quiz:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete quiz' },
       { status: 500 }
     );
   }

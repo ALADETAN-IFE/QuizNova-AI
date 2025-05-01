@@ -7,6 +7,7 @@ import { useAppStore } from '@/lib/store.zustand';
 import { toast } from 'react-hot-toast';
 import QuizCard from '@/components/QuizCard';
 import { evaluateAnswer } from '@/lib/gemini';
+// import axios from 'axios';
 
 interface Question {
   question: string;
@@ -33,7 +34,8 @@ interface QuizContentProps {
 export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, currentQuiz, addQuizResult, setCurrentQuiz } = useAppStore();
+  const { user, currentQuiz, setCurrentQuiz } = useAppStore();
+  // const { user, currentQuiz, addQuizResult, setCurrentQuiz } = useAppStore();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<string[]>([]);
@@ -214,15 +216,16 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
     const handleBackToQuizzes = () => {
       // Call onComplete and save result before navigating
       onComplete(score);
-      if (quiz && user) {
-        addQuizResult({
-          quizId: quiz.id || quiz._id || '',
-          score,
-          totalQuestions,
-          completedAt: new Date().toISOString(),
-        });
-      }
-      router.push('/quiz');
+      // if (quiz && user) {
+      //   // const response = axios.post("api/results")
+      //   addQuizResult({
+      //     quizId: quiz.id || quiz._id || '',
+      //     score,
+      //     totalQuestions,
+      //     completedAt: new Date().toISOString(),
+      //   });
+      // }
+      // router.push('/quiz');
     };
 
     return (

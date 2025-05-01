@@ -5,6 +5,7 @@ interface User {
   id: string;
   username: string;
   email: string;
+  plan: 'basic' | 'premium';
   // add any other fields as needed
 }
 
@@ -37,7 +38,8 @@ interface AppState {
 
   setUser: (user: User | null) => void;
   setCurrentQuiz: (quiz: Quiz | null) => void;
-  addQuizResult: (result: QuizResult) => void;
+  // addQuizResult: (result: QuizResult) => void;
+  addQuizResult: (results: QuizResult[]) => void;
   clearCurrentQuiz: () => void;
   clearQuizResults: () => void;
   logout: () => void;
@@ -74,9 +76,13 @@ export const useAppStore = create<AppState>()(
 
         setUser: (user) => set({ user }),
         setCurrentQuiz: (quiz) => set({ currentQuiz: quiz }),
-        addQuizResult: (result) => set((state) => ({ 
-          quizResults: [...state.quizResults, result] 
-        })),
+        addQuizResult: (results) => set({ 
+          quizResults: results 
+        }),
+        //  addQuizResult: (result) => set((state) => ({ 
+        //   quizResults: result 
+        //   // quizResults: [...state.quizResults, result] 
+        // })),
         clearCurrentQuiz: () => set({ currentQuiz: null }),
         clearQuizResults: () => set({ quizResults: [] }),
         logout: () => set({ user: null, currentQuiz: null, quizResults: [] }),

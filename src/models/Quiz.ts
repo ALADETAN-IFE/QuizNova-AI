@@ -17,6 +17,11 @@ const QuestionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  questionType: {
+    type: String,
+    enum: ['obj', 'subjective', 'theory'],
+    required: true,
+  },
 })
 
 const QuizSchema = new mongoose.Schema({

@@ -36,6 +36,13 @@ export default function UploadClient() {
   const [questionType, setQuestionType] = useState<"obj" | "subjective" | "theory">("obj");
   const { user, setCurrentQuiz } = useAppStore();
 
+  // Add this function to check if user can access question type
+  const canAccessQuestionType = (type: string) => {
+    if (!user) return false;
+    if (user.plan === 'premium') return true;
+    return type === 'obj';
+  };
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file && file.type === "application/pdf") {
@@ -70,30 +77,40 @@ export default function UploadClient() {
     return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
   };
 
-  // const getQuestionTypeColor = (type: string) => {
-  //   if (questionType === type) {
-  //     switch (type) {
-  //       case 'obj':
-  //         return 'bg-quantum-teal text-white';
-  //       case 'subjective':
-  //         return 'bg-ai-blue text-white';
-  //       case 'theory':
-  //         return 'bg-nova-purple text-white';
-  //       default:
-  //         return '';
-  //     }
-  //   }
-  //   return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
-  // };
+  const getQuestionTypeColor = (type: string) => {
+    if (questionType === type) {
+      switch (type) {
+        case 'obj':
+          return 'bg-quantum-teal text-white';
+        case 'subjective':
+          return 'bg-ai-blue text-white';
+        case 'theory':
+          return 'bg-nova-purple text-white';
+        default:
+          return '';
+      }
+    }
+    return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
+  };
 
   const generateQuiz = async () => {
     console.log("user", user);
-    setQuestionType("obj")
+    if (!user) {
+      toast.error("Please login to generate quizzes");
+      return;
+    }
+
+    if (!canAccessQuestionType(questionType)) {
+      toast.error("Upgrade to premium to access this question type");
+      return;
+    }
+
     if (!uploadedFile) {
       toast.error("Please upload a PDF file first");
       return;
     }
 
+    setQuestionType("obj")
     setIsUploading(true);
     setProcessingStatus("Extracting text from PDF...");
 
@@ -258,7 +275,7 @@ export default function UploadClient() {
                   </div>
                 </div>
 
-                {/* <div>
+                <div>
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">
                     Question Type
                   </label>
@@ -268,13 +285,23 @@ export default function UploadClient() {
                         key={type}
                         type="button"
                         onClick={() => setQuestionType(type as "obj" | "subjective" | "theory")}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${getQuestionTypeColor(type)}`}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          canAccessQuestionType(type) 
+                            ? questionType === type 
+                              ? getQuestionTypeColor(type)
+                              : 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70'
+                            : 'bg-cool-black/50 text-cool-white/30 cursor-not-allowed'
+                        }`}
+                        disabled={!canAccessQuestionType(type)}
                       >
                         {type.charAt(0).toUpperCase() + type.slice(1)}
+                        {!canAccessQuestionType(type) && (
+                          <span className="ml-1 text-xs">(Premium)</span>
+                        )}
                       </button>
                     ))}
                   </div>
-                </div> */}
+                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/context/AuthContext";
+import { ResultProvider } from "@/context/ResultContext";
 
 // Configure Inter font for Turbopack compatibility
 const inter = Inter({
@@ -52,11 +53,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}>
         <AuthProvider>
-          <Toaster 
-          // position="top-right"
-          />
-        {children}
-          <Navigation />
+          <ResultProvider>
+            <Toaster 
+              // position="top-right"
+            />
+            {children}
+            <Navigation />
+          </ResultProvider>
         </AuthProvider>
       </body>
     </html>

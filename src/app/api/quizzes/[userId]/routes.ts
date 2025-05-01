@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
+import { verifyAuth } from '@/lib/auth-middleware';
 
 // Export a route handler using the syntax for Next.js 13+
 export async function GET (req: Request)  {
   try {
+    // Verify authentication
+    const authResult = await verifyAuth();
+    if (authResult.error || !authResult.decoded) {
+      return NextResponse.json(
+        { error: authResult.message || 'Unauthorized' },
+        { status: authResult.status || 401 }
+      );
+    }
+
     const userId = req.url.split('/').pop();
     
     // Connect to the database

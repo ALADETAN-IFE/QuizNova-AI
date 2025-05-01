@@ -19,6 +19,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  plan:{
+    type: String,
+    enum: ["basic", "premium"],
+    default: "basic"
+  },
   resetToken: String,
   resetTokenExpiry: Date,
 }, { timestamps: true })

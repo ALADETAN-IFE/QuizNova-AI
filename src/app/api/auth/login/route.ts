@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     }
 
     // Create and set JWT token
-    const token = createToken(user._id, user.username)
+    const token = await createToken(user._id, user.username)
     await setAuthCookie(token)
 
     // Return user data (excluding password)

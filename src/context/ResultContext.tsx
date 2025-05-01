@@ -75,8 +75,9 @@ interface QuizResult {
         // Mark as not synced
         setHasSynced(false);
         // Trigger a sync to ensure all results are up to date
-        const response = await axios.get(`/api/results?userId=${user.id}`)
-        console.log('Fetched results:', response.data)
+       await axios.get(`/api/results?userId=${user.id}`)
+        // const response = await axios.get(`/api/results?userId=${user.id}`)
+        // console.log('Fetched results:', response.data)
       }
     } catch (error) {
       console.error('Error saving quiz result:', error)
@@ -87,12 +88,10 @@ interface QuizResult {
   }
   
     useEffect(() => {
-    // if(!user) setHasSynced(true)
-
         const syncLocalResults = async () => {
       // Skip if already synced or no user loggedIn
       if (!user || hasSynced) return;
-      console.log("hasSynced", hasSynced)
+      // console.log("hasSynced", hasSynced)
       setLoading(true);
 
       // if(user && quizResults.length < 1) setHasSynced(false)
@@ -103,7 +102,7 @@ interface QuizResult {
               // Check if user has any results in database
               const response = await axios.get(`/api/results?userId=${user.id}`)
               const dbResults = response.data
-        console.log('Database results:', dbResults)
+        // console.log('Database results:', dbResults)
       
               // If user has no results in database, sync local storage results
         if (dbResults.length === 0 && quizResults.length > 0) {

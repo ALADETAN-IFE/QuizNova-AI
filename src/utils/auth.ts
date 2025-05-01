@@ -2,6 +2,13 @@ import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
 import axios from 'axios'
 
+interface DecodedToken {
+  userId: string;
+  email: string;
+  iat: number;
+  exp: number;
+}
+
 // Ensure JWT_SECRET is available in production
 const JWT_SECRET = process.env.JWT_SECRET
 if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
@@ -34,21 +41,40 @@ export async function setAuthCookie(token: string) {
   })
 }
 
+// export const isTokenExpired = (token: string): boolean => {
+//   try {
+//     const decoded: { exp: number } = jwtDecode(token); 
+//     const currentTime = Math.floor(Date.now() / 1000);
+//     return decoded.exp < currentTime;
+//   } catch (error) {
+//     console.error('Error decoding token:', error);
+//     return true; // Treat as expired if decoding fails
+//   }
+// };
+
+
 export async function getAuthToken(): Promise<string | null> {
   const cookieStore = await cookies()
   return cookieStore.get('auth-token')?.value || null
 }
 
-export function verifyToken(token: string) {
-  if (!secret) {
-    throw new Error('JWT secret is not configured')
-  }
-  
+export const verifyToken = async (): Promise<true | string> => {
+  if (!secret) throw new Error('JWT secret is not configured')
+
   try {
-    return jwt.verify(token, secret)
+    const token = await getAuthToken()
+    if (!token) return 'No token found'
+
+    const decoded = jwt.verify(token, secret) as DecodedToken
+    const currentTime = Math.floor(Date.now() / 1000)
+    if (decoded.exp < currentTime) {
+      return 'Token is expired, please login again'
+    }
+
+    return true
   } catch (error) {
-    console.log("error", error)
-    return null
+    console.error('JWT verify error:', error)
+    return 'Invalid token'
   }
 }
 

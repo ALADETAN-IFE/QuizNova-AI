@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     // // Convert createdBy to ObjectId
     // const createdById = new mongoose.Types.ObjectId(body.createdBy);
     // Use authenticated user's ID
-    const createdById = new mongoose.Types.ObjectId(authResult.decoded.id);
+    const createdById = new mongoose.Types.ObjectId(authResult.decoded.userId);
 
     // Create quiz with validated data
     const quiz = await Quiz.create({

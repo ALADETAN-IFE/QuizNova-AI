@@ -3,11 +3,21 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Result from '@/models/Result';
 import Quiz from '@/models/Quiz';
 import mongoose from 'mongoose';
+import { verifyAuth } from "@/lib/auth-middleware";
 
 export async function POST(req: Request) {
   try {
     await connectToDatabase();
     const body = await req.json();
+
+  // Verify authentication
+    const authResult = await verifyAuth();
+    if (authResult.error || !authResult.decoded) {
+      return NextResponse.json(
+        { error: authResult.message || "Unauthorized" },
+        { status: authResult.status || 401 }
+      );
+    }
 
     // Validate required fields
     const missingFields = [];
@@ -63,6 +73,14 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
+      // Verify authentication
+        const authResult = await verifyAuth();
+        if (authResult.error || !authResult.decoded) {
+          return NextResponse.json(
+            { error: authResult.message || "Unauthorized" },
+            { status: authResult.status || 401 }
+          );
+        }
     const url = new URL(req.url);
     const userId = url.searchParams.get('userId');
 
@@ -78,6 +96,14 @@ export async function GET(req: Request) {
     // Ensure Quiz model is registered
     if (!mongoose.models.Quiz) {
       mongoose.model('Quiz', Quiz.schema);
+    }
+
+    // Verify quiz result ownership
+    if (userId !== authResult.decoded.userId) {
+      return NextResponse.json(
+        { error: "Unauthorized - You can only delete your own quiz results" },
+        { status: 403 }
+      );
     }
 
     const results = await Result.find({ user: userId })

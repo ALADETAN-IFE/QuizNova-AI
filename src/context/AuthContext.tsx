@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useRouter, usePathname } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
+import { verifyToken } from '@/utils/auth'
 
 interface User {
   id: string;
@@ -32,11 +33,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Check if user is already logged in
     if (user) {
       setLoading(false);
+
+      // check if the token is expired
+      const result = await verifyToken()
+      if (result !== true) {
+        toast.error(result)
+        setUser(null)
+        router.push('/auth/signin')
+      }
     } else {
       setLoading(false);
     }
     // Redirect to sign in if user is not logged in
-    if (!user && (pathname === '/progress' || pathname === '/results')) {
+    // if (!user && (pathname === '/progress' || pathname === '/profile')) {
+    if (!user &&  ['/progress', '/profile'].includes(pathname)) {
       router.push('/auth/signin');
       return;
     }

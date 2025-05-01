@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
 interface DecodedToken {
-  id: string;
+  userId: string;
   email: string;
   iat: number;
   exp: number;
@@ -11,7 +11,7 @@ interface DecodedToken {
 export async function verifyAuth() {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get('auth-token')?.value;
+    const token = cookieStore.get('auth-token')?.value ;
 
     if (!token) {
       return {
@@ -24,6 +24,15 @@ export async function verifyAuth() {
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken;
     console.log('Decoded Token:', decoded); // Debugging log
+    const currentTime = Math.floor(Date.now() / 1000);
+    const isTokenExpired =  decoded.exp < currentTime;
+    if (isTokenExpired) {
+      return {
+        error: true,
+        message: `Token is expired (now: ${currentTime}, exp: ${decoded.exp}), please login again`,
+        status: 401
+      };
+    }
     return {
       error: false,
       decoded

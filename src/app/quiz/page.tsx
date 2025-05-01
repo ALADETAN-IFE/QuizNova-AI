@@ -69,7 +69,7 @@ export default function QuizPage() {
           }, 1200);
         }
       } catch (error: unknown) {
-        console.error('Error fetching quizzes:', error);
+        // console.error('Error fetching quizzes:', error);
         toast.error((error as ErrorInterFace).error || 'Failed to load quizzes');
 
         // toast.error(error?.error || 'Failed to load quizzes');
@@ -143,9 +143,9 @@ export default function QuizPage() {
       const response = await axios.get(`/api/quizzes?userId=${user?.id}`);
       setAllQuizzes(response.data);
       setFilteredQuizzes(response.data);
-    } catch (error) {
-      console.error('Error deleting quiz:', error);
-      toast.error('Failed to delete quiz');
+    } catch (error: unknown) {
+      console.error('Error deleting quiz:', (error as ErrorInterFace).msg);
+      toast.error((error as ErrorInterFace).error || 'Failed to delete quiz');
     }
     setActiveMenu(null);
   };

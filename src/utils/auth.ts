@@ -19,7 +19,7 @@ if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
 // Fallback for development only
 const secret = JWT_SECRET || (process.env.NODE_ENV === 'development' ? 'dev-secret-key' : '')
 
-export function createToken(userId: string, username: string): string {
+export async function createToken(userId: string, username: string): Promise<string> {
   if (!secret) {
     throw new Error('JWT secret is not configured')
   }

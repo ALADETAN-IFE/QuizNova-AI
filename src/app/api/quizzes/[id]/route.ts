@@ -31,7 +31,10 @@ export async function DELETE(req: Request) {
     // Verify quiz ownership
     if (quiz.createdBy.toString() !== authResult.decoded.id) {
       return NextResponse.json(
-        { error: 'Unauthorized - You can only delete your own quizzes' },
+        { 
+          error: 'Unauthorized - You can only delete your own quizzes',
+           msg: `${quiz.createdBy.toString()} and ${authResult.decoded.id} does not match`
+        },
         { status: 403 }
       );
     }

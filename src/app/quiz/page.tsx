@@ -70,6 +70,8 @@ export default function QuizPage() {
         }
       } catch (error: unknown) {
         console.error('Error fetching quizzes:', error);
+        toast.error((error as ErrorInterFace).error || 'Failed to load quizzes');
+
         // toast.error(error?.error || 'Failed to load quizzes');
         // if(!currentQuiz || !user?.id){
         //   toast.success('No to load quizzes');
@@ -243,3 +245,9 @@ export default function QuizPage() {
     </main>
   );
 }
+
+// For the code present, we get this error:
+// ```
+// Property 'error' does not exist on type '{}'.
+// ```
+// How can I resolve this? If you propose a fix, please make it concise.

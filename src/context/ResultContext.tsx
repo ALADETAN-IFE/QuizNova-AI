@@ -87,7 +87,7 @@ interface QuizResult {
   }
   
     useEffect(() => {
-    if(!user) setHasSynced(true)
+    // if(!user) setHasSynced(true)
 
         const syncLocalResults = async () => {
       // Skip if already synced or no user loggedIn

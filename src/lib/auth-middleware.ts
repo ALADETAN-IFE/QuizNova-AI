@@ -23,16 +23,17 @@ export async function verifyAuth() {
 
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken;
+    console.log('Decoded Token:', decoded); // Debugging log
     return {
       error: false,
       decoded
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       error: true,
       message: 'Unauthorized - Invalid token',
       status: 401
     };
   }
-} 
+}

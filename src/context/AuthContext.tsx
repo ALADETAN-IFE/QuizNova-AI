@@ -35,12 +35,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
 
       // check if the token is expired
-      const result = await verifyToken()
-      if (result !== true) {
-        toast.error(result)
-        setUser(null)
-        router.push('/auth/signin')
+      const checkAuth = async () => {
+        const result = await verifyToken()
+        if (result !== true) {
+          toast.error(result)
+          setUser(null)
+          router.push('/auth/signin')
+        }
       }
+      checkAuth()
     } else {
       setLoading(false);
     }

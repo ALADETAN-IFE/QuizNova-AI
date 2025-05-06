@@ -8,7 +8,7 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const quiz = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quizzes/${id}`)
+  const quiz = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quizzes/one?id=${id}`)
     .then(res => res.json())
     .catch(() => null);
   const title = quiz?.title || "Take this Quiz on QuizNova AI";

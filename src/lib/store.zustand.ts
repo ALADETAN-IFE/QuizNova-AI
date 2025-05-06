@@ -25,11 +25,20 @@ interface Quiz {
   }[];
 }
 
+interface Question {
+  question: string;
+  correctAnswer: string;
+  selectedAnswer: string;
+  questionType?: 'obj' | 'subjective' | 'theory';
+  isCorrect: boolean;
+}
+
 interface QuizResult {
   quizId: string;
   score: number;
   totalQuestions: number;
   completedAt: string;
+  answers: Question[]
 }
 
 interface AppState {

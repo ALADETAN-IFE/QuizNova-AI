@@ -92,7 +92,8 @@ interface QuizResult {
     useEffect(() => {
         const syncLocalResults = async () => {
       // Skip if already synced or no user loggedIn
-      if (!user || hasSynced) return;
+      if(!user) setHasSynced(false)
+      if (!user && hasSynced) return;
       // console.log("hasSynced", hasSynced)
       setLoading(true);
 
@@ -115,7 +116,13 @@ interface QuizResult {
                     user: user.id,
                     score: result.score,
                     totalQuestions: result.totalQuestions,
-                    answers: [], // We don't have detailed answers from local storage
+                    answers: result.questions.map((q: Question) => ({
+                      question: q.question,
+                      correctAnswer: q.correctAnswer,
+                      selectedAnswer: q.selectedAnswer,
+                      questionType: q.questionType || 'obj',
+                      isCorrect: q.selectedAnswer == q.correctAnswer, // Calculate correctness based on actual answers
+                    })),
                   })
                 }
                 toast.success('Quiz results synced to database!')

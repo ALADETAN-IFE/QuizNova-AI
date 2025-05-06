@@ -77,7 +77,7 @@ export default function ProgressPage() {
       .sort((a, b) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime())
       .reduce((acc, result) => {
       // Extract topic from quiz ID (first word) and truncate if needed
-      const quizTitle = typeof result.quizId === 'string' ? result.quizId : result.quizId.title || result.quizId._id;
+      const quizTitle = typeof result?.quizId === 'string' ? result.quizId : result.quizId.title || result.quizId._id;
       const topic = truncateTitle(quizTitle.split(' ')[0])
       if (!acc[topic]) {
         acc[topic] = { correct: 0, total: 0 }

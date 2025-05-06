@@ -199,6 +199,15 @@ export default function QuizPage() {
                     </button>
                     {activeMenu === (quiz._id || quiz.id) && (
                       <div className="absolute right-0 mt-2 w-48 bg-midnight-gray rounded-lg shadow-lg z-10">
+                        <button 
+                          className="w-full text-left px-4 py-2 text-cool-white hover:bg-cool-black/30 rounded-lg transition-colors"
+                          onClick={() => {
+                            navigator.clipboard.writeText(`https://quiznova.ai/quiz/${quiz._id || quiz.id}`);
+                            toast.success('Link copied to clipboard');
+                          }}
+                        >
+                          Share Quiz
+                        </button>
                         <button
                           onClick={(e) => handleDeleteQuiz(quiz._id || quiz.id || '', e)}
                           className="w-full text-left px-4 py-2 text-starburst-orange hover:bg-cool-black/30 rounded-lg transition-colors"

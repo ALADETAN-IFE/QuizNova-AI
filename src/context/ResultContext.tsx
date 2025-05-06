@@ -52,6 +52,13 @@ interface QuizResult {
         score,
         totalQuestions: quiz.questions.length,
         completedAt: new Date().toISOString(),
+        answers: quiz.questions.map((q: Question) => ({
+          question: q.question,
+          correctAnswer: q.correctAnswer,
+          selectedAnswer: q.selectedAnswer,
+          questionType: q.questionType || 'obj',
+          isCorrect: q.selectedAnswer == q.correctAnswer, // Calculate correctness based on actual answers
+        })),
       }
 
       // Always add to local storage
@@ -92,7 +99,7 @@ interface QuizResult {
     useEffect(() => {
         const syncLocalResults = async () => {
       // Skip if already synced or no user loggedIn
-      if(!user) setHasSynced(false)
+      if(!user) return setHasSynced(false)
       if (!user && hasSynced) return;
       // console.log("hasSynced", hasSynced)
       setLoading(true);
@@ -116,7 +123,7 @@ interface QuizResult {
                     user: user.id,
                     score: result.score,
                     totalQuestions: result.totalQuestions,
-                    answers: result.questions.map((q: Question) => ({
+                    answers: result.answers.map((q: Question) => ({
                       question: q.question,
                       correctAnswer: q.correctAnswer,
                       selectedAnswer: q.selectedAnswer,

@@ -21,13 +21,13 @@ export async function GET(req: Request) {
     // Connect to the database
     await connectToDatabase();
 
-    // Verify quiz ownership
-    if (userId !== authResult.decoded.userId) {
-      return NextResponse.json(
-        { error: "Unauthorized - You can only access your own quizzes" },
-        { status: 403 }
-      );
-    }
+    // // Verify quiz ownership
+    // if (userId !== authResult.decoded.userId) {
+    //   return NextResponse.json(
+    //     { error: "Unauthorized - You can only access your own quizzes" },
+    //     { status: 403 }
+    //   );
+    // }
 
     // Fetch quizzes created by the user
     const quizzes = await Quiz.find({ createdBy: userId }).sort({

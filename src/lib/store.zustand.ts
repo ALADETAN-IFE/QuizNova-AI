@@ -19,6 +19,8 @@ interface Quiz {
     question: string;
     options: string[];
     correctAnswer: string;
+    selectedAnswer?: string;
+    isCorrect?: boolean;
     explanation: string;
   }[];
 }

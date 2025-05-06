@@ -8,7 +8,9 @@ import { useAppStore } from "@/lib/store.zustand";
 interface Question {
   question: string;
   correctAnswer: string;
+  selectedAnswer: string;
   questionType?: 'obj' | 'subjective' | 'theory';
+  isCorrect: boolean;
 }
 
 interface Quiz {
@@ -64,10 +66,10 @@ interface QuizResult {
           totalQuestions: quiz.questions.length,
           answers: quiz.questions.map((q: Question) => ({
             question: q.question,
-            selectedAnswer: q.correctAnswer,
             correctAnswer: q.correctAnswer,
+            selectedAnswer: q.selectedAnswer,
             questionType: q.questionType || 'obj',
-            isCorrect: true, // You might want to calculate this based on actual answers
+            isCorrect: q.selectedAnswer == q.correctAnswer, // Calculate correctness based on actual answers
           })),
         })
         toast.success('Quiz result saved successfully!')

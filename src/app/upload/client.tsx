@@ -77,28 +77,28 @@ export default function UploadClient() {
     return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
   };
 
-  const getQuestionTypeColor = (type: string) => {
-    if (questionType === type) {
-      switch (type) {
-        case 'obj':
-          return 'bg-quantum-teal text-white';
-        case 'subjective':
-          return 'bg-ai-blue text-white';
-        case 'theory':
-          return 'bg-nova-purple text-white';
-        default:
-          return '';
-      }
-    }
-    return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
-  };
+  // const getQuestionTypeColor = (type: string) => {
+  //   if (questionType === type) {
+  //     switch (type) {
+  //       case 'obj':
+  //         return 'bg-quantum-teal text-white';
+  //       case 'subjective':
+  //         return 'bg-ai-blue text-white';
+  //       case 'theory':
+  //         return 'bg-nova-purple text-white';
+  //       default:
+  //         return '';
+  //     }
+  //   }
+  //   return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
+  // };
 
   const generateQuiz = async () => {
     console.log("user", user);
-    if (!user) {
-      toast.error("Please login to generate quizzes");
-      return;
-    }
+    // if (!user) {
+    //   toast.error("Please login to generate quizzes");
+    //   return;
+    // }
 
     if (!canAccessQuestionType(questionType)) {
       toast.error("Upgrade to premium to access this question type");
@@ -275,7 +275,7 @@ export default function UploadClient() {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">
                     Question Type
                   </label>
@@ -301,7 +301,7 @@ export default function UploadClient() {
                       </button>
                     ))}
                   </div>
-                </div>
+                </div> */}
 
                 <div>
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">

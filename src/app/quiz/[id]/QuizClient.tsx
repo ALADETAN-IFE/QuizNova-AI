@@ -14,7 +14,14 @@ export default function QuizClient({ quizId }: QuizClientProps) {
 
   const handleQuizComplete = async (score: number) => {
     if (!currentQuiz) return
-    await saveQuizResult(currentQuiz, score)
+    await saveQuizResult({ 
+      ...currentQuiz, 
+      questions: currentQuiz.questions.map(q => ({ 
+        ...q, 
+        selectedAnswer: q.selectedAnswer || '' ,
+        isCorrect: q.isCorrect || false 
+      })) 
+    }, score)
   }
 
   if (loading) {

@@ -5,6 +5,14 @@ import Quiz from '@/models/Quiz';
 import mongoose from 'mongoose';
 import { verifyAuth } from "@/lib/auth-middleware";
 
+interface Answers {
+  question: string;
+  correctAnswer: string;
+  selectedAnswer?: string;
+  questionType?: 'obj' | 'subjective' | 'theory';
+  isCorrect?: boolean;
+}
+
 export async function POST(req: Request) {
   try {
     await connectToDatabase();
@@ -24,6 +32,7 @@ export async function POST(req: Request) {
     if (!body.quiz) missingFields.push('quiz');
     if (!body.user) missingFields.push('user');
     if (!body.score) missingFields.push('score');
+    if (!body.answers) missingFields.push('answers');
     if (!body.totalQuestions) missingFields.push('totalQuestions');
 
     if (missingFields.length > 0) {
@@ -32,6 +41,18 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
+      // Validate answers
+      const invalidAnswers = body.answers.filter((answer: Answers) => {
+        return !answer.question || !answer.selectedAnswer || !answer.correctAnswer;
+      });
+  
+      if (invalidAnswers.length > 0) {
+        return NextResponse.json(
+          { error: 'Invalid answer data', details: invalidAnswers },
+          { status: 400 }
+        );
+      }
 
     // Convert IDs to ObjectId
     const quizId = new mongoose.Types.ObjectId(body.quiz);

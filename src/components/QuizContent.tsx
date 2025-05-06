@@ -13,8 +13,10 @@ interface Question {
   question: string;
   options?: string[];
   correctAnswer: string;
+  selectedAnswer?: string
   explanation: string;
   questionType?: 'obj' | 'subjective' | 'theory';
+  isCorrect?: boolean;
 }
 
 interface Quiz {
@@ -103,6 +105,11 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
         newAnswers[currentQuestionIndex] = answer;
         return newAnswers;
       });
+      // setSelectedAnswers(prev => 
+      //   prev.map((q, index) =>
+      //     index === currentQuestionIndex ? { ...q, answer } : q
+      //   )
+      // );
       // Add 1.5-second delay before moving to next question
       setTimeout(() => {
         handleNext();

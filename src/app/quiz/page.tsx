@@ -202,7 +202,8 @@ export default function QuizPage() {
                         <button 
                           className="w-full text-left px-4 py-2 text-cool-white hover:bg-cool-black/30 rounded-lg transition-colors"
                           onClick={() => {
-                            navigator.clipboard.writeText(`https://quiznova-ai.vercel.app/quiz/${quiz._id || quiz.id}`);
+                            navigator.clipboard.writeText(`${process.env.NEXT_PUBLIC_APP_URL}/quiz/${quiz._id || quiz.id}`);
+                            // navigator.clipboard.writeText(`https://quiznova-ai.vercel.app/quiz/${quiz._id || quiz.id}`);
                             setActiveMenu(null)
                             toast.success('Link copied to clipboard');
                           }}

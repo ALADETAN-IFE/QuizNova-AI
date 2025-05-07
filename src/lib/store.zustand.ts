@@ -101,7 +101,7 @@ export const useAppStore = create<AppState>()(
         setHasSynced:(hasSynced) => set({ hasSynced }),
         clearCurrentQuiz: () => set({ currentQuiz: null }),
         clearQuizResults: () => set({ quizResults: [] }),
-        logout: () => set({ user: null, currentQuiz: null, quizResults: [] }),
+        logout: () => set({ user: null, currentQuiz: null, quizResults: [], hasSynced: false, }),
       }),
       {
         name: 'quizNova-storage',

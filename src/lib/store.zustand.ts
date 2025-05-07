@@ -46,11 +46,13 @@ interface AppState {
   user: User | null;
   currentQuiz: Quiz | null;
   quizResults: QuizResult[];
+  hasSynced: boolean
 
   setUser: (user: User | null) => void;
   setCurrentQuiz: (quiz: Quiz | null) => void;
   // addQuizResult: (result: QuizResult) => void;
   addQuizResult: (results: QuizResult[]) => void;
+  setHasSynced:(hasSynced :boolean) => boolean
   clearCurrentQuiz: () => void;
   clearQuizResults: () => void;
   logout: () => void;
@@ -65,10 +67,12 @@ const migrations = {
     user: null,
     currentQuiz: null,
     quizResults: [],
+    hasSynced: false
     ...state,
     setUser: () => {},
     setCurrentQuiz: () => {},
     addQuizResult: () => {},
+    setHasSynced:() => false
     clearCurrentQuiz: () => {},
     clearQuizResults: () => {},
     logout: () => {},
@@ -84,6 +88,7 @@ export const useAppStore = create<AppState>()(
         user: null,
         currentQuiz: null,
         quizResults: [],
+        hasSynced: false
 
         setUser: (user) => set({ user }),
         setCurrentQuiz: (quiz) => set({ currentQuiz: quiz }),
@@ -94,6 +99,7 @@ export const useAppStore = create<AppState>()(
         //   quizResults: result 
         //   // quizResults: [...state.quizResults, result] 
         // })),
+        setHasSynced:(hasSynced) => set(hasSynced)
         clearCurrentQuiz: () => set({ currentQuiz: null }),
         clearQuizResults: () => set({ quizResults: [] }),
         logout: () => set({ user: null, currentQuiz: null, quizResults: [] }),

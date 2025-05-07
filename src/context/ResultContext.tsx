@@ -17,32 +17,33 @@ interface Quiz {
   id?: string;
   _id?: string;
   questions: Question[];
-  }
+}
+
 interface QuizResult {
   quiz: string;
   score: string | number;
   totalQuestions: string | number;
   createdAt: string;
-  }
+}
   
-  interface ResultContextType {
-    loading: boolean;
+interface ResultContextType {
+  loading: boolean;
   quizResults: Array<{
     quizId: string;
     score: number;
     totalQuestions: number;
     completedAt: string;
     quiz?: Quiz;
-  }>;
+}>;
   saveQuizResult: (quiz: Quiz, score: number) => Promise<void>;
   }
   
   const ResultContext = createContext<ResultContextType | undefined>(undefined);
   
   export function ResultProvider({ children }: { children: ReactNode }) {
-  const { user, quizResults, addQuizResult } = useAppStore();
-  const [loading, setLoading] = useState(false);
-  const [hasSynced, setHasSynced] = useState(false);
+  const { user, quizResults, addQuizResult, hasSynced, setHasSynced } = useAppStore();
+  const [loading, setLoading] = useState<boolean>(false);
+  // const [hasSynced, setHasSynced] = useState(false);
 
   const saveQuizResult = async (quiz: Quiz, score: number) => {
     setLoading(true);

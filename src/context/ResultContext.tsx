@@ -100,9 +100,9 @@ interface ResultContextType {
     useEffect(() => {
         const syncLocalResults = async () => {
       // Skip if already synced or no user loggedIn
-      if(!user) return setHasSynced(false);
-      if (hasSynced) return;
-      // if (!user || hasSynced) return;
+      // if(!user) return setHasSynced(false);
+      // if (hasSynced) return;
+      if (!user || hasSynced) return ;
       console.log("hasSynced", hasSynced)
       setLoading(true);
 
@@ -151,6 +151,7 @@ interface ResultContextType {
 
         // Mark as synced
         setHasSynced(true);
+        console.log("hasSynced2", hasSynced)
             } catch (error) {
               console.error('Error syncing quiz results:', error)
         toast.error('Failed to sync quiz results')

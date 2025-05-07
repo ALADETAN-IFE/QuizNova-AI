@@ -1,6 +1,6 @@
  'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
@@ -45,8 +45,7 @@ interface ResultContextType {
   const { user, quizResults, addQuizResult, hasSynced, setHasSynced } = useAppStore();
   const [loading, setLoading] = useState<boolean>(false);
   // const [hasSynced, setHasSynced] = useState(false);
-  const hasSyncedRef = useRef(false);
-  const isInitialMount = useRef(true);
+
 
   const saveQuizResult = async (quiz: Quiz, score: number) => {
     setLoading(true);
@@ -102,14 +101,8 @@ interface ResultContextType {
   
     useEffect(() => {
         const syncLocalResults = async () => {
-      // Skip on initial mount
-      if (isInitialMount.current) {
-        isInitialMount.current = false;
-        return;
-      }
-
       // Skip if no user or already synced
-      if (!user || hasSyncedRef.current) return;
+      if (!user || hasSynced) return;
       
       setLoading(true);
 
@@ -140,6 +133,9 @@ interface ResultContextType {
           toast.success('Quiz results synced to database!')
         }
 
+        // Check if user result in db's length match the length in localstorage
+        if (dbResults.length === quizResults.length) return;
+        
         // If user has results in database, sync them to local storage
         if (dbResults.length > 0) {
           console.log('Syncing database results to local storage')
@@ -154,7 +150,6 @@ interface ResultContextType {
         }
 
         // Mark as synced
-        hasSyncedRef.current = true;
         setHasSynced(true);
       } catch (error) {
         console.error('Error syncing quiz results:', error)

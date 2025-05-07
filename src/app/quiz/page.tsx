@@ -124,6 +124,11 @@ export default function QuizPage() {
       toast.error('Invalid quiz ID');
       return;
     }
+
+    if(activeMenu){
+      toast.error('close the menubar to access the quiz');
+      return;
+    }
     if(user?.id){
       const quizToShow = filteredQuizzes.filter(e=> e._id === quizId)
       if (quizToShow[0] && quizToShow[0]._id) {

@@ -51,7 +51,7 @@ interface AppState {
   setCurrentQuiz: (quiz: Quiz | null) => void;
   // addQuizResult: (result: QuizResult) => void;
   addQuizResult: (results: QuizResult[]) => void;
-  setHasSynced:(hasSynced :boolean) => boolean
+  setHasSynced:(hasSynced :boolean) => void
   clearCurrentQuiz: () => void;
   clearQuizResults: () => void;
   logout: () => void;
@@ -98,7 +98,7 @@ export const useAppStore = create<AppState>()(
         //   quizResults: result 
         //   // quizResults: [...state.quizResults, result] 
         // })),
-        setHasSynced:(hasSynced) => set({hasSynced: hasSynced}),
+        setHasSynced:(hasSynced) => set({ hasSynced }),
         clearCurrentQuiz: () => set({ currentQuiz: null }),
         clearQuizResults: () => set({ quizResults: [] }),
         logout: () => set({ user: null, currentQuiz: null, quizResults: [] }),

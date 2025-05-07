@@ -6,7 +6,6 @@ interface User {
   username: string;
   email: string;
   plan: 'basic' | 'premium';
-  // add any other fields as needed
 }
 
 interface Quiz {
@@ -46,7 +45,7 @@ interface AppState {
   user: User | null;
   currentQuiz: Quiz | null;
   quizResults: QuizResult[];
-  hasSynced: boolean
+  hasSynced: boolean;
 
   setUser: (user: User | null) => void;
   setCurrentQuiz: (quiz: Quiz | null) => void;
@@ -67,7 +66,7 @@ const migrations = {
     user: null,
     currentQuiz: null,
     quizResults: [],
-    hasSynced: false
+    hasSynced: false,
     ...state,
     setUser: () => {},
     setCurrentQuiz: () => {},
@@ -88,7 +87,7 @@ export const useAppStore = create<AppState>()(
         user: null,
         currentQuiz: null,
         quizResults: [],
-        hasSynced: false
+        hasSynced: false,
 
         setUser: (user) => set({ user }),
         setCurrentQuiz: (quiz) => set({ currentQuiz: quiz }),
@@ -99,7 +98,7 @@ export const useAppStore = create<AppState>()(
         //   quizResults: result 
         //   // quizResults: [...state.quizResults, result] 
         // })),
-        setHasSynced:(hasSynced) => set(hasSynced)
+        setHasSynced:(hasSynced) => set({hasSynced: hasSynced}),
         clearCurrentQuiz: () => set({ currentQuiz: null }),
         clearQuizResults: () => set({ quizResults: [] }),
         logout: () => set({ user: null, currentQuiz: null, quizResults: [] }),

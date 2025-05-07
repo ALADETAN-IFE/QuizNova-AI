@@ -1,6 +1,6 @@
  'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
@@ -24,6 +24,7 @@ interface QuizResult {
   score: string | number;
   totalQuestions: string | number;
   createdAt: string;
+  answers: Question[];
 }
   
 interface ResultContextType {
@@ -44,6 +45,8 @@ interface ResultContextType {
   const { user, quizResults, addQuizResult, hasSynced, setHasSynced } = useAppStore();
   const [loading, setLoading] = useState<boolean>(false);
   // const [hasSynced, setHasSynced] = useState(false);
+  const hasSyncedRef = useRef(false);
+  const isInitialMount = useRef(true);
 
   const saveQuizResult = async (quiz: Quiz, score: number) => {
     setLoading(true);
@@ -99,43 +102,43 @@ interface ResultContextType {
   
     useEffect(() => {
         const syncLocalResults = async () => {
-      // Skip if already synced or no user loggedIn
-      // if(!user) return setHasSynced(false);
-      // if (hasSynced) return;
-      if (!user || hasSynced) return ;
-      console.log("hasSynced", hasSynced)
+      // Skip on initial mount
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+
+      // Skip if no user or already synced
+      if (!user || hasSyncedRef.current) return;
+      
       setLoading(true);
 
-      // if(user && quizResults.length < 1) setHasSynced(false)
-
-        // if(hasSynced) setHasSynced(true)
       try {
         console.log('Syncing results for user:', user.id)
-              // Check if user has any results in database
-              const response = await axios.get(`/api/results?userId=${user.id}`)
-              const dbResults = response.data
-        // console.log('Database results:', dbResults)
+        // Check if user has any results in database
+        const response = await axios.get(`/api/results?userId=${user.id}`)
+        const dbResults = response.data
       
-              // If user has no results in database, sync local storage results
+        // If user has no results in database, sync local storage results
         if (dbResults.length === 0 && quizResults.length > 0) {
           console.log('Syncing local results to database')
-                for (const result of quizResults) {
-                  await axios.post('/api/results', {
-                    quiz: result.quizId,
-                    user: user.id,
-                    score: result.score,
-                    totalQuestions: result.totalQuestions,
-                    answers: result.answers.map((q: Question) => ({
-                      question: q.question,
-                      correctAnswer: q.correctAnswer,
-                      selectedAnswer: q.selectedAnswer,
-                      questionType: q.questionType || 'obj',
-                      isCorrect: q.selectedAnswer == q.correctAnswer, // Calculate correctness based on actual answers
-                    })),
-                  })
-                }
-                toast.success('Quiz results synced to database!')
-              }
+          for (const result of quizResults) {
+            await axios.post('/api/results', {
+              quiz: result.quizId,
+              user: user.id,
+              score: result.score,
+              totalQuestions: result.totalQuestions,
+              answers: result.answers.map((q: Question) => ({
+                question: q.question,
+                correctAnswer: q.correctAnswer,
+                selectedAnswer: q.selectedAnswer,
+                questionType: q.questionType || 'obj',
+                isCorrect: q.selectedAnswer == q.correctAnswer,
+              })),
+            })
+          }
+          toast.success('Quiz results synced to database!')
+        }
 
         // If user has results in database, sync them to local storage
         if (dbResults.length > 0) {
@@ -145,23 +148,24 @@ interface ResultContextType {
             score: result.score,
             totalQuestions: result.totalQuestions,
             completedAt: result.createdAt || new Date().toISOString(),
+            answers: result.answers
           })))
           toast.success('Database results synced to local storage!')
         }
 
         // Mark as synced
+        hasSyncedRef.current = true;
         setHasSynced(true);
-        console.log("hasSynced2", hasSynced)
-            } catch (error) {
-              console.error('Error syncing quiz results:', error)
+      } catch (error) {
+        console.error('Error syncing quiz results:', error)
         toast.error('Failed to sync quiz results')
       } finally {
         setLoading(false);
-            }
-          }
-      
-          syncLocalResults()
-  }, [user, hasSynced]); // Only depend on user ID and sync status
+      }
+    }
+    
+    syncLocalResults();
+  }, [user, hasSynced]);
   
     const value = {
       loading,

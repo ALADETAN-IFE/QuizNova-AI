@@ -112,7 +112,7 @@ interface ResultContextType {
         const response = await axios.get(`/api/results?userId=${user.id}`)
         const dbResults = response.data
       
-        // If user has no results in database, sync local storage results
+        // If user has no results in database, sync localstorage results
         if (dbResults.length === 0 && quizResults.length > 0) {
           console.log('Syncing local results to database')
           for (const result of quizResults) {
@@ -135,8 +135,8 @@ interface ResultContextType {
 
         // Check if user result in db's length match the length in localstorage
         if (dbResults.length === quizResults.length) return;
-        
-        // If user has results in database, sync them to local storage
+
+        // If user has results in database, sync them to localstorage
         if (dbResults.length > 0) {
           console.log('Syncing database results to local storage')
           addQuizResult(dbResults.map((result: QuizResult) => ({

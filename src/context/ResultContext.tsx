@@ -100,7 +100,7 @@ interface ResultContextType {
     useEffect(() => {
         const syncLocalResults = async () => {
       // Skip if already synced or no user loggedIn
-      if(!user) setHasSynced(false) return;
+      if(!user) return setHasSynced(false);
       if (hasSynced) return;
       // if (!user || hasSynced) return;
       console.log("hasSynced", hasSynced)

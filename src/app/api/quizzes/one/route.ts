@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
-import { verifyAuth } from '@/lib/auth-middleware';
+// import { verifyAuth } from '@/lib/auth-middleware';
 
 // Export a route handler using the syntax for Next.js 13+
 export async function GET(req: Request) {

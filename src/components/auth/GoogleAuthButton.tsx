@@ -10,10 +10,8 @@ import { useRouter } from 'next/navigation'
 // import axios from 'axios'
 
 interface Session {
-  _id: string;
   id: string;
   username: string;
-  name: string;
   image: string;
   email: string;
   plan: "basic" | "premium";
@@ -44,14 +42,12 @@ export default function GoogleAuthButton() {
       if (session?.user) {
         toast.success('Logged in with Google successfully')
         const userSession: Session = {
-          _id: session.user.id || '',
-          id: session.user.id || '',
-          username: session.user.name || '',
-          name: session.user.name || '',
+          id: session.user._id || '',
+          username: session.user.username || '',
           image: session.user.image || '',
           email: session.user.email || '',
           plan: "basic",
-          googleId: session.user.id || ''
+          googleId: session.user.id || session.user.googleId || ""
         }
         setUser(userSession)
         router.push('/profile')

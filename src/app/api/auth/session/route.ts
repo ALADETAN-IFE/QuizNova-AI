@@ -14,12 +14,12 @@ export async function GET() {
   // })
   return NextResponse.json({ 
     user: {
-      _id: session.user._id,
+      id: session.user._id,
       email: session.user.email,
       username: session.user.email?.split('@')[0] || session.user.name?.replace(/\s+/g, ''),
       // name: session.user.name,
       image: session.user.image,
-      googleId: session.user.googleId,
+      googleId: session.user.id,
       plan: session.user.plan
     }
   })

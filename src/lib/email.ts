@@ -1,32 +1,30 @@
 import nodemailer from 'nodemailer';
 
-// // Create reusable transporter
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASSWORD,
-//   },
-// });
-
-// Create a transporter using SMTP
+// Professional transporter configuration
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.example.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER || 'user@example.com',
-      pass: process.env.SMTP_PASS || 'password',
-    },
-    tls : {
-      rejectUnauthorized: false,
-    },
-  })
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER!,
+    pass: process.env.GMAIL_APP_PASSWORD!, // App password, not regular password
+  },
+  // Professional settings
+  pool: true,
+  maxConnections: 1,
+  rateDelta: 20000, // 20s delay between emails
+  headers: {
+    'X-Application': 'QuizNova AI',
+    'List-Unsubscribe': `<mailto:unsubscribe@quiznova-ai.vercel.app?subject=Unsubscribe>`
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 
 export async function sendWelcomeEmail(userEmail: string, userName: string) {
   try {
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"QuizNova AI" <no-reply@quiznova-ai.vercel.app>`, // Professional sender
+      replyTo: '"Support Team" <support@quiznova-ai.vercel.app>', // For replies
       to: userEmail,
       subject: 'Welcome to QuizNova! 🎉',
       html: `
@@ -51,10 +49,15 @@ export async function sendWelcomeEmail(userEmail: string, userName: string) {
           <p>Best regards,<br>The QuizNova Team</p>
         </div>
       `,
+       // Professional headers
+       headers: {
+        'X-Priority': '3',
+        'X-Mailer': 'QuizNovaAI'
+      }
     };
 
     await transporter.sendMail(mailOptions);
-    console.log('Welcome email sent successfully');
+    console.log('Welcome email sent successfully to:', userEmail);
   } catch (error) {
     console.error('Error sending welcome email:', error);
     // Don't throw the error as email sending should not block the signup process
@@ -66,7 +69,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
     
     try {
       await transporter.sendMail({
-        from: process.env.SMTP_FROM || '"QuizNova AI" <noreply@quiznova.com>',
+        from: `"QuizNova AI" <no-reply@quiznova-ai.vercel.app>`,
         to: email,
         subject: 'Reset Your Password',
         html: `
@@ -77,7 +80,12 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
           <p>If you didn't request this, you can safely ignore this email.</p>
           <p>This link will expire in 1 hour.</p>
           <p>Best regards,<br>The QuizNova AI Team</p>
-        `,
+          `,
+          // Security headers
+          headers: {
+            'X-Priority': '1', // High priority for password resets
+            'X-Mailer': 'QuizNovaAI'
+          }
       })
       return true
     } catch (error) {

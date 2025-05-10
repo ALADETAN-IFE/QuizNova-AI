@@ -13,16 +13,19 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
+    select: false, // option remains, which means the password won't be included in queries by default (for security)
   },
   image: {
     type: String,
-    default: '',
+    default: "",
   },
   plan:{
     type: String,
     enum: ["basic", "premium"],
     default: "basic"
+  },
+  googleId: {
+    type: String
   },
   resetToken: String,
   resetTokenExpiry: Date,

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { Eye, EyeOff } from 'lucide-react'
+import GoogleAuthButton from '@/components/auth/GoogleAuthButton'
 // import toast from 'react-hot-toast'
 
 export default function SignUp() {
@@ -41,7 +42,7 @@ export default function SignUp() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-cool-black px-4">
-      <div className="w-full max-w-md space-y-8 bg-cool-black/50 p-8 rounded-2xl border border-cool-white/10">
+      <div className="w-full max-w-md space-y-8 bg-cool-black/50 p-8 rounded-2xl border border-cool-white/10 backdrop-blur-sm">
         <div className="text-center">
           <h1 className="text-4xl font-bold gradient-text mb-2">Join QuizNova</h1>
           <p className="text-cool-white/70">Create an account to start your learning journey</p>
@@ -65,9 +66,9 @@ export default function SignUp() {
                 type="text"
                 required
                 autoComplete="username"
-                // pattern="^[a-zA-Z0-9_-]{3,16}$"
+                pattern="^[a-zA-Z0-9_-]{3,16}$"
                 title="Username must be 3-16 characters and can only contain letters, numbers, underscores, and hyphens"
-                className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
+                className="w-full px-4 py-2 bg-white/5 border border-cool-white/10 rounded-lg text-cool-white placeholder-cool-white/50 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
                 placeholder="Choose a username"
               />
             </div>
@@ -82,7 +83,7 @@ export default function SignUp() {
                 type="email"
                 required
                 autoComplete="email"
-                className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
+                className="w-full px-4 py-2 bg-white/5 border border-cool-white/10 rounded-lg text-cool-white placeholder-cool-white/50 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
                 placeholder="Enter your email"
               />
             </div>
@@ -99,13 +100,13 @@ export default function SignUp() {
                   required
                   autoComplete="new-password"
                   minLength={8}
-                  className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all pr-12"
+                  className="w-full px-4 py-2 bg-white/5 border border-cool-white/10 rounded-lg text-cool-white placeholder-cool-white/50 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all pr-12"
                   placeholder="Create a password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-cool-white/50 hover:text-cool-white transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -131,6 +132,17 @@ export default function SignUp() {
               'Create account'
             )}
           </button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-cool-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-cool-black/50 text-cool-white/50">Or continue with</span>
+            </div>
+          </div>
+
+          <GoogleAuthButton />
 
           <div className="text-center">
             <Link 

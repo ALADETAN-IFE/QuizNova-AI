@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { Eye, EyeOff } from 'lucide-react'
+import GoogleAuthButton from '@/components/auth/GoogleAuthButton'
 
 export default function SignIn() {
   const router = useRouter()
@@ -39,7 +40,7 @@ export default function SignIn() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-cool-black px-4">
-      <div className="w-full max-w-md space-y-8 bg-cool-black/50 p-8 rounded-2xl border border-cool-white/10">
+      <div className="w-full max-w-md space-y-8 bg-cool-black/50 p-8 rounded-2xl border border-cool-white/10 backdrop-blur-sm">
         <div className="text-center">
           <h1 className="text-4xl font-bold gradient-text mb-2">Welcome Back</h1>
           <p className="text-cool-white/70">Sign in to continue your learning journey</p>
@@ -62,7 +63,7 @@ export default function SignIn() {
                 name="identifier"
                 type="text"
                 required
-                className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
+                className="w-full px-4 py-2 bg-white/5 border border-cool-white/10 rounded-lg text-cool-white placeholder-cool-white/50 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all"
                 placeholder="Enter your email or username"
               />
             </div>
@@ -78,13 +79,13 @@ export default function SignIn() {
                   type={showPassword ? "text" : "password"}
                   required
                   autoComplete="current-password"
-                  className="w-full px-4 py-2 bg-white border border-cool-white/10 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all pr-12"
+                  className="w-full px-4 py-2 bg-white/5 border border-cool-white/10 rounded-lg text-cool-white placeholder-cool-white/50 focus:outline-none focus:ring-2 focus:ring-quantum-teal/50 focus:border-transparent transition-all pr-12"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-cool-white/50 hover:text-cool-white transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -110,6 +111,17 @@ export default function SignIn() {
               'Sign in'
             )}
           </button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-cool-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-cool-black/50 text-cool-white/50">Or continue with</span>
+            </div>
+          </div>
+
+          <GoogleAuthButton />
 
           <div className="text-center">
             <Link 

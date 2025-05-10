@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Upload, Brain, BarChart, Share2 } from 'lucide-react';
 import Image from 'next/image';
+import Footer from '@/components/layout/Footer'
 
 export default function Home() {
   return (
@@ -145,6 +146,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <Footer/>
     </main>
   );
 }

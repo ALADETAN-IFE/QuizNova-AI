@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
 import { verifyToken } from '@/utils/auth'
+import { useSession } from 'next-auth/react'
 
 interface User {
   id: string;
@@ -18,6 +19,7 @@ interface AuthContextType {
   loading: boolean;
   login: (identifier: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
+  // googleSignIn: () => Promise<void>;
   logout: () => void;
 }
 
@@ -28,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const { status } = useSession()
 
   useEffect(() => {
     // Check if user is already logged in
@@ -43,7 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           router.push('/auth/signin')
         }
       }
-      checkAuth()
+      if (status !== "authenticated") {
+        checkAuth()
+      } 
     } else {
       setLoading(false);
     }
@@ -89,6 +94,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // const googleSignIn = async () => {
+  //   try {
+  //     const response = await signIn('google', { redirect: false })
+      
+  //     if (response?.error) {
+  //       console.error("response.error")
+  //       throw new Error(response.error)
+  //     }
+
+  //     // Fetch the user data after successful Google sign-in
+  //     const userResponse = await axios.get('/api/auth/session')
+  //     console.log("session", userResponse)
+  //     if (userResponse.user) {
+  //       setUser(userResponse.user)
+  //       // router.push('/quiz')
+  //     }
+      
+  //     toast.success('Logged in with Google successfully')
+  //     // router.push('/quiz')
+  //   } catch (error) {
+  //     console.error('Google Sign-In error:', error)
+  //     if (error instanceof Error) {
+  //       toast.error(error.message)
+  //     }
+  //     throw error
+  //   }
+  // }
+
+  useEffect(() => {
+     // if (status === "authenticated") {
+      //   setUser(session?.user)
+      // }
+    if (status == "authenticated") {
+      // googleSignIn()
+    }
+  }, [pathname])
+
   const logout = () => {
     setUser(null);
     router.push('/');
@@ -99,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     login,
     register,
+    // googleSignIn,
     logout,
   };
 

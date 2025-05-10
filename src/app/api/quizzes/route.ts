@@ -68,6 +68,8 @@ export async function POST(req: Request) {
       createdBy: createdById,
     });
 
+    
+
     return NextResponse.json(quiz, { status: 201 });
   } catch (error) {
     console.error('Error creating quiz:', error);

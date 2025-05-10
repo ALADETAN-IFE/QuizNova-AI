@@ -6,6 +6,8 @@ interface User {
   username: string;
   email: string;
   plan: 'basic' | 'premium';
+  image?: string;
+  googleId?: string;
 }
 
 interface Quiz {

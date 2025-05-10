@@ -14,7 +14,7 @@ declare module "next-auth" {
       username: string | null;
       name?: string | null;
       image: string | null;
-      googleId?: string | null;
+      googleId: string | null;
       plan: string | null;
     }
   }

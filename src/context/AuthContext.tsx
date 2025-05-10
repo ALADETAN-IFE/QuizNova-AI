@@ -30,13 +30,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { status } = useSession()
+  const { data: session } = useSession()
 
   useEffect(() => {
     // Check if user is already logged in
     if (user) {
       setLoading(false);
-
+      console.log("checking auth...")
       // check if the token is expired
       const checkAuth = async () => {
         const result = await verifyToken()
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           router.push('/auth/signin')
         }
       }
-      if (status !== "authenticated") {
+      if (!session) {
         checkAuth()
       } 
     } else {

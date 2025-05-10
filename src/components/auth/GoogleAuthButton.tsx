@@ -42,10 +42,10 @@ export default function GoogleAuthButton() {
       if (session?.user) {
         toast.success('Logged in with Google successfully')
         const userSession: Session = {
-          id: session.user._id || '',
-          username: session.user.username || '',
-          image: session.user.image || '',
-          email: session.user.email || '',
+          id: session.user._id!,
+          username: session.user.username!,
+          image: session.user.image!,
+          email: session.user.email!,
           plan: "basic",
           googleId: session.user.id || session.user.googleId || ""
         }

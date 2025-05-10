@@ -122,7 +122,9 @@ export async function GET(req: Request) {
     // Verify quiz result ownership
     if (userId !== authResult.decoded.userId) {
       return NextResponse.json(
-        { error: "Unauthorized - You can only get your own quiz results" },
+        { error: "Unauthorized - You can only get your own quiz results",
+          msg : `userID: ${userId} and authResult.decoded.userId: ${authResult.decoded.userId} are not the same`
+         },
         { status: 403 }
       );
     }

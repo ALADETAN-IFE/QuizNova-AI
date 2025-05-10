@@ -14,7 +14,7 @@ export async function GET() {
   // })
   return NextResponse.json({ 
     user: {
-      id: session.user._id,
+      _id: session.user._id,
       email: session.user.email,
       username: session.user.email?.split('@')[0] || session.user.name?.replace(/\s+/g, ''),
       // name: session.user.name,

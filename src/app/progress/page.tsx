@@ -15,8 +15,8 @@ import {
 import { format, subDays, subMonths, subYears, isWithinInterval } from 'date-fns'
 import { useAppStore } from "@/lib/store.zustand";
 import { useRouter } from 'next/navigation';
-import { LogOut } from 'lucide-react';
 import { useResult } from '@/context/ResultContext';
+import LogOutButton from "@/components/auth/LogoutButton"
 
 interface QuizId {
   _id: string;
@@ -57,7 +57,7 @@ function truncateTitle(title: string | QuizId, maxLength = 20) {
 
 export default function ProgressPage() {
   const router = useRouter();
-  const { user, logout } = useAppStore();
+  const { user } = useAppStore();
   // Get quiz results and loading state from ResultContext
   const { quizResults, loading } = useResult();
   // State for time range filter (week/month/year)
@@ -98,11 +98,7 @@ export default function ProgressPage() {
     )
   }, [quizResults, user, router]);
 
-  // Handle user logout
-  const handleLogout = () => {
-    logout();
-    router.push('/');
-  };
+
 
   // Calculate overall average score from all quiz results
   const calculateAverageScore = () => {
@@ -182,13 +178,7 @@ export default function ProgressPage() {
       {/* Header with title and logout button */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold gradient-text">Your Progress</h1>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 bg-starburst-orange/20 text-starburst-orange rounded-lg hover:bg-starburst-orange/30 transition-colors"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
+        <LogOutButton/ >
       </div>
 
       {/* Summary cards showing average score and total quizzes */}

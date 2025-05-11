@@ -12,6 +12,7 @@ export default function AuthError() {
     AccessDenied: 'You do not have permission to sign in.',
     Verification: 'The verification link may have expired or already been used.',
     Default: 'An error occurred during authentication.',
+    EMAIL_EXISTS_WITH_PASSWORD: "Please login manually"
   }
 
   const errorMessage = error ? errorMessages[error] || errorMessages.Default : errorMessages.Default

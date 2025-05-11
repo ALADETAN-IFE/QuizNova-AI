@@ -50,21 +50,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (status === "loading") return;
         if (!user && session?.user) {
           const userSession: Session = {
-          id: session.user._id!,
-          username: session.user.username!,
-          image: session.user.image!,
-          email: session.user.email!,
-          plan: session.user.plan! || "basic",
-          googleId: session.user.id || session.user.googleId || ""
+            id: session.user._id!,
+            username: session.user.username!,
+            image: session.user.image!,
+            email: session.user.email!,
+            plan: session.user.plan! || "basic",
+            googleId: session.user.id || session.user.googleId || ""
         }
         setUser(userSession)
         };
 
         setLoading(false);
-        console.log("checking auth...", session)
+        console.log("checking auth...")
         
         if (!session) {
+          console.log("verify token")
           const result = await verifyToken()
+          console.log("result", result)
           if (result !== true) {
             toast.error(result)
             setUser(null)

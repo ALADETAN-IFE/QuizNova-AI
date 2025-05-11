@@ -46,9 +46,15 @@ export const authOptions: NextAuthOptions = {
           // Check if user exists
           const existingUser = await User.findOne({ $or: [{ email: user.email }, { username }] })
 
-          // console.log("exists", )
           
-          if (existingUser && existingUser.googleId !== "") {
+          if (existingUser) {
+            // If user exists and has a password, they need to use manual login
+            if (existingUser.password) {
+              console.log("User exists with password, requires manual login")
+              return Promise.reject(new Error("EMAIL_EXISTS_WITH_PASSWORD"));
+            }
+            
+            // Otherwise, just sign in with Google
             console.log("Existing user:", existingUser)
             user._id = existingUser._id.toString()
             return true

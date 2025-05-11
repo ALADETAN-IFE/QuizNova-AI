@@ -3,22 +3,21 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAppStore } from '@/lib/store.zustand'
-import { LogOut, User, Mail, Trophy, Calendar } from 'lucide-react'
+import { User, Mail, Trophy, Calendar } from 'lucide-react'
 // import Image from 'next/image'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { useResult } from '@/context/ResultContext'
-import { signOut, useSession } from 'next-auth/react'
+import LogOutButton from "@/components/auth/LogoutButton"
 
 export default function ProfilePage() {
   const router = useRouter()
-  const { user, logout, setUser } = useAppStore()
+  const { user, setUser } = useAppStore()
   const { quizResults, loading } = useResult()
   const [isEditing, setIsEditing] = useState(false)
   const [username, setUsername] = useState(user?.username || '')
   const [isLoading, setIsLoading] = useState(false)
-  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-  const { status } = useSession()
+
   if (!user) {
     // router.push('/auth/signin')
     return null
@@ -37,27 +36,7 @@ export default function ProfilePage() {
     );
   }
 
-  const handleLogoutClick = () => {
-    setShowLogoutConfirm(true)
-  }
 
-  const handleLogoutConfirm = async () => {
-    try {
-      if (status == "authenticated"){
-        await signOut({ redirect: false })
-      }
-      logout()
-      // router.push('/')
-      toast.success('Logged out successfully')
-    } catch (error) {
-      console.error('Logout error:', error)
-      toast.error('Failed to logout')
-    }
-  }
-
-  const handleLogoutCancel = () => {
-    setShowLogoutConfirm(false)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,13 +69,7 @@ export default function ProfilePage() {
     <div className="p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold gradient-text">Profile</h1>
-        <button
-          onClick={handleLogoutClick}
-          className="flex items-center gap-2 px-4 py-2 bg-starburst-orange/20 text-starburst-orange rounded-lg hover:bg-starburst-orange/30 transition-colors"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
+        <LogOutButton/ >
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -198,29 +171,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-
-      {showLogoutConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-          <div className="bg-midnight-gray p-6 rounded-lg max-w-sm w-full">
-            <h3 className="text-xl font-semibold mb-4 text-cool-white">Confirm Logout</h3>
-            <p className="text-cool-white/70 mb-6">Are you sure you want to logout?</p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={handleLogoutCancel}
-                className="px-4 py-2 bg-ai-blue/20 text-ai-blue rounded-lg hover:bg-ai-blue/30 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleLogoutConfirm}
-                className="px-4 py-2 bg-starburst-orange/20 text-starburst-orange rounded-lg hover:bg-starburst-orange/30 transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 } 

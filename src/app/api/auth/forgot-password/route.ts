@@ -9,7 +9,6 @@ export const config = {
 }
 
 export async function POST(req: Request) {
-  await connectToDatabase()
   try {
     const { email } = await req.json()
 
@@ -20,39 +19,44 @@ export async function POST(req: Request) {
       )
     }
 
-    const user = await User.findOne({ email })
+    // Connect to database
+    await connectToDatabase()
+    
+    // Find user by email
+    const user = await User.findOne({ email: email.toLowerCase() })
+    
+    // For security reasons, don't reveal if a user was found or not
     if (!user) {
-      return NextResponse.json(
-        { error: 'No user found with this email' },
-        { status: 404 }
-      )
+      // Still return success to prevent email enumeration attacks
+      return NextResponse.json({ message: 'If your email is in our system, you will receive a reset link' })
     }
 
-    // Generate reset token
+    // Generate a random token
     const resetToken = crypto.randomBytes(32).toString('hex')
-    const resetTokenExpiry = Date.now() + 3600000 // 1 hour
+    
+    // Set an expiry time - 1 hour from now
+    const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000)
 
-    // Save reset token to user
+    // Save the token to the user
     user.resetToken = resetToken
     user.resetTokenExpiry = resetTokenExpiry
     await user.save()
 
-    // Send password reset email
+    // Send the password reset email
     const emailSent = await sendPasswordResetEmail(email, resetToken)
+
     if (!emailSent) {
       return NextResponse.json(
-        { error: 'Error sending reset email' },
+        { error: 'Failed to send reset email' },
         { status: 500 }
       )
     }
 
-    return NextResponse.json({
-      message: 'Password reset email sent'
-    })
+    return NextResponse.json({ message: 'If your email is in our system, you will receive a reset link' })
   } catch (error) {
     console.error('Forgot password error:', error)
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Internal server error' },
       { status: 500 }
     )
   }

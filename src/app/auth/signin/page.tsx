@@ -133,6 +133,14 @@ export default function SignIn() {
               Don&apos;t have an account? Sign up
             </Link>
           </div>
+          <div className="flex justify-end mt-1">
+            <Link 
+              href="/auth/forgot-password" 
+              className="text-quantum-teal hover:text-quantum-teal/80 text-xs font-medium transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
         </form>
       </div>
     </div>

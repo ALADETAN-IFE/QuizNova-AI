@@ -6,6 +6,7 @@ import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/context/AuthContext";
 import { ResultProvider } from "@/context/ResultContext";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
+import { Analytics } from "@vercel/analytics/next"
 
 // Configure Inter font for Turbopack compatibility
 const inter = Inter({
@@ -59,6 +60,7 @@ export default function RootLayout({
             <Toaster 
               // position="top-right"
             />
+            <Analytics />
             {children}
             <Navigation />
           </ResultProvider>

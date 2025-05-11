@@ -69,19 +69,19 @@ export async function sendWelcomeEmail(userEmail: string, userName: string) {
                 <span style="${styles.listItemIcon}">🤝</span>
                 Connect with other learners and share your knowledge
               </li>
-            </ul>
+          </ul>
 
             <div style="text-align: center;">
-              <a href="${process.env.NEXT_PUBLIC_APP_URL}/quiz" 
+            <a href="${process.env.NEXT_PUBLIC_APP_URL}/quiz" 
                  style="${styles.button}">
                 Start Your Learning Journey
-              </a>
+            </a>
             </div>
 
             <p style="font-size: 16px; line-height: 1.6;">If you have any questions or need assistance, our support team is always here to help!</p>
           </div>
           <div style="${styles.footer}">
-            <p>Best regards,<br>The QuizNova Team</p>
+          <p>Best regards,<br>The QuizNova Team</p>
             <p style="font-size: 12px; margin-top: 10px;">
               © ${new Date().getFullYear()} QuizNova AI. All rights reserved.
             </p>
@@ -101,17 +101,17 @@ export async function sendWelcomeEmail(userEmail: string, userName: string) {
     console.error('Error sending welcome email:', error);
     // Don't throw the error as email sending should not block the signup process
   }
-}
+} 
 
 export async function sendPasswordResetEmail(email: string, resetToken: string) {
   const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
-  
-  try {
-    await transporter.sendMail({
-      from: `"QuizNova AI" <no-reply@quiznova-ai.vercel.app>`,
-      to: email,
-      subject: 'Reset Your Password',
-      html: `
+    
+    try {
+      await transporter.sendMail({
+        from: `"QuizNova AI" <no-reply@quiznova-ai.vercel.app>`,
+        to: email,
+        subject: 'Reset Your Password',
+        html: `
         <div style="${styles.container}">
           <div style="${styles.header}">
             <h1 style="${styles.title}">Password Reset Request 🔐</h1>
@@ -143,14 +143,14 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
           </div>
         </div>
       `,
-      headers: {
+          headers: {
         'X-Priority': '1',
-        'X-Mailer': 'QuizNovaAI'
-      }
+            'X-Mailer': 'QuizNovaAI'
+          }
     });
     return true;
-  } catch (error) {
+    } catch (error) {
     console.error('Error sending password reset email:', error);
     return false;
-  }
-} 
+    }
+  } 

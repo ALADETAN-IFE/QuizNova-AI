@@ -1,3 +1,5 @@
+'use server';
+
 import nodemailer from 'nodemailer';
 
 // Professional transporter configuration

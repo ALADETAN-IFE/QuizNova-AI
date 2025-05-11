@@ -26,12 +26,12 @@ export default function SignUp() {
     const password = formData.get('password') as string
 
     try {
-     await register(username, email.toLowerCase(), password)
+      await register(username, email.toLowerCase(), password)
       router.push('/')
     } catch (error) {
-      if (error instanceof Error && 'response' in error) {
-        const serverError = error as { response?: { data?: { error?: string } } }
-        setError(serverError.response?.data?.error || 'Something went wrong')
+      console.log("signupError", error)
+      if (typeof error === 'string') {
+        setError(error == "Internal Server Error" ? "Something went wrong": error)
       } else {
         setError('Something went wrong')
       }

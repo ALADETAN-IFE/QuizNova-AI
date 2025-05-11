@@ -8,7 +8,7 @@ import { LogOut, User, Mail, Trophy, Calendar } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import axios from 'axios'
 import { useResult } from '@/context/ResultContext'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -18,7 +18,7 @@ export default function ProfilePage() {
   const [username, setUsername] = useState(user?.username || '')
   const [isLoading, setIsLoading] = useState(false)
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-
+  const { status } = useSession()
   if (!user) {
     // router.push('/auth/signin')
     return null
@@ -43,9 +43,11 @@ export default function ProfilePage() {
 
   const handleLogoutConfirm = async () => {
     try {
-      await signOut({ redirect: false })
+      if (status == "authenticated"){
+        await signOut({ redirect: false })
+      }
       logout()
-      router.push('/')
+      // router.push('/')
       toast.success('Logged out successfully')
     } catch (error) {
       console.error('Logout error:', error)

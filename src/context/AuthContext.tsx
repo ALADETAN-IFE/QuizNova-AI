@@ -6,7 +6,9 @@ import { useRouter, usePathname } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
 import { verifyToken } from '@/utils/auth'
-import { useSession } from 'next-auth/react'
+// import { useSession } from 'next-auth/react'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/next-auth'
 
 interface User {
   id: string;
@@ -30,34 +32,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession()
-
+  // const { data: session } = useSession()
+  
   useEffect(() => {
-    // Check if user is already logged in
-    if (user) {
-      setLoading(false);
-      console.log("checking auth...")
-      // check if the token is expired
-      const checkAuth = async () => {
-        const result = await verifyToken()
-        if (result !== true) {
-          toast.error(result)
-          setUser(null)
-          router.push('/auth/signin')
+    const checkAuth = async () => {
+      if (user) {
+        const session = await getServerSession(authOptions);
+        setLoading(false);
+        console.log("checking auth...", session)
+        
+        if (!session) {
+          const result = await verifyToken()
+          if (result !== true) {
+            toast.error(result)
+            setUser(null)
+            router.push('/auth/signin')
+          }
         }
+      } else {
+        setLoading(false);
       }
-      if (!session) {
-        checkAuth()
-      } 
-    } else {
-      setLoading(false);
-    }
-    // Redirect to sign in if user is not logged in
-    // if (!user && (pathname === '/progress' || pathname === '/profile')) {
-    if (!user &&  ['/progress', '/profile'].includes(pathname)) {
-      router.push('/auth/signin');
-      return;
-    }
+
+      if (!user && ['/progress', '/profile'].includes(pathname)) {
+        router.push('/auth/signin');
+      }
+    };
+
+    checkAuth();
   }, [user, pathname]);
 
   const login = async (identifier: string, password: string) => {
@@ -88,52 +89,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Registration error:', error);
       if (axios.isAxiosError(error) && error.response?.data?.error) {
-        throw new Error(error.response.data.error);
+        throw error.response.data.error;
       }
-      throw new Error('Registration failed. Please try again.');
+      throw 'Registration failed. Please try again.';
     }
   };
 
-  // const googleSignIn = async () => {
-  //   try {
-  //     const response = await signIn('google', { redirect: false })
-      
-  //     if (response?.error) {
-  //       console.error("response.error")
-  //       throw new Error(response.error)
-  //     }
 
-  //     // Fetch the user data after successful Google sign-in
-  //     const userResponse = await axios.get('/api/auth/session')
-  //     console.log("session", userResponse)
-  //     if (userResponse.user) {
-  //       setUser(userResponse.user)
-  //       // router.push('/quiz')
-  //     }
-      
-  //     toast.success('Logged in with Google successfully')
-  //     // router.push('/quiz')
-  //   } catch (error) {
-  //     console.error('Google Sign-In error:', error)
-  //     if (error instanceof Error) {
-  //       toast.error(error.message)
-  //     }
-  //     throw error
+  // useEffect(() => {
+  //    // if (status === "authenticated") {
+  //     //   setUser(session?.user)
+  //     // }
+  //   if (status == "authenticated") {
+  //     // googleSignIn()
   //   }
-  // }
+  // }, [pathname])
 
-  useEffect(() => {
-     // if (status === "authenticated") {
-      //   setUser(session?.user)
-      // }
-    if (status == "authenticated") {
-      // googleSignIn()
+  const logout = async () => {
+    try {
+      setUser(null);
+      const res = await axios.post('/api/auth/logout');
+      toast.success(res.data.message)
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still proceed with logout even if API call fails
+      router.push('/');
     }
-  }, [pathname])
-
-  const logout = () => {
-    setUser(null);
-    router.push('/');
   };
 
   const value = {

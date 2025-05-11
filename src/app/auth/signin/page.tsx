@@ -27,9 +27,11 @@ export default function SignIn() {
       await login(identifier, password)
       router.push('/')
     } catch (error) {
+       console.log("loginError", error)
       if (error instanceof Error && 'response' in error) {
         const serverError = error as { response?: { data?: { error?: string } } }
-        setError(serverError.response?.data?.error || 'Something went wrong')
+        setError(
+          serverError.response?.data?.error == "Internal Server Error" ? "Something went wrong" : serverError.response?.data?.error || 'Something went wrong')
       } else {
         setError('Something went wrong')
       }

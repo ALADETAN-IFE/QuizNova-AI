@@ -23,9 +23,9 @@ export default function GoogleAuthButton() {
   // const { googleSignIn } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter();
-  const { data: session } = useSession()
+  const { status, data: session } = useSession()
 
-  console.log("session2", session?.user)
+  console.log("session2:", session?.user, "status:", status)
 
   const handleGoogleSignIn = async () => {
     try {
@@ -50,7 +50,7 @@ export default function GoogleAuthButton() {
           googleId: session.user.id || session.user.googleId || ""
         }
         setUser(userSession)
-        router.push('/profile')
+        router.push('/')
       }
     } catch (error) {
       console.error("Error signing in with Google:", error)

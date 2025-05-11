@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    select: false, // option remains, which means the password won't be included in queries by default (for security)
+    // select: false, // option remains, which means the password won't be included in queries by default (for security)
   },
   image: {
     type: String,

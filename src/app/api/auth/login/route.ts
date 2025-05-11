@@ -36,6 +36,8 @@ export async function POST(req: Request) {
       )
     }
 
+    console.log("user", user)
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password)
     if (!isPasswordValid) {
@@ -61,7 +63,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Internal Server Error', msg: error },
       { status: 500 }
     )
   }

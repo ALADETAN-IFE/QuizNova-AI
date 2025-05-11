@@ -5,7 +5,7 @@ interface User {
   id: string;
   username: string;
   email: string;
-  plan: 'basic' | 'premium';
+  plan: 'basic' | 'premium' | string;
   image?: string;
   googleId?: string;
 }

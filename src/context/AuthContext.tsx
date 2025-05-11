@@ -6,14 +6,23 @@ import { useRouter, usePathname } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 import { useAppStore } from "@/lib/store.zustand";
 import { verifyToken } from '@/utils/auth'
-// import { useSession } from 'next-auth/react'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/next-auth'
+import { useSession } from 'next-auth/react'
+// import { getServerSession } from 'next-auth'
+// import { authOptions } from '@/lib/next-auth'
 
 interface User {
   id: string;
   username: string;
   email: string;
+}
+
+interface Session {
+  id: string;
+  username: string;
+  image: string;
+  email: string;
+  plan: string;
+  googleId: string;
 }
 
 interface AuthContextType {
@@ -32,12 +41,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  // const { data: session } = useSession()
+  const { status, data: session } = useSession()
   
   useEffect(() => {
     const checkAuth = async () => {
       if (user) {
-        const session = await getServerSession(authOptions);
+        // const session = await getServerSession(authOptions);
+        if (status === "loading") return;
+        if (!user && session?.user) {
+          const userSession: Session = {
+          id: session.user._id!,
+          username: session.user.username!,
+          image: session.user.image!,
+          email: session.user.email!,
+          plan: session.user.plan! || "basic",
+          googleId: session.user.id || session.user.googleId || ""
+        }
+        setUser(userSession)
+        };
+
         setLoading(false);
         console.log("checking auth...", session)
         
@@ -59,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     checkAuth();
-  }, [user, pathname]);
+  }, [user, session, status, pathname]);
 
   const login = async (identifier: string, password: string) => {
     try {

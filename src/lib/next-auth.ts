@@ -68,6 +68,8 @@ export const authOptions: NextAuthOptions = {
             console.error('Failed to create user')
             return false
           }
+          
+          await newUser.save()
 
           console.log("New user created:", newUser)
           // Store MongoDB _id in the id field that exists on User type

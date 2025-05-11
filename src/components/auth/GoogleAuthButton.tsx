@@ -14,7 +14,7 @@ interface Session {
   username: string;
   image: string;
   email: string;
-  plan: "basic" | "premium";
+  plan: string;
   googleId: string;
 }
 
@@ -46,7 +46,7 @@ export default function GoogleAuthButton() {
           username: session.user.username!,
           image: session.user.image!,
           email: session.user.email!,
-          plan: "basic",
+          plan: session.user.plan!,
           googleId: session.user.id || session.user.googleId || ""
         }
         setUser(userSession)

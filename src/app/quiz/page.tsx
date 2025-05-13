@@ -67,6 +67,13 @@ export default function QuizPage() {
            setTimeout(() => {
             setLoading(false);
           }, 1200);
+        } else if (!currentQuiz && !user?.id){
+          setTimeout(() => {
+            setLoading(false);
+              console.log("hello")
+              toast.success('No quizzes available to load');
+
+          }, 1500);  
         }
       } catch (error: unknown) {
         // console.error('Error fetching quizzes:', error);
@@ -84,12 +91,6 @@ export default function QuizPage() {
           }, 1200);
       } 
       // finally {
-      //   setTimeout(() => {
-      //     setLoading(false);
-      //     if(!currentQuiz || !user?.id){
-      //       toast.success('No quizzes available to load');
-      //     }
-      //   }, 1500);
       // }
     };
 

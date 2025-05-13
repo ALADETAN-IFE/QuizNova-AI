@@ -95,15 +95,14 @@ export default function UploadClient() {
 
   const generateQuiz = async () => {
     console.log("user", user);
-    // if (!user) {
-    //   toast.error("Please login to generate quizzes");
-    //   return;
-    // }
-
-    if (!canAccessQuestionType(questionType)) {
-      toast.error("Upgrade to premium to access this question type");
-      return;
+    if (user) {
+      if (!canAccessQuestionType(questionType)) {
+        toast.error("Upgrade to premium to access this question type");
+        return;
+      }
+     
     }
+
 
     if (!uploadedFile) {
       toast.error("Please upload a PDF file first");
@@ -274,34 +273,38 @@ export default function UploadClient() {
                     ))}
                   </div>
                 </div>
+                {/* {
+                  user?.id ? 
+                  <div>
+                    <label className="block text-sm font-medium text-cool-white/70 mb-2">
+                      Question Type
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["obj", "subjective", "theory"].map((type) => (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => setQuestionType(type as "obj" | "subjective" | "theory")}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                            canAccessQuestionType(type) 
+                              ? questionType === type 
+                                ? getQuestionTypeColor(type)
+                                : 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70'
+                              : 'bg-cool-black/50 text-cool-white/30 cursor-not-allowed'
+                          }`}
+                          disabled={!canAccessQuestionType(type)}
+                        >
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                          {!canAccessQuestionType(type) && (
+                            <span className="ml-1 text-xs">(Premium)</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div> 
+                  : null
+                } */}
 
-                {/* <div>
-                  <label className="block text-sm font-medium text-cool-white/70 mb-2">
-                    Question Type
-                  </label>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["obj", "subjective", "theory"].map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => setQuestionType(type as "obj" | "subjective" | "theory")}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                          canAccessQuestionType(type) 
-                            ? questionType === type 
-                              ? getQuestionTypeColor(type)
-                              : 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70'
-                            : 'bg-cool-black/50 text-cool-white/30 cursor-not-allowed'
-                        }`}
-                        disabled={!canAccessQuestionType(type)}
-                      >
-                        {type.charAt(0).toUpperCase() + type.slice(1)}
-                        {!canAccessQuestionType(type) && (
-                          <span className="ml-1 text-xs">(Premium)</span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div> */}
 
                 <div>
                   <label className="block text-sm font-medium text-cool-white/70 mb-2">

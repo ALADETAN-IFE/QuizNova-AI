@@ -34,7 +34,11 @@ export async function DELETE(req: Request) {
     }
 
     // Delete the quiz
-    await Quiz.findByIdAndDelete(quizId);
+    // await Quiz.findByIdAndDelete(quizId);
+    
+    // Delete the quiz using soft delete
+    await Quiz.findByIdAndUpdate(quizId, { isDeleted: true });
+
 
     return NextResponse.json(
       { message: "Quiz deleted successfully" },

@@ -29,10 +29,11 @@ export async function GET(req: Request) {
     //   );
     // }
 
-    // Fetch quizzes created by the user
-    const quizzes = await Quiz.find({ createdBy: userId }).sort({
+    // Fetch quizzes created by the userand filtering out the soft deleted ones
+    const quizzes = await Quiz.find({ createdBy: userId, isDeleted: false, }).sort({
       createdAt: -1,
     });
+
 
     if (!quizzes) {
       return NextResponse.json({ error: "Quiz not found" }, { status: 404 });

@@ -1,7 +1,6 @@
 "use server";
 
 import nodemailer from "nodemailer";
-
 // Professional transporter configuration
 const transporter = nodemailer.createTransport({
   service: "gmail",

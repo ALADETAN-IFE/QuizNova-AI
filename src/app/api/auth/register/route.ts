@@ -22,8 +22,10 @@ export async function POST(req: Request) {
         { status: 503 }
       )
     }
-
+    
     const { username, email, password } = await req.json()
+    
+    const emailSmall = email.toLowerCase()
 
     // Validate input
     if (!username || !email || !password) {
@@ -58,10 +60,10 @@ export async function POST(req: Request) {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] })
+    const existingUser = await User.findOne({ $or: [{ emailSmall }, { username }] })
     if (existingUser) {
       return NextResponse.json(
-        { error: existingUser.email === email ? 'Email already registered' : 'Username already taken' },
+        { error: existingUser.email.toLowerCase() === emailSmall ? 'Email already registered' : 'Username already taken' },
         { status: 409 }
       )
     }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-// import axios from 'axios';
+import axios from 'axios';
 import { useAppStore } from '@/lib/store.zustand';
 import { toast } from 'react-hot-toast';
 import QuizCard from '@/components/QuizCard';
@@ -68,21 +68,25 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           return;
         }
         if (user?.id) {
-          // const response = await axios.get(`/api/quizzes/one`, {
-          //   params: {
-          //     id: quizId
-          //   }
-          // });
-          // // const 
-          // const fetchedQuiz = response.data;
-          // setQuiz(fetchedQuiz);
-          // setCurrentQuiz(fetchedQuiz);
-          // setLoading(false);
           if (currentQuiz && (currentQuiz?._id === quizId)) {
             setQuiz(currentQuiz);
             setCurrentQuiz(currentQuiz);
             setLoading(false);
           }
+        }
+        if(!currentQuiz && !user?.id){
+          const response = await axios.get(`/api/quizzes/one/${quizId}`, 
+            // {
+            //   params: {
+            //     id: quizId
+            //   }
+            // }
+          );
+          const fetchedQuiz = response.data;
+          setQuiz(fetchedQuiz);
+          setCurrentQuiz(fetchedQuiz);
+          setLoading(false);
+
         }
       } catch (error) {
         console.error('Error fetching quiz:', error);

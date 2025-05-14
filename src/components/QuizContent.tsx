@@ -90,7 +90,7 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           }
         }
         if(!currentQuiz && !user?.id){
-          const response = await axios.get(`/api/quizzes/one/${quizId}`, 
+          const response = await axios.get(`/api/quizzes/one/?id=${quizId}`, 
             // {
             //   params: {
             //     id: quizId

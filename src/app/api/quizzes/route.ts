@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 import mongoose from 'mongoose';
 import { verifyAuth } from '@/lib/auth-middleware';
+import User from '@/models/User'
 
 interface Question {
   question: string;
@@ -104,22 +105,31 @@ export async function POST(req: Request) {
   }
 }
 
-// Function to add the isDeleted field
+// Function to add the missing field
 // export async function PATCH(req: Request) {
 //   try {
 //     await connectToDatabase();
 
-//     // Update all documents that do NOT have 'isDeleted' field
-//     const result = await Quiz.updateMany(
-//       { isDeleted: { $exists: false } },
-//       { $set: { isDeleted: false } }
+//     // Update all documents that do NOT have 'plan' field
+//     const result = await User.updateMany(
+//       { plan: { $exists: true } },
+//       { $set: { plan: "basic" } }
 //     );
+//     // // Update all documents that do NOT have 'isDeleted' field
+//     // const result = await Quiz.updateMany(
+//     //   { isDeleted: { $exists: false } },
+//     //   { $set: { isDeleted: false } }
+//     // );
 
-//     console.log(`Updated ${result.modifiedCount} quizzes.`);
-//     process.exit(0);
+//     return NextResponse.json(`Updated ${result.modifiedCount} quizzes.`);
+//     // process.exit(0);
 //   } catch (error) {
 //     console.error("Error updating quizzes:", error);
-//     process.exit(1);
+//      return NextResponse.json(
+//       { error: 'Failed to update', details: (error as Error).message },
+//       { status: 500 }
+//     );
+//     // process.exit(1);
 //   }
 // }
 

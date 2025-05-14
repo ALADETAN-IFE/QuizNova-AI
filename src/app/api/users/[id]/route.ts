@@ -52,34 +52,34 @@ export async function PATCH(req: Request) {
   }
 } 
 
-export async function GET(req: Request) {
-  try {
-    // Get the ID from the last segment of the URL
-    const id = req.url.split('/').pop() || '';
+// export async function GET(req: Request) {
+//   try {
+//     // Get the ID from the last segment of the URL
+//     const id = req.url.split('/').pop() || '';
     
 
-    await connectToDatabase()
+//     await connectToDatabase()
 
-    // Check if user exists
-    const existingUser = await User.findById(id)
-    if (!existingUser) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      )
-    }
+//     // Check if user exists
+//     const existingUser = await User.findById(id)
+//     if (!existingUser) {
+//       return NextResponse.json(
+//         { error: 'User not found' },
+//         { status: 404 }
+//       )
+//     }
 
-    await User.findByIdAndDelete(id)
+//     await User.findByIdAndDelete(id)
 
-    return NextResponse.json(
-      { message: `${existingUser.username} with ID: ${existingUser._id} has been deleted` },
-      { status: 200 }
-    )
-  } catch(error){
-    console.error('Error updating user:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete user', msg: error },
-      { status: 500 }
-    )
-  }
-}
+//     return NextResponse.json(
+//       { message: `${existingUser.username} with ID: ${existingUser._id} has been deleted` },
+//       { status: 200 }
+//     )
+//   } catch(error){
+//     console.error('Error updating user:', error)
+//     return NextResponse.json(
+//       { error: 'Failed to delete user', msg: error },
+//       { status: 500 }
+//     )
+//   }
+// }

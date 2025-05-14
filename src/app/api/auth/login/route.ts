@@ -58,6 +58,8 @@ export async function POST(req: Request) {
         id: user._id.toString(),
         username: user.username,
         email: user.email,
+        plan: user.plan,
+        isAdmin: user.isAdmin == true ? true: undefined
       }
     })
   } catch (error) {

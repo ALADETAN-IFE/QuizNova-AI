@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema({
     enum: ["basic", "premium"],
     default: "basic"
   },
+  isAdmin:{
+    type: Boolean,
+    default: false
+  },
   googleId: {
     type: String
   },

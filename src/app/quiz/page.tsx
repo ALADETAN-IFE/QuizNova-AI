@@ -53,7 +53,7 @@ export default function QuizPage() {
         if (user?.id) {
           const userId = user?.id;
           // For logged-in users, fetch from API
-          const response = await axios.get(`/api/quizzes?userId=${userId}`);
+          const response = await axios.get(`/api/quizzes/${userId}`);
           const fetchedQuizzes = response.data;
           setAllQuizzes(fetchedQuizzes);
           setFilteredQuizzes(fetchedQuizzes);
@@ -146,7 +146,7 @@ export default function QuizPage() {
       await axios.delete(`/api/quizzes/${quizId}`);
       toast.success('Quiz deleted successfully');
       // Refresh quizzes
-      const response = await axios.get(`/api/quizzes?userId=${user?.id}`);
+      const response = await axios.get(`/api/quizzes/${user?.id}`);
       setAllQuizzes(response.data);
       setFilteredQuizzes(response.data);
     } catch (error: unknown) {

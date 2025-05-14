@@ -104,6 +104,25 @@ export async function POST(req: Request) {
   }
 }
 
+// Function to add the isDeleted field
+// export async function PATCH(req: Request) {
+//   try {
+//     await connectToDatabase();
+
+//     // Update all documents that do NOT have 'isDeleted' field
+//     const result = await Quiz.updateMany(
+//       { isDeleted: { $exists: false } },
+//       { $set: { isDeleted: false } }
+//     );
+
+//     console.log(`Updated ${result.modifiedCount} quizzes.`);
+//     process.exit(0);
+//   } catch (error) {
+//     console.error("Error updating quizzes:", error);
+//     process.exit(1);
+//   }
+// }
+
 // export async function GET() {
 //   try {
 //     // Verify authentication

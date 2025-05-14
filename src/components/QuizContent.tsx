@@ -28,6 +28,11 @@ interface Quiz {
   questions: Question[];
 }
 
+interface ErrorInterFace {
+  error?: string;
+  message: string;
+}
+
 interface QuizContentProps {
   quizId: string;
   onComplete: (score: number) => void;
@@ -44,7 +49,8 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
   const [userAnswers, setUserAnswers] = useState<string[]>([]);
   const [evaluation, setEvaluation] = useState<{ score: number; feedback: string } | null>(null);
   const [showReview, setShowReview] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isDeleted, setIsDeleted] = useState<boolean>(false);
 
   // Effect to handle initial question from URL
   useEffect(() => {
@@ -61,21 +67,30 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        if (currentQuiz && (currentQuiz.id === quizId)) {
-          setQuiz(currentQuiz);
-          setCurrentQuiz(currentQuiz);
-          setLoading(false);
-          return;
+        setIsDeleted(false)
+        if(currentQuiz){
+          if ((currentQuiz.id === quizId)) {
+            setQuiz(currentQuiz);
+            setCurrentQuiz(currentQuiz);
+            setLoading(false);
+            return;
+          }
+          if ((currentQuiz._id !== quizId)) {
+            setQuiz(null);
+            setCurrentQuiz(null);
+            setLoading(false);
+          }
         }
         if (user?.id) {
           if (currentQuiz && (currentQuiz?._id === quizId)) {
             setQuiz(currentQuiz);
             setCurrentQuiz(currentQuiz);
             setLoading(false);
+            return
           }
         }
         if(!currentQuiz && !user?.id){
-          const response = await axios.get(`/api/quizzes/one/?id=${quizId}`, 
+          const response = await axios.get(`/api/quizzes/one/${quizId}`, 
             // {
             //   params: {
             //     id: quizId
@@ -86,11 +101,16 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
           setQuiz(fetchedQuiz);
           setCurrentQuiz(fetchedQuiz);
           setLoading(false);
-
+          return
         }
-      } catch (error) {
+      } catch (error: unknown) {
         console.error('Error fetching quiz:', error);
-        toast.error('Failed to load quiz');
+        // if((error as ErrorInterFace).message === "QUIZ DELETED"){
+          setIsDeleted((error as ErrorInterFace).message === "QUIZ DELETED")
+          toast.error((error as ErrorInterFace).message === "QUIZ DELETED" ? "The quiz has been deleted by it's owner" : "Failed to load quiz");
+          // return
+        // }
+        // toast.error('Failed to load quiz');
         setLoading(false);
       }
     };
@@ -217,7 +237,8 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
     );
   }
 
-  if (!quiz || !quiz.questions) return <div>Quiz not found</div>;
+  if (isDeleted) return <div>The quiz has been deleted by it's owner</div>;
+  if (!quiz || !quiz.questions) return <div>Quiz not found or the quiz has been deleted by it's owner</div>;
 
   if (showReview) {
     const score = calculateScore(selectedAnswers, quiz.questions);

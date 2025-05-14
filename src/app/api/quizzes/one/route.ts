@@ -37,6 +37,12 @@ export async function GET(req: Request) {
       );
     }
 
+    if(quiz.isDeleted == true){
+      return NextResponse.json({
+        message: "QUIZ DELETED"
+      });
+    }
+
     return NextResponse.json(quiz);
   } catch (error) {
     console.error('Error fetching quiz:', error);

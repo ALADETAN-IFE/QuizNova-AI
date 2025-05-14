@@ -237,8 +237,8 @@ export default function QuizContent({ quizId, onComplete }: QuizContentProps) {
     );
   }
 
-  if (isDeleted) return <div>The quiz has been deleted by it's owner</div>;
-  if (!quiz || !quiz.questions) return <div>Quiz not found or the quiz has been deleted by it's owner</div>;
+  if (isDeleted) return <div>The quiz has been deleted by it&apos;s owner</div>;
+  if (!quiz || !quiz.questions) return <div>Quiz not found or the quiz has been deleted by it&apos;s owner</div>;
 
   if (showReview) {
     const score = calculateScore(selectedAnswers, quiz.questions);

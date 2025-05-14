@@ -3,7 +3,7 @@ import { connectToDatabase } from "@/lib/mongodb";
 import Quiz from "@/models/Quiz";
 import { verifyAuth } from "@/lib/auth-middleware";
 
-export async function PATCH(req: Request) {
+export async function GET(req: Request) {
   try {
     // Verify authentication
     const authResult = await verifyAuth();

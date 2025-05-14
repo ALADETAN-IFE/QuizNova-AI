@@ -104,25 +104,25 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET() {
-  try {
-    // Verify authentication
-    const authResult = await verifyAuth();
-    if (authResult.error || !authResult.decoded) {
-      return NextResponse.json(
-        { error: authResult.message || 'Unauthorized' },
-        { status: authResult.status || 401 }
-      );
-    }
+// export async function GET() {
+//   try {
+//     // Verify authentication
+//     const authResult = await verifyAuth();
+//     if (authResult.error || !authResult.decoded) {
+//       return NextResponse.json(
+//         { error: authResult.message || 'Unauthorized' },
+//         { status: authResult.status || 401 }
+//       );
+//     }
 
-    await connectToDatabase();
-    const quizzes = await Quiz.find().sort({ createdAt: -1 });
-    return NextResponse.json(quizzes);
-  } catch (error) {
-    console.error('Error fetching quizzes:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch quizzes', details: (error as Error).message },
-      { status: 500 }
-    );
-  }
-} 
+//     await connectToDatabase();
+//     const quizzes = await Quiz.find().sort({ createdAt: -1 });
+//     return NextResponse.json(quizzes);
+//   } catch (error) {
+//     console.error('Error fetching quizzes:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to fetch quizzes', details: (error as Error).message },
+//       { status: 500 }
+//     );
+//   }
+// } 

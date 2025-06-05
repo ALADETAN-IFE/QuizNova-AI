@@ -7,6 +7,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { ResultProvider } from "@/context/ResultContext";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 import { Analytics } from "@vercel/analytics/next"
+import Script from "next/script";
 
 // Configure Inter font for Turbopack compatibility
 const inter = Inter({
@@ -21,6 +22,18 @@ export const metadata: Metadata = {
   description: "AI-powered quiz creation and management platform",
   authors: [{ name: "IfeCodes" }],
   icons: "/quizNova.ico",
+  manifest: "/manifest.json",
+  themeColor: "#000000",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "QuizNova AI",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
   creator: "IfeCodes",
   publisher: "IfeCodes",
   openGraph: {
@@ -53,19 +66,43 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="apple-touch-icon" href="/quizNova.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="QuizNova AI" />
+      </head>
       <body className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}>
-      <SessionProviderWrapper>
-        <AuthProvider>
-          <ResultProvider>
-            <Toaster 
-              // position="top-right"
-            />
-            <Analytics />
-            {children}
-            <Navigation />
-          </ResultProvider>
-        </AuthProvider>
+        <SessionProviderWrapper>
+          <AuthProvider>
+            <ResultProvider>
+              <Toaster 
+                // position="top-right"
+              />
+              <Analytics />
+              {children}
+              <Navigation />
+            </ResultProvider>
+          </AuthProvider>
         </SessionProviderWrapper>
+        <Script id="register-sw" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(
+                  function(registration) {
+                    console.log('ServiceWorker registration successful');
+                  },
+                  function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                  }
+                );
+              });
+            }
+          `}
+        </Script>
       </body>
     </html>
   );

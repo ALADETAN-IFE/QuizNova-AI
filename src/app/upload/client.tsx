@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { extractTextFromPDF } from "@/lib/pdf";
 import { generateQuizFromPDF } from "@/lib/gemini";
-import { Upload, FileText } from "lucide-react";
+import { Upload, FileText, Info } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import axios, { AxiosError } from "axios";
 import { useAppStore } from "@/lib/store.zustand";
@@ -42,6 +42,7 @@ export default function UploadClient() {
     if (user.plan === 'premium') return true;
     return type === 'obj';
   };
+  console.log(questionType, user?.plan)
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -77,27 +78,35 @@ export default function UploadClient() {
     return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
   };
 
-  // const getQuestionTypeColor = (type: string) => {
-  //   if (questionType === type) {
-  //     switch (type) {
-  //       case 'obj':
-  //         return 'bg-quantum-teal text-white';
-  //       case 'subjective':
-  //         return 'bg-ai-blue text-white';
-  //       case 'theory':
-  //         return 'bg-nova-purple text-white';
-  //       default:
-  //         return '';
-  //     }
-  //   }
-  //   return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
-  // };
+  const getQuestionTypeColor = (type: string) => {
+    if (questionType === type) {
+      switch (type) {
+        case 'obj':
+          return 'bg-quantum-teal text-white';
+        case 'subjective':
+          return 'bg-ai-blue text-white';
+        case 'theory':
+          return 'bg-nova-purple text-white';
+        default:
+          return '';
+      }
+    }
+    return 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70';
+  };
 
   const generateQuiz = async () => {
     console.log("user", user);
     if (user) {
       if (!canAccessQuestionType(questionType)) {
-        toast.error("Upgrade to premium to access this question type");
+        toast.error("Please upgrade to premium to access this question type");
+        setTimeout(() => {
+          toast.custom(
+            <div className="flex items-center gap-2 bg-white text-black/70 border border-cool-white/10 px-4 py-2 rounded-lg shadow-lg">
+              <Info className="w-5 h-5 text-quantum-teal" />
+              <span>Go to profile to upgrade account</span>
+            </div>
+          );
+        }, 1700);
         return;
       }
      
@@ -273,7 +282,7 @@ export default function UploadClient() {
                     ))}
                   </div>
                 </div>
-                {/* {
+                {
                   user?.id ? 
                   <div>
                     <label className="block text-sm font-medium text-cool-white/70 mb-2">
@@ -286,13 +295,14 @@ export default function UploadClient() {
                           type="button"
                           onClick={() => setQuestionType(type as "obj" | "subjective" | "theory")}
                           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                            canAccessQuestionType(type) 
-                              ? questionType === type 
+                            // canAccessQuestionType(type) 
+                              // ? 
+                              questionType === type 
                                 ? getQuestionTypeColor(type)
                                 : 'bg-cool-black/50 text-cool-white/70 hover:bg-cool-black/70'
-                              : 'bg-cool-black/50 text-cool-white/30 cursor-not-allowed'
+                              // : 'bg-cool-black/50 text-cool-white/30 cursor-not-allowed'
                           }`}
-                          disabled={!canAccessQuestionType(type)}
+                          // disabled={!canAccessQuestionType(type)}
                         >
                           {type.charAt(0).toUpperCase() + type.slice(1)}
                           {!canAccessQuestionType(type) && (
@@ -303,7 +313,7 @@ export default function UploadClient() {
                     </div>
                   </div> 
                   : null
-                } */}
+                }
 
 
                 <div>

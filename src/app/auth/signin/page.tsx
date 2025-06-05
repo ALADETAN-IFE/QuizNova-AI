@@ -25,7 +25,7 @@ export default function SignIn() {
 
     try {
       await login(identifier, password)
-      router.push('/')
+      // router.push('/')
     } catch (error) {
        console.log("loginError", error)
       if (error instanceof Error && 'response' in error) {

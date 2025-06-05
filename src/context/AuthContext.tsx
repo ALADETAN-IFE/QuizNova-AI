@@ -109,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       toast.success(response.data.message)
       setUser(response.data.user);
-      // router.push('/quiz');
+      router.push('/quiz');
     } catch (error) {
       console.error('Registration error:', error);
       if (axios.isAxiosError(error) && error.response?.data?.error) {

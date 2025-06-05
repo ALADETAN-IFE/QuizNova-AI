@@ -27,7 +27,7 @@ export default function SignUp() {
 
     try {
       await register(username, email.toLowerCase(), password)
-      router.push('/')
+      // router.push('/')
     } catch (error) {
       console.log("signupError", error)
       if (typeof error === 'string') {

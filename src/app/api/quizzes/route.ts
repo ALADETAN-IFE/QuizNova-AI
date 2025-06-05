@@ -3,7 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Quiz from '@/models/Quiz';
 import mongoose from 'mongoose';
 import { verifyAuth } from '@/lib/auth-middleware';
-import User from '@/models/User'
+// import User from '@/models/User'
 
 interface Question {
   question: string;

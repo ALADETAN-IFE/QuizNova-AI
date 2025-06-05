@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { Eye, EyeOff } from 'lucide-react'
@@ -9,7 +9,7 @@ import GoogleAuthButton from '@/components/auth/GoogleAuthButton'
 // import toast from 'react-hot-toast'
 
 export default function SignUp() {
-  const router = useRouter()
+  // const router = useRouter()
   const { register } = useAuth()
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)

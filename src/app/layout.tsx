@@ -90,10 +90,54 @@ export default function RootLayout({
         <Script id="register-sw" strategy="afterInteractive">
           {`
             if ('serviceWorker' in navigator) {
+              // Unregister any existing service workers
+              navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                  registration.unregister();
+                }
+              });
+
               window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(
                   function(registration) {
                     console.log('ServiceWorker registration successful');
+                    
+                    // Check if the app is already installed
+                    if (!window.matchMedia('(display-mode: standalone)').matches) {
+                      // Show install prompt after a delay
+                      setTimeout(() => {
+                        if ('BeforeInstallPromptEvent' in window) {
+                          window.addEventListener('beforeinstallprompt', (e) => {
+                            e.preventDefault();
+                            // Store the event for later use
+                            window.deferredPrompt = e;
+                            // Show a custom install button or prompt
+                            const installButton = document.createElement('button');
+                            installButton.textContent = 'Install QuizNova';
+                            installButton.style.position = 'fixed';
+                            installButton.style.bottom = '20px';
+                            installButton.style.left = '50%';
+                            installButton.style.transform = 'translateX(-50%)';
+                            installButton.style.padding = '10px 20px';
+                            installButton.style.backgroundColor = '#000000';
+                            installButton.style.color = '#ffffff';
+                            installButton.style.border = 'none';
+                            installButton.style.borderRadius = '5px';
+                            installButton.style.zIndex = '1000';
+                            installButton.onclick = () => {
+                              window.deferredPrompt.prompt();
+                              window.deferredPrompt.userChoice.then((choiceResult) => {
+                                if (choiceResult.outcome === 'accepted') {
+                                  console.log('User accepted the install prompt');
+                                }
+                                window.deferredPrompt = null;
+                              });
+                            };
+                            document.body.appendChild(installButton);
+                          });
+                        }
+                      }, 3000);
+                    }
                   },
                   function(err) {
                     console.log('ServiceWorker registration failed: ', err);

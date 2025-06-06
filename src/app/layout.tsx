@@ -111,29 +111,101 @@ export default function RootLayout({
                             e.preventDefault();
                             // Store the event for later use
                             window.deferredPrompt = e;
-                            // Show a custom install button or prompt
+                            
+                            // Create and show the install prompt
+                            const installPrompt = document.createElement('div');
+                            installPrompt.style.cssText = \`
+                              position: fixed;
+                              bottom: 20px;
+                              left: 50%;
+                              transform: translateX(-50%);
+                              background: rgba(0, 0, 0, 0.9);
+                              color: white;
+                              padding: 16px;
+                              border-radius: 12px;
+                              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                              z-index: 1000;
+                              max-width: 90%;
+                              width: 400px;
+                              text-align: center;
+                              backdrop-filter: blur(10px);
+                              border: 1px solid rgba(255, 255, 255, 0.1);
+                            \`;
+
+                            const promptContent = document.createElement('div');
+                            promptContent.innerHTML = \`
+                              <div style="margin-bottom: 12px; font-weight: 600;">Install QuizNova AI</div>
+                              <div style="margin-bottom: 16px; font-size: 14px; opacity: 0.9;">
+                                Install our app for a better experience. Get quick access and work offline.
+                              </div>
+                            \`;
+
+                            const buttonContainer = document.createElement('div');
+                            buttonContainer.style.cssText = \`
+                              display: flex;
+                              gap: 8px;
+                              justify-content: center;
+                            \`;
+
                             const installButton = document.createElement('button');
-                            installButton.textContent = 'Install QuizNova';
-                            installButton.style.position = 'fixed';
-                            installButton.style.bottom = '20px';
-                            installButton.style.left = '50%';
-                            installButton.style.transform = 'translateX(-50%)';
-                            installButton.style.padding = '10px 20px';
-                            installButton.style.backgroundColor = '#000000';
-                            installButton.style.color = '#ffffff';
-                            installButton.style.border = 'none';
-                            installButton.style.borderRadius = '5px';
-                            installButton.style.zIndex = '1000';
+                            installButton.textContent = 'Install';
+                            installButton.style.cssText = \`
+                              background: #4CAF50;
+                              color: white;
+                              border: none;
+                              padding: 8px 24px;
+                              border-radius: 6px;
+                              font-weight: 500;
+                              cursor: pointer;
+                              transition: background 0.2s;
+                            \`;
+                            installButton.onmouseover = () => installButton.style.background = '#45a049';
+                            installButton.onmouseout = () => installButton.style.background = '#4CAF50';
                             installButton.onclick = () => {
                               window.deferredPrompt.prompt();
                               window.deferredPrompt.userChoice.then((choiceResult) => {
                                 if (choiceResult.outcome === 'accepted') {
                                   console.log('User accepted the install prompt');
+                                  installPrompt.remove();
                                 }
                                 window.deferredPrompt = null;
                               });
                             };
-                            document.body.appendChild(installButton);
+
+                            const dismissButton = document.createElement('button');
+                            dismissButton.textContent = 'Not Now';
+                            dismissButton.style.cssText = \`
+                              background: transparent;
+                              color: white;
+                              border: 1px solid rgba(255, 255, 255, 0.3);
+                              padding: 8px 24px;
+                              border-radius: 6px;
+                              font-weight: 500;
+                              cursor: pointer;
+                              transition: background 0.2s;
+                            \`;
+                            dismissButton.onmouseover = () => dismissButton.style.background = 'rgba(255, 255, 255, 0.1)';
+                            dismissButton.onmouseout = () => dismissButton.style.background = 'transparent';
+                            dismissButton.onclick = () => {
+                              installPrompt.remove();
+                              // Store in localStorage to not show again for 24 hours
+                              localStorage.setItem('pwaInstallDismissed', Date.now().toString());
+                            };
+
+                            buttonContainer.appendChild(installButton);
+                            buttonContainer.appendChild(dismissButton);
+                            promptContent.appendChild(buttonContainer);
+                            installPrompt.appendChild(promptContent);
+                            document.body.appendChild(installPrompt);
+
+                            // Check if we should show the prompt (not dismissed in last 24 hours)
+                            const lastDismissed = localStorage.getItem('pwaInstallDismissed');
+                            if (lastDismissed) {
+                              const hoursSinceDismissed = (Date.now() - parseInt(lastDismissed)) / (1000 * 60 * 60);
+                              if (hoursSinceDismissed < 24) {
+                                installPrompt.remove();
+                              }
+                            }
                           });
                         }
                       }, 3000);

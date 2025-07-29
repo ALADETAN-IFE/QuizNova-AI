@@ -17,6 +17,7 @@
     "date-fns": "^2.30.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.487.0",
+    "mammoth": "^1.9.1",
     "mongoose": "^8.13.2",
     "next": "15.3.0",
     "next-auth": "^4.24.11",

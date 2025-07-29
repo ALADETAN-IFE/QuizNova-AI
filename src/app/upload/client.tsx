@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import { extractTextFromPDF } from "@/lib/pdf";
+import { extractTextFromFile } from "@/lib/text-extractor";
 import { generateQuizFromPDF } from "@/lib/gemini";
 import { Upload, FileText, Info } from "lucide-react";
 import { useDropzone } from "react-dropzone";
@@ -46,11 +46,11 @@ export default function UploadClient() {
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
-    if (file && file.type === "application/pdf") {
+    if (file && (file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
       setUploadedFile(file);
       console.log("uploading...");
     } else {
-      toast.error("Please upload a PDF file");
+      toast.error("Please upload a PDF or DOCX file");
     }
   }, []);
 
@@ -58,6 +58,7 @@ export default function UploadClient() {
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
     },
     maxFiles: 1,
   });
@@ -114,31 +115,31 @@ export default function UploadClient() {
 
 
     if (!uploadedFile) {
-      toast.error("Please upload a PDF file first");
+      toast.error("Please upload a PDF or DOCX file first");
       return;
     }
 
     setQuestionType("obj")
     setIsUploading(true);
-    setProcessingStatus("Extracting text from PDF...");
+    setProcessingStatus("Extracting text from file...");
 
     try {
-      const pdfText = await extractTextFromPDF(uploadedFile);
-      console.log("Extracted text:", pdfText?.slice(0, 100)); // Log first 100 chars for debugging
+      const extractedText = await extractTextFromFile(uploadedFile);
+      console.log("Extracted text:", extractedText?.slice(0, 100)); // Log first 100 chars for debugging
       
-      if (!pdfText || pdfText.trim().length === 0) {
-        toast.error("Could not extract text from PDF. Please make sure the PDF contains selectable text and is not scanned/image-based.");
+      if (!extractedText || extractedText.trim().length === 0) {
+        toast.error("Could not extract text from file. Please make sure the file contains selectable text and is not scanned/image-based.");
         return;
       }
 
-      if (pdfText.trim().length < 50) {
-        toast.error("The extracted text is too short. Please make sure the PDF contains enough content.");
+      if (extractedText.trim().length < 50) {
+        toast.error("The extracted text is too short. Please make sure the file contains enough content.");
         return;
       }
 
       setProcessingStatus("Generating quiz questions...");
       const questions = await generateQuizFromPDF(
-        pdfText,
+        extractedText,
         numQuestions,
         difficulty,
         questionType
@@ -154,7 +155,7 @@ export default function UploadClient() {
         // For logged-in users, create quiz in MongoDB
         try {
           const response = await axios.post('/api/quizzes', {
-            title: uploadedFile.name.replace(".pdf", ""),
+            title: uploadedFile.name.replace(/\.(pdf|docx)$/i, ""),
             description: `Quiz generated from ${uploadedFile.name}`,
             difficulty,
             questions: questions.map((q) => ({
@@ -187,7 +188,7 @@ export default function UploadClient() {
         // For non-logged-in users, use Zustand store
         const quiz = {
           id: generateId(),
-          title: uploadedFile.name.replace(".pdf", ""),
+          title: uploadedFile.name.replace(/\.(pdf|docx)$/i, ""),
           description: `Quiz generated from ${uploadedFile.name}`,
           difficulty,
           questions: questions.map((q) => ({
@@ -208,12 +209,12 @@ export default function UploadClient() {
       console.error("Error processing PDF:", error);
       if (error instanceof Error) {
         if (error.message.includes("Could not extract text")) {
-          toast.error("Could not extract text from PDF. Please make sure the PDF contains selectable text and is not scanned/image-based.");
+          toast.error("Could not extract text from file. Please make sure the file contains selectable text and is not scanned/image-based.");
         } else {
           toast.error(error.message);
         }
       } else {
-        toast.error("An unexpected error occurred while processing the PDF");
+        toast.error("An unexpected error occurred while processing the file");
       }
     } finally {
       setIsUploading(false);
@@ -231,7 +232,7 @@ export default function UploadClient() {
           {...getRootProps()}
           className="card border-2 border-dashed border-holographic-silver cursor-pointer transition-colors"
         >
-          <input {...getInputProps()} accept="application/pdf,.pdf" />
+          <input {...getInputProps()} accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" />
           {uploadedFile ? (
             <div className="text-center py-12">
               <div className="flex flex-col items-center gap-4">
@@ -249,10 +250,10 @@ export default function UploadClient() {
               <div className="flex flex-col items-center gap-4">
                 <Upload className="w-12 h-12 text-nova-purple" />
                 <p className="text-cool-white/70">
-                  Drag & drop your PDF here, or click to select
+                  Drag & drop your PDF or DOCX here, or click to select
                 </p>
                 <p className="text-sm text-cool-white/50">
-                  Supported format: PDF
+                  Supported formats: PDF, DOCX
                 </p>
               </div>
             </div>

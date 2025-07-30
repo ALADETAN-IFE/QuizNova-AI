@@ -73,6 +73,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="QuizNova AI" />
+        {/* Google site verification */}
+        <meta name="google-site-verification" content="kAmAKBSToZAEnjZnpsFJ1TCRoQT7NoU2AR5H95ksziI" />
+        {/* adding google site verification to allow google to search my app   */}
       </head>
       <body className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}>
         <SessionProviderWrapper>

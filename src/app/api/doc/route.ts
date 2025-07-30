@@ -1,4 +1,4 @@
-// import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 // import mammoth from 'mammoth';
 // import textract from 'textract';
 // import { writeFile, unlink } from 'fs/promises';
@@ -8,8 +8,9 @@
 
 // const textractFromFile = promisify(textract.fromFileWithPath);
 
-// export async function POST(request: NextRequest) {
-//   try {
+export async function POST(request: NextRequest) {
+  try {
+      return NextResponse.json({ error: 'Future plans' }, { status: 200 });
 //     const formData = await request.formData();
 //     const file = formData.get('file') as File;
     
@@ -79,10 +80,10 @@
 //       error: 'Unsupported file type. Please upload a DOCX or DOC file.' 
 //     }, { status: 400 });
 
-//   } catch (error) {
-//     console.error('Error processing file:', error);
-//     return NextResponse.json({ 
-//       error: 'Failed to process file' 
-//     }, { status: 500 });
-//   }
-// }
+  } catch (error) {
+    console.error('Error processing file:', error);
+    return NextResponse.json({ 
+      error: 'Failed to process file' 
+    }, { status: 500 });
+  }
+}

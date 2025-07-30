@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+// import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 // import mammoth from 'mammoth';
 // import textract from 'textract';
 // import { writeFile, unlink } from 'fs/promises';
@@ -8,7 +9,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 // const textractFromFile = promisify(textract.fromFileWithPath);
 
-export async function POST(request: NextRequest) {
+// export async function POST(request: NextRequest) {
+export async function POST() {
   try {
       return NextResponse.json({ error: 'Future plans' }, { status: 200 });
 //     const formData = await request.formData();

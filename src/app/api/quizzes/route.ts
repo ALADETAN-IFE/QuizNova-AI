@@ -65,6 +65,7 @@ export async function POST(req: Request) {
         options: q.options,
         correctAnswer: q.correctAnswer,
         explanation: q.explanation,
+        questionType: q.questionType,
       })),
       createdBy: createdById,
     });

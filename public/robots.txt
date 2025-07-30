@@ -1,0 +1,30 @@
+User-agent: *
+Allow: /
+
+# Disallow API routes and private areas
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+Disallow: /private/
+
+# Allow important pages
+Allow: /
+Allow: /upload
+Allow: /quiz
+Allow: /progress
+Allow: /profile
+Allow: /auth/signin
+Allow: /auth/signup
+Allow: /legal/
+
+# Crawl delay (optional - helps with server load)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://quiznova-ai.vercel.app/sitemap.xml
+
+# Additional sitemaps
+Sitemap: https://quiznova-ai.vercel.app/sitemap-images.xml
+
+# Host directive (canonical domain)
+Host: https://quiznova-ai.vercel.app

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage Images -->
+  <url>
+    <loc>https://quiznova-ai.vercel.app/</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/quizNova.png</image:loc>
+      <image:title>QuizNova AI Logo</image:title>
+      <image:caption>QuizNova AI - AI-powered quiz generation platform</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/logo.png</image:loc>
+      <image:title>QuizNova Logo</image:title>
+      <image:caption>QuizNova brand logo</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/logo1.jpeg</image:loc>
+      <image:title>QuizNova Logo Alternative</image:title>
+      <image:caption>Alternative QuizNova logo design</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Upload Page Images -->
+  <url>
+    <loc>https://quiznova-ai.vercel.app/upload</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/file.svg</image:loc>
+      <image:title>File Upload Icon</image:title>
+      <image:caption>Document upload interface icon</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/window.svg</image:loc>
+      <image:title>Window Interface Icon</image:title>
+      <image:caption>Upload window interface icon</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Quiz Page Images -->
+  <url>
+    <loc>https://quiznova-ai.vercel.app/quiz</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/globe.svg</image:loc>
+      <image:title>Globe Icon</image:title>
+      <image:caption>Global quiz platform icon</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Progress Page Images -->
+  <url>
+    <loc>https://quiznova-ai.vercel.app/progress</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/next.svg</image:loc>
+      <image:title>Next.js Framework Icon</image:title>
+      <image:caption>Built with Next.js framework</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Profile Page Images -->
+  <url>
+    <loc>https://quiznova-ai.vercel.app/profile</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/vercel.svg</image:loc>
+      <image:title>Vercel Deployment Icon</image:title>
+      <image:caption>Deployed on Vercel platform</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Authentication Pages Images -->
+  <url>
+    <loc>https://quiznova-ai.vercel.app/auth/signin</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/google.svg</image:loc>
+      <image:title>Google Sign In</image:title>
+      <image:caption>Sign in with Google option</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://quiznova-ai.vercel.app/auth/signup</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/google.svg</image:loc>
+      <image:title>Google Sign Up</image:title>
+      <image:caption>Sign up with Google option</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Favicon and App Icons -->
+  <url>
+    <loc>https://quiznova-ai.vercel.app/</loc>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/quizNova.ico</image:loc>
+      <image:title>QuizNova Favicon</image:title>
+      <image:caption>QuizNova AI favicon icon</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://quiznova-ai.vercel.app/logo.ico</image:loc>
+      <image:title>QuizNova Logo Icon</image:title>
+      <image:caption>QuizNova logo favicon</image:caption>
+    </image:image>
+  </url>
+
+</urlset> 

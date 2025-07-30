@@ -10,6 +10,7 @@ interface Question {
   options: string[];
   correctAnswer: string;
   explanation: string;
+  questionType: string;
 }
 
 export async function POST(req: Request) {

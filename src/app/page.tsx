@@ -6,7 +6,7 @@ import Footer from '@/components/layout/Footer'
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-deep-space via-deep-space/90 to-deep-space text-cool-white">
-      <div className="bg-gradient-to-r from-nova-purple to-ai-blue text-white text-2xl font-bold py-2 overflow-hidden">
+      <div className="bg-gradient-to-r from-nova-purple to-ai-blue text-white text-base font-bold py-2 overflow-hidden">
         <div className="animate-marquee whitespace-nowrap">
           It now supports DOCX files.
         </div>

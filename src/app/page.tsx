@@ -40,7 +40,12 @@ export default function Home() {
         <h2 className="section-title text-center text-4xl font-bold mb-12 gradient-text">
           Key Features
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {/* grid-cols-1: By default (for small screens), 1 column.
+            md:grid-cols-2: From medium screens (768px+) to large (1024px+), 2 columns.
+            lg:grid-cols-3: For large screens (1024px to 1279px), 3 columns.
+            xl:grid-cols-4: For extra large screens (1280px+), 4 columns. 
+          */}
           <div className="feature-card p-6 rounded-lg bg-gradient-to-r from-nova-purple to-ai-blue shadow-lg hover:scale-105 transition-transform">
             <Upload className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">PDF & DOCX Upload</h3>

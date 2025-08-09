@@ -64,25 +64,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // console.log("checking auth...")
         
         if (!session) {
-          // // console.log("verify token")
-          // const result = await verifyToken()
-          // // console.log("result", result)
-          // if (result !== true) {
-          //   toast.error(result)
-          //   setUser(null)
-          //   router.push('/auth/signin')
-          // Only verify token if we're on a protected route
-          const protectedRoutes = ['/progress', '/profile', '/quiz']
-          if (protectedRoutes.includes(pathname)) {
-            const result = await verifyToken()
-            if (result !== true) {
-              // Don't show error toast for expected auth failures
-              setUser(null)
-              router.push('/auth/signin')
-            }
-          } else {
-            // For public routes, just ensure user is null
+          // console.log("verify token")
+          const result = await verifyToken()
+          // console.log("result", result)
+          if (result !== true) {
+            toast.error(result)
             setUser(null)
+            router.push('/auth/signin')
+          // // Only verify token if we're on a protected route
+          // const protectedRoutes = ['/progress', '/profile', '/quiz']
+          // if (protectedRoutes.includes(pathname)) {
+          //   const result = await verifyToken()
+          //   if (result !== true) {
+          //     // Don't show error toast for expected auth failures
+          //     setUser(null)
+          //     router.push('/auth/signin')
+          //   }
+          // } else {
+          //   // For public routes, just ensure user is null
+          //   setUser(null)
           }
         }
       } else {

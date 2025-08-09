@@ -7,7 +7,14 @@ export async function GET() {
     const session = await getServerSession(authOptions)
     
     if (!session?.user) {
-      return NextResponse.json({ error: 'Not authenticated', message: 'No active session found' }, { status: 401 })
+      // return NextResponse.json({ error: 'Not authenticated', message: 'No active session found' }, { status: 401 })
+      // Return 200 with null user instead of 401 to avoid console errors
+      // This is normal behavior for non-authenticated users
+      return NextResponse.json({ 
+        user: null, 
+        authenticated: false, 
+        message: 'No active session found' 
+      }, { status: 200 })
     }
     // return NextResponse.json({ 
     //   user: session.user
@@ -21,7 +28,8 @@ export async function GET() {
         image: session.user.image,
         googleId: session.user.id,
         plan: session.user.plan
-      }
+      },
+      authenticated: true
     })
   } catch (error) {
     console.error('Session error:', error)

@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           //   setUser(null)
           //   router.push('/auth/signin')
           // Only verify token if we're on a protected route
-          const protectedRoutes = ['/progress', '/profile']
+          const protectedRoutes = ['/progress', '/profile', '/upload']
           if (protectedRoutes.includes(pathname)) {
             const result = await verifyToken()
             if (result !== true) {

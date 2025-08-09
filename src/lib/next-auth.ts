@@ -36,6 +36,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
+  // url: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === 'google') {
@@ -50,12 +52,12 @@ export const authOptions: NextAuthOptions = {
           if (existingUser) {
             // If user exists and has a password, they need to use manual login
             if (existingUser.password) {
-              console.log("User exists with password, requires manual login")
+              // console.log("User exists with password, requires manual login")
               return Promise.reject(new Error("EMAIL_EXISTS_WITH_PASSWORD"));
             }
             
             // Otherwise, just sign in with Google
-            console.log("Existing user:", existingUser)
+            // console.log("Existing user:", existingUser)
             user._id = existingUser._id.toString()
             return true
           }
@@ -77,7 +79,7 @@ export const authOptions: NextAuthOptions = {
           
           await newUser.save()
 
-          console.log("New user created:", newUser)
+          // console.log("New user created:", newUser)
           // Store MongoDB _id in the id field that exists on User type
           user._id = newUser._id.toString()
           user.plan = newUser.plan

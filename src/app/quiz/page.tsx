@@ -70,7 +70,7 @@ export default function QuizPage() {
         } else if (!currentQuiz && !user?.id){
           setTimeout(() => {
             setLoading(false);
-              console.log("hello")
+              // console.log("hello")
               toast.success('No quizzes available to load');
 
           }, 1500);  

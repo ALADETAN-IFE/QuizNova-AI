@@ -68,7 +68,7 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # Google AI API
-GOOGLE_AI_API_KEY=your-google-ai-api-key
+NEXT_PUBLIC_GEMINI_API_KEY=your-google-ai-api-key
 
 # Email Configuration
 GMAIL_USER=your-gmail@gmail.com
@@ -113,7 +113,7 @@ QuizNova AI includes professionally designed email templates for:
 | `NEXTAUTH_SECRET` | Secret key for NextAuth.js | Yes |
 | `GOOGLE_CLIENT_ID` | Google OAuth client ID | Yes |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | Yes |
-| `GOOGLE_AI_API_KEY` | API key for Google's Generative AI | Yes |
+| `NEXT_PUBLIC_GEMINI_API_KEY` | API key for Google's Generative AI | Yes |
 | `GMAIL_USER` | Gmail address for sending emails | Yes |
 | `GMAIL_APP_PASSWORD` | Gmail app password | Yes |
 | `NEXT_PUBLIC_APP_URL` | Base URL for the application | Yes |

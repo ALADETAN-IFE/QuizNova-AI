@@ -103,7 +103,7 @@ export default function RootLayout({
               window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(
                   function(registration) {
-                    console.log('ServiceWorker registration successful');
+                    // // console.log('ServiceWorker registration successful');
                     
                     // Check if the app is already installed
                     if (!window.matchMedia('(display-mode: standalone)').matches) {
@@ -168,7 +168,7 @@ export default function RootLayout({
                               window.deferredPrompt.prompt();
                               window.deferredPrompt.userChoice.then((choiceResult) => {
                                 if (choiceResult.outcome === 'accepted') {
-                                  console.log('User accepted the install prompt');
+                                  // console.log('User accepted the install prompt');
                                   installPrompt.remove();
                                 }
                                 window.deferredPrompt = null;
@@ -215,7 +215,7 @@ export default function RootLayout({
                     }
                   },
                   function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
+                    // console.log('ServiceWorker registration failed: ', err);
                   }
                 );
               });

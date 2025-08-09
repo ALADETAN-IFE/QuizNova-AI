@@ -27,7 +27,7 @@ export default function SignIn() {
       await login(identifier, password)
       // router.push('/')
     } catch (error) {
-       console.log("loginError", error)
+       // console.log("loginError", error)
       if (error instanceof Error && 'response' in error) {
         const serverError = error as { response?: { data?: { error?: string } } }
         setError(

@@ -6,6 +6,11 @@ import Footer from '@/components/layout/Footer'
 export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-deep-space via-deep-space/90 to-deep-space text-cool-white">
+      <div className="bg-gradient-to-r from-nova-purple to-ai-blue text-white text-2xl font-bold py-2 overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap">
+          It now supports DOCX files.
+        </div>
+      </div>
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-20">
         <div className="text-center">
@@ -22,7 +27,7 @@ export default function Home() {
             Transform Your Study Materials into Interactive Quizzes
           </h1>
           <p className="text-xl text-cool-white/80 mb-8 max-w-2xl mx-auto">
-            Upload your PDFs, let AI generate questions, and track your progress. Study smarter, not harder.
+            Upload your PDFs and DOCX files, let AI generate questions, and track your progress. Study smarter, not harder.
           </p>
           <Link href="/upload" className="btn-primary text-lg">
             Get Started
@@ -38,9 +43,10 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="feature-card p-6 rounded-lg bg-gradient-to-r from-nova-purple to-ai-blue shadow-lg hover:scale-105 transition-transform">
             <Upload className="w-12 h-12 text-white mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-white">PDF Upload</h3>
+            <h3 className="text-xl font-semibold mb-2 text-white">PDF & DOCX Upload</h3>
             <p className="text-white/80">
-              Upload your study materials and let AI generate relevant questions.
+            {/* Upload your study materials and let AI generate relevant questions. */}
+              Upload your study materials in PDF or DOCX format and let AI generate relevant questions.
             </p>
           </div>
           <div className="feature-card p-6 rounded-lg bg-gradient-to-r from-ai-blue to-quantum-teal shadow-lg hover:scale-105 transition-transform">

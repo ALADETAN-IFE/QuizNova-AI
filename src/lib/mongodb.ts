@@ -33,7 +33,7 @@
 //     await mongoose.connect(MONGODB_URI, {
 //       bufferCommands: false,
 //     })
-//     console.log('MongoDB Connected')
+//     // console.log('MongoDB Connected')
 //   } catch (error) {
 //     console.error('MongoDB Connection Error:', error)
 //     throw error // Re-throw the error to be handled by the caller

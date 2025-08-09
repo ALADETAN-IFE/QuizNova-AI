@@ -27,7 +27,7 @@ export async function verifyAuth() {
     if (token) {
       // Verify the token
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken;
-      console.log('Decoded Token:', decoded); // Debugging log
+      // console.log('Decoded Token:', decoded); // Debugging log
       const currentTime = Math.floor(Date.now() / 1000);
       const isTokenExpired =  decoded.exp < currentTime;
       if (isTokenExpired) {

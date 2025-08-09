@@ -21,8 +21,8 @@ export default function Support() {
       // For now, we'll just show a success message
       toast.success('Message sent successfully! We\'ll get back to you soon.')
       setFormData({ name: '', email: '', subject: '', message: '' })
-    } catch (error) {
-      console.log(error)
+    } catch {
+      // console.log(error)
       toast.error('Failed to send message. Please try again.')
     } finally {
       setLoading(false)

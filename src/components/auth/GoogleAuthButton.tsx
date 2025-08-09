@@ -25,7 +25,7 @@ export default function GoogleAuthButton() {
   const router = useRouter();
   const { data: session, status } = useSession()
 
-  console.log("session2:", session?.user, "status:", status)
+  // console.log("session2:", session?.user, "status:", status)
 
   // Handle session changes
   useEffect(() => {
@@ -55,7 +55,7 @@ export default function GoogleAuthButton() {
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true)
-      console.log('Starting Google sign in...')
+      // console.log('Starting Google sign in...')
       const response = await signIn('google', { 
         // callbackUrl: '/',
         redirect: false

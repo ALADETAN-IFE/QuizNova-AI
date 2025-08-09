@@ -10,14 +10,6 @@ import { useDropzone } from "react-dropzone";
 import axios, { AxiosError } from "axios";
 import { useAppStore } from "@/lib/store.zustand";
 
-// Define question type
-// interface Question {
-//   question: string;
-//   options?: string[];
-//   correctAnswer: string;
-//   explanation: string;
-//   questionType?: 'obj' | 'subjective' | 'theory';
-// }
 
 // Generate a random ID using timestamp and random number
 const generateId = () => {
@@ -42,13 +34,13 @@ export default function UploadClient() {
     if (user.plan === 'premium') return true;
     return type === 'obj';
   };
-  console.log(questionType, user?.plan)
+  // console.log(questionType, user?.plan)
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file && (file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
       setUploadedFile(file);
-      console.log("uploading...");
+      // console.log("uploading...");
     } else {
       toast.error("Please upload a PDF or DOCX file");
     }
@@ -96,7 +88,7 @@ export default function UploadClient() {
   };
 
   const generateQuiz = async () => {
-    console.log("user", user);
+    // console.log("user", user);
     if (user) {
       if (!canAccessQuestionType(questionType)) {
         toast.error("Please upgrade to premium to access this question type");
@@ -125,7 +117,7 @@ export default function UploadClient() {
 
     try {
       const extractedText = await extractTextFromFile(uploadedFile);
-      console.log("Extracted text:", extractedText?.slice(0, 100)); // Log first 100 chars for debugging
+      // console.log("Extracted text:", extractedText?.slice(0, 100)); // Log first 100 chars for debugging
       
       if (!extractedText || extractedText.trim().length === 0) {
         toast.error("Could not extract text from file. Please make sure the file contains selectable text and is not scanned/image-based.");

@@ -5,7 +5,7 @@ import { extractTextFromDOCX } from './docx';
 export async function extractTextFromFile(file: File): Promise<string> {
   const fileType = file.type;
 
-  console.log("fileType", fileType)
+  // console.log("fileType", fileType)
   
   switch (fileType) {
     case 'application/pdf':

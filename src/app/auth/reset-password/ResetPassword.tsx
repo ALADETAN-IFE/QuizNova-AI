@@ -30,11 +30,9 @@ export default function ResetPassword() {
       }
 
       try {
-        const response = await axios.post('/api/auth/verify-reset-token', { token })
-        console.log(response)
+        await axios.post('/api/auth/verify-reset-token', { token })
         setTokenValid(true)
-      } catch (error) {
-        console.log(error)
+      } catch {
         setTokenValid(false)
         setError('This password reset link is invalid or has expired')
       } finally {

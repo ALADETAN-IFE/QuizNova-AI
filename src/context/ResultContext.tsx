@@ -89,7 +89,7 @@ interface ResultContextType {
         // Trigger a sync to ensure all results are up to date
        await axios.get(`/api/results?userId=${user.id}`)
         // const response = await axios.get(`/api/results?userId=${user.id}`)
-        // console.log('Fetched results:', response.data)
+        // // console.log('Fetched results:', response.data)
       }
     } catch (error) {
       console.error('Error saving quiz result:', error)
@@ -107,14 +107,14 @@ interface ResultContextType {
       setLoading(true);
 
       try {
-        console.log('Syncing results for user:', user.id)
+        // console.log('Syncing results for user:', user.id)
         // Check if user has any results in database
         const response = await axios.get(`/api/results?userId=${user.id}`)
         const dbResults = response.data
       
         // If user has no results in database, sync localstorage results
         if (dbResults.length === 0 && quizResults.length > 0) {
-          console.log('Syncing local results to database')
+          // console.log('Syncing local results to database')
           for (const result of quizResults) {
             await axios.post('/api/results', {
               quiz: result.quizId,
@@ -138,7 +138,7 @@ interface ResultContextType {
 
         // If user has results in database, sync them to localstorage
         if (dbResults.length > 0) {
-          console.log('Syncing database results to local storage')
+          // console.log('Syncing database results to local storage')
           addQuizResult(dbResults.map((result: QuizResult) => ({
             quizId: result.quiz,
             score: result.score,

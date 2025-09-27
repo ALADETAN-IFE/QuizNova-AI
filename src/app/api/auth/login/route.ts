@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs'
 import { connectToDatabase } from '@/lib/mongodb'
 import User from '@/models/User'
 import { createToken, setAuthCookie } from '@/utils/auth'
+// import { sendWelcomeEmail } from '@/lib/email'
 
 export const config = {
   runtime: "nodejs", // Force Node.js runtime
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
       )
     }
 
-    console.log("user", user)
+    // console.log("user", user)
 
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password)
@@ -47,6 +48,9 @@ export async function POST(req: Request) {
       )
     }
 
+    // sendWelcomeEmail(user.email, user.username).catch(error => {
+    //       console.error('Failed to send welcome email:', error)
+    // })
     // Create and set JWT token
     const token = await createToken(user._id, user.username)
     await setAuthCookie(token)

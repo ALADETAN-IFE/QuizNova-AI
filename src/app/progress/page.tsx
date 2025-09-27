@@ -65,6 +65,22 @@ export default function ProgressPage() {
   // State for topic performance data
   const [topicPerformance, setTopicPerformance] = useState<{ topic: string; correct: number; total: number }[]>([])
 
+  const check = (result: QuizResult) => {
+    console.log('Check function called');
+     let quizTitle = ""
+      if (result?.quizId == null || result?.quizId === undefined) {
+        quizTitle = 'Unknown Quiz'
+      } else {
+        if (typeof result?.quizId === 'string') {
+          quizTitle = result.quizId
+        } else {
+          quizTitle = result.quizId.title || result.quizId._id || 'Unknown Quiz'
+        }
+      }
+
+      return quizTitle;
+  }
+
   useEffect(() => {
     // // Redirect to sign in if user is not logged in
     // if (!user) {
@@ -73,11 +89,14 @@ export default function ProgressPage() {
     // }
 
     // Calculate performance statistics for each topic
+    // console.log('Quiz Results:', quizResults);
     const topicStats = (quizResults as QuizResult[])
+      // .filter(result => result?.quizId == null) // Filter out null/undefined results
       .sort((a, b) => new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime())
       .reduce((acc, result) => {
       // Extract topic from quiz ID (first word) and truncate if needed
-      const quizTitle = typeof result?.quizId === 'string' ? result.quizId : result.quizId.title || result.quizId._id;
+        const quizTitle = check(result);
+
       const topic = truncateTitle(quizTitle.split(' ')[0])
       if (!acc[topic]) {
         acc[topic] = { correct: 0, total: 0 }
@@ -278,17 +297,19 @@ export default function ProgressPage() {
             <div key={index} className="card p-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="font-semibold text-cool-white" title={typeof result.quizId === 'string' ? result.quizId : result.quizId.title || result.quizId._id}>
-                    {truncateTitle(result.quizId)} -
+                  <h3 className="font-semibold text-cool-white" title={check(result)}>
+                  {/* <h3 className="font-semibold text-cool-white" title={typeof result.quizId === 'string' ? result.quizId : result.quizId.title || result.quizId._id}> */}
+                    {/* {truncateTitle(result.quizId)} - */}
                     <span
-                      className={`px-3 py-1 rounded-full ${typeof result.quizId !== 'string' && result.quizId.difficulty === 'easy'
+                      className={`px-3 py-1 rounded-full ${typeof result.quizId !== 'string' && result?.quizId?.difficulty === 'easy'
                         ? 'text-green-500'
-                        : typeof result.quizId !== 'string' && result.quizId.difficulty === 'medium'
+                        : typeof result.quizId !== 'string' && result?.quizId?.difficulty === 'medium'
                           ? 'text-blue-500'
                           : 'text-starburst-orange'
                         }`}
                     >
-                      {typeof result.quizId === 'string' ? '' : result.quizId.difficulty} 
+                      {typeof result.quizId === 'string' ? '' : result?.quizId?.difficulty} 
+                      {result.quizId == null ? 'easy' : '' }
                     </span>
                     -
                     <span className={`px-3 py-1 rounded-full text-sm ${result.quiz?.questions[0]?.questionType === 'obj'
@@ -318,3 +339,7 @@ export default function ProgressPage() {
     </div>
   );
 } 
+
+// export default function ProgressPages() {
+//   return <div>Progress Page</div>
+// }

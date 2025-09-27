@@ -34,6 +34,7 @@ export async function GET(req: Request) {
     const quizzes = await Quiz.find({ createdBy: userId, isDeleted: false }).sort({
       createdAt: -1,
     });
+    
 
 
     if (!quizzes) {

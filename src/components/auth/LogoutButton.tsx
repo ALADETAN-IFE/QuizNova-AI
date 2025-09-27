@@ -5,10 +5,12 @@ import { LogOut } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useAppStore } from "@/lib/store.zustand";
 import { signOut, useSession } from "next-auth/react";
+import axios from "axios";
 
 export default function LogOutButton() {
   const { logout } = useAppStore();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { status } = useSession();
 
   const handleLogoutClick = () => {
@@ -17,15 +19,29 @@ export default function LogOutButton() {
 
   const handleLogoutConfirm = async () => {
     try {
-      if (status == "authenticated") {
+      setLoading(true);
+       if (status == "authenticated") {
         await signOut({ redirect: false });
       }
+      // Call the logout API to clear server-side cookies
+      await axios.post('/api/auth/logout');
+
+      // Clear client-side cookies as backup
+      const cookies = document.cookie.split(";");
+      for (let cookie of cookies) {
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos).trim() : cookie.trim();
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      }
+      
       logout();
       // router.push('/')
       toast.success("Logged out successfully");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Failed to logout");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -61,7 +77,7 @@ export default function LogOutButton() {
                 onClick={handleLogoutConfirm}
                 className="px-4 py-2 bg-starburst-orange/20 text-starburst-orange rounded-lg hover:bg-starburst-orange/30 transition-colors"
               >
-                Logout
+                {loading ? "Logging out..." : "Logout"}
               </button>
             </div>
           </div>

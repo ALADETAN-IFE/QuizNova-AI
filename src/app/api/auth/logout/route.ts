@@ -6,7 +6,7 @@ import { authOptions } from '@/lib/next-auth'
 export async function POST() {
   try {
     // Get the server session
-    const session = await getServerSession(authOptions)
+    // const session = await getServerSession(authOptions)
     
     const cookieStore = await cookies()
     

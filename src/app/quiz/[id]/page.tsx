@@ -1,3 +1,10 @@
+# ============================================================
+# REPOGUARD — MANUAL REVIEW REQUIRED: src/app/quiz/[id]/page.tsx
+# Scanned: 2026-06-08T20:28:48.231Z
+# The following findings could NOT be automatically patched:
+#   [HIGH] env-exfiltration: Environment variable exfiltration — secrets being sent externally
+# ============================================================
+
 import type { Metadata } from "next";
 import { Suspense } from 'react'
 import QuizClient from './QuizClient'
@@ -8,6 +15,8 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
+// ⚠️ REPOGUARD [HIGH] env-exfiltration: Environment variable exfiltration — secrets being sent externally
+//    ACTION REQUIRED: Review and fix this line manually before merging.
   const quiz = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/quizzes/one?id=${id}`)
     .then(res => res.json())
     .catch(() => null);

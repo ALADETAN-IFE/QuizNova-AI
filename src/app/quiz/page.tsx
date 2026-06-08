@@ -1,3 +1,10 @@
+# ============================================================
+# REPOGUARD — MANUAL REVIEW REQUIRED: src/app/quiz/page.tsx
+# Scanned: 2026-06-08T20:28:49.505Z
+# The following findings could NOT be automatically patched:
+#   [HIGH] env-exfiltration: Environment variable exfiltration — secrets being sent externally
+# ============================================================
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -53,6 +60,8 @@ export default function QuizPage() {
         if (user?.id) {
           const userId = user?.id;
           // For logged-in users, fetch from API
+// ⚠️ REPOGUARD [HIGH] env-exfiltration: Environment variable exfiltration — secrets being sent externally
+//    ACTION REQUIRED: Review and fix this line manually before merging.
           const response = await axios.get(`/api/quizzes/${userId}`);
           const fetchedQuizzes = response.data;
           setAllQuizzes(fetchedQuizzes);

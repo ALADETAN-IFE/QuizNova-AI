@@ -1,3 +1,10 @@
+# ============================================================
+# REPOGUARD — MANUAL REVIEW REQUIRED: src/utils/auth.ts
+# Scanned: 2026-06-08T20:28:50.774Z
+# The following findings could NOT be automatically patched:
+#   [HIGH] env-exfiltration: Environment variable exfiltration — secrets being sent externally
+# ============================================================
+
 'use server'
 import { cookies } from 'next/headers'
 import jwt from 'jsonwebtoken'
@@ -86,6 +93,8 @@ export async function clearAuthCookie() {
 
 export async function login(email: string, password: string) {
   try {
+// ⚠️ REPOGUARD [HIGH] env-exfiltration: Environment variable exfiltration — secrets being sent externally
+//    ACTION REQUIRED: Review and fix this line manually before merging.
     const response = await axios.post('/api/auth/login', { email, password })
     return response.data
   } catch {

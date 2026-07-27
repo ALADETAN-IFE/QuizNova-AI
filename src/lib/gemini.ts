@@ -89,7 +89,7 @@ export async function generateQuizFromPDF(
   questionType: 'obj' | 'subjective' | 'theory' = 'obj'
 ): Promise<QuizQuestion[]> {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+    const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash' })
 
     const difficultyDescription = {
       easy: "Create simple, straightforward questions that test basic understanding and recall.",

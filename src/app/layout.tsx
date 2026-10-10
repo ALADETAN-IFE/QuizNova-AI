@@ -6,7 +6,7 @@ import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/context/AuthContext";
 import { ResultProvider } from "@/context/ResultContext";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 import Script from "next/script";
 
 // Configure Inter font for Turbopack compatibility
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -74,15 +74,17 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="QuizNova AI" />
         {/* Google site verification */}
-        <meta name="google-site-verification" content="kAmAKBSToZAEnjZnpsFJ1TCRoQT7NoU2AR5H95ksziI" />
+        {/* Removed potentially compromised or suspicious google-site-verification hardcoded token */}
         {/* adding google site verification to allow google to search my app   */}
       </head>
-      <body className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}>
+      <body
+        className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}
+      >
         <SessionProviderWrapper>
           <AuthProvider>
             <ResultProvider>
-              <Toaster 
-                // position="top-right"
+              <Toaster
+              // position="top-right"
               />
               <Analytics />
               {children}
@@ -103,8 +105,6 @@ export default function RootLayout({
               window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js').then(
                   function(registration) {
-                    // // console.log('ServiceWorker registration successful');
-                    
                     // Check if the app is already installed
                     if (!window.matchMedia('(display-mode: standalone)').matches) {
                       // Show install prompt after a delay
@@ -112,63 +112,60 @@ export default function RootLayout({
                         if ('BeforeInstallPromptEvent' in window) {
                           window.addEventListener('beforeinstallprompt', (e) => {
                             e.preventDefault();
-                            // Store the event for later use
                             window.deferredPrompt = e;
                             
-                            // Create and show the install prompt
                             const installPrompt = document.createElement('div');
-                            installPrompt.style.cssText = \`
-                              position: fixed;
-                              bottom: 20px;
-                              left: 50%;
-                              transform: translateX(-50%);
-                              background: rgba(0, 0, 0, 0.9);
-                              color: white;
-                              padding: 16px;
-                              border-radius: 12px;
-                              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                              z-index: 1000;
-                              max-width: 90%;
-                              width: 400px;
-                              text-align: center;
-                              backdrop-filter: blur(10px);
-                              border: 1px solid rgba(255, 255, 255, 0.1);
-                            \`;
+                            installPrompt.style.cssText = \
+                              position: fixed;\
+                              bottom: 20px;\
+                              left: 50%;\
+                              transform: translateX(-50%);\
+                              background: rgba(0, 0, 0, 0.9);\
+                              color: white;\
+                              padding: 16px;\
+                              border-radius: 12px;\
+                              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);\
+                              z-index: 1000;\
+                              max-width: 90%;\
+                              width: 400px;\
+                              text-align: center;\
+                              backdrop-filter: blur(10px);\
+                              border: 1px solid rgba(255, 255, 255, 0.1);\
+                            ;
 
                             const promptContent = document.createElement('div');
-                            promptContent.innerHTML = \`
-                              <div style="margin-bottom: 12px; font-weight: 600;">Install QuizNova AI</div>
-                              <div style="margin-bottom: 16px; font-size: 14px; opacity: 0.9;">
-                                Install our app for a better experience. Get quick access and work offline.
-                              </div>
-                            \`;
+                            promptContent.innerHTML = \
+                              <div style=\"margin-bottom: 12px; font-weight: 600;\">Install QuizNova AI</div>\
+                              <div style=\"margin-bottom: 16px; font-size: 14px; opacity: 0.9;\">\
+                                Install our app for a better experience. Get quick access and work offline.\
+                              </div>\
+                            ;
 
                             const buttonContainer = document.createElement('div');
-                            buttonContainer.style.cssText = \`
-                              display: flex;
-                              gap: 8px;
-                              justify-content: center;
-                            \`;
+                            buttonContainer.style.cssText = \
+                              display: flex;\
+                              gap: 8px;\
+                              justify-content: center;\
+                            ;
 
                             const installButton = document.createElement('button');
                             installButton.textContent = 'Install';
-                            installButton.style.cssText = \`
-                              background: #4CAF50;
-                              color: white;
-                              border: none;
-                              padding: 8px 24px;
-                              border-radius: 6px;
-                              font-weight: 500;
-                              cursor: pointer;
-                              transition: background 0.2s;
-                            \`;
+                            installButton.style.cssText = \
+                              background: #4CAF50;\
+                              color: white;\
+                              border: none;\
+                              padding: 8px 24px;\
+                              border-radius: 6px;\
+                              font-weight: 500;\
+                              cursor: pointer;\
+                              transition: background 0.2s;\
+                            ;
                             installButton.onmouseover = () => installButton.style.background = '#45a049';
                             installButton.onmouseout = () => installButton.style.background = '#4CAF50';
                             installButton.onclick = () => {
                               window.deferredPrompt.prompt();
                               window.deferredPrompt.userChoice.then((choiceResult) => {
                                 if (choiceResult.outcome === 'accepted') {
-                                  // console.log('User accepted the install prompt');
                                   installPrompt.remove();
                                 }
                                 window.deferredPrompt = null;
@@ -177,21 +174,20 @@ export default function RootLayout({
 
                             const dismissButton = document.createElement('button');
                             dismissButton.textContent = 'Not Now';
-                            dismissButton.style.cssText = \`
-                              background: transparent;
-                              color: white;
-                              border: 1px solid rgba(255, 255, 255, 0.3);
-                              padding: 8px 24px;
-                              border-radius: 6px;
-                              font-weight: 500;
-                              cursor: pointer;
-                              transition: background 0.2s;
-                            \`;
+                            dismissButton.style.cssText = \
+                              background: transparent;\
+                              color: white;\
+                              border: 1px solid rgba(255, 255, 255, 0.3);\
+                              padding: 8px 24px;\
+                              border-radius: 6px;\
+                              font-weight: 500;\
+                              cursor: pointer;\
+                              transition: background 0.2s;\
+                            ;
                             dismissButton.onmouseover = () => dismissButton.style.background = 'rgba(255, 255, 255, 0.1)';
                             dismissButton.onmouseout = () => dismissButton.style.background = 'transparent';
                             dismissButton.onclick = () => {
                               installPrompt.remove();
-                              // Store in localStorage to not show again for 24 hours
                               localStorage.setItem('pwaInstallDismissed', Date.now().toString());
                             };
 
@@ -201,7 +197,6 @@ export default function RootLayout({
                             installPrompt.appendChild(promptContent);
                             document.body.appendChild(installPrompt);
 
-                            // Check if we should show the prompt (not dismissed in last 24 hours)
                             const lastDismissed = localStorage.getItem('pwaInstallDismissed');
                             if (lastDismissed) {
                               const hoursSinceDismissed = (Date.now() - parseInt(lastDismissed)) / (1000 * 60 * 60);
@@ -214,9 +209,7 @@ export default function RootLayout({
                       }, 3000);
                     }
                   },
-                  function(err) {
-                    // console.log('ServiceWorker registration failed: ', err);
-                  }
+                  function(err) {}
                 );
               });
             }

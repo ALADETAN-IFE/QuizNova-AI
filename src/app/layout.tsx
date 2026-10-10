@@ -6,7 +6,7 @@ import Navigation from "@/components/Navigation";
 import { AuthProvider } from "@/context/AuthContext";
 import { ResultProvider } from "@/context/ResultContext";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@/vercel/analytics/next";
 import Script from "next/script";
 
 // Configure Inter font for Turbopack compatibility
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
@@ -74,15 +74,17 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="QuizNova AI" />
         {/* Google site verification */}
-        <meta name="google-site-verification" content="kAmAKBSToZAEnjZnpsFJ1TCRoQT7NoU2AR5H95ksziI" />
+        <meta name="google-site-verification" content="" />
         {/* adding google site verification to allow google to search my app   */}
       </head>
-      <body className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}>
+      <body
+        className={`min-h-screen bg-deep-space text-cool-white pb-20 ${inter.className}`}
+      >
         <SessionProviderWrapper>
           <AuthProvider>
             <ResultProvider>
-              <Toaster 
-                // position="top-right"
+              <Toaster
+              // position="top-right"
               />
               <Analytics />
               {children}
@@ -117,7 +119,7 @@ export default function RootLayout({
                             
                             // Create and show the install prompt
                             const installPrompt = document.createElement('div');
-                            installPrompt.style.cssText = \`
+                            installPrompt.style.cssText = \
                               position: fixed;
                               bottom: 20px;
                               left: 50%;
@@ -133,26 +135,26 @@ export default function RootLayout({
                               text-align: center;
                               backdrop-filter: blur(10px);
                               border: 1px solid rgba(255, 255, 255, 0.1);
-                            \`;
+                            \";
 
                             const promptContent = document.createElement('div');
-                            promptContent.innerHTML = \`
+                            promptContent.innerHTML = \
                               <div style="margin-bottom: 12px; font-weight: 600;">Install QuizNova AI</div>
                               <div style="margin-bottom: 16px; font-size: 14px; opacity: 0.9;">
                                 Install our app for a better experience. Get quick access and work offline.
                               </div>
-                            \`;
+                            \";
 
                             const buttonContainer = document.createElement('div');
-                            buttonContainer.style.cssText = \`
+                            buttonContainer.style.cssText = \
                               display: flex;
                               gap: 8px;
                               justify-content: center;
-                            \`;
+                            \";
 
                             const installButton = document.createElement('button');
                             installButton.textContent = 'Install';
-                            installButton.style.cssText = \`
+                            installButton.style.cssText = \
                               background: #4CAF50;
                               color: white;
                               border: none;
@@ -161,7 +163,7 @@ export default function RootLayout({
                               font-weight: 500;
                               cursor: pointer;
                               transition: background 0.2s;
-                            \`;
+                            \";
                             installButton.onmouseover = () => installButton.style.background = '#45a049';
                             installButton.onmouseout = () => installButton.style.background = '#4CAF50';
                             installButton.onclick = () => {
@@ -177,7 +179,7 @@ export default function RootLayout({
 
                             const dismissButton = document.createElement('button');
                             dismissButton.textContent = 'Not Now';
-                            dismissButton.style.cssText = \`
+                            dismissButton.style.cssText = \
                               background: transparent;
                               color: white;
                               border: 1px solid rgba(255, 255, 255, 0.3);
@@ -186,7 +188,7 @@ export default function RootLayout({
                               font-weight: 500;
                               cursor: pointer;
                               transition: background 0.2s;
-                            \`;
+                            \";
                             dismissButton.onmouseover = () => dismissButton.style.background = 'rgba(255, 255, 255, 0.1)';
                             dismissButton.onmouseout = () => dismissButton.style.background = 'transparent';
                             dismissButton.onclick = () => {

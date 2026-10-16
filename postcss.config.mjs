@@ -6,4 +6,3 @@ const config = {
 };
 
 export default config;
-// REMOVED BY REPOGUARD: obfuscated malware payload

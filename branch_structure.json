@@ -1,0 +1,27 @@
+{
+  "default_branch": "main",
+  "branches": [
+    "development",
+    "main",
+    "origin",
+    "repoguard/fixes-1792149887704",
+    "repoguard/fixes-1792149890405",
+    "vercel/react-server-components-cve-vu-5loisc"
+  ],
+  "parent": {
+    "development": "main",
+    "main": null,
+    "origin": "main",
+    "repoguard/fixes-1792149887704": "main",
+    "repoguard/fixes-1792149890405": "main",
+    "vercel/react-server-components-cve-vu-5loisc": "main"
+  },
+  "order": [
+    "main",
+    "development",
+    "origin",
+    "repoguard/fixes-1792149887704",
+    "repoguard/fixes-1792149890405",
+    "vercel/react-server-components-cve-vu-5loisc"
+  ]
+}
